@@ -22,6 +22,7 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
+from qgis.core import QgsMessageLog
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -178,16 +179,50 @@ class profileAAR:
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
-
+		
 
     def run(self):
         """Run method that performs all the real work"""
-        # show the dialog
-        self.dlg.show()
+        self.dlg.show()		
+        #read layers from qgis layers
+
+        layers = self.iface.legendInterface().layers()
+        #list to save layers
+        layer_list = []
+        #read all entrys
+        for layer in layers:
+            layer_list.append(layer.name())
+        #add entries in combo box
+        self.dlg.inputCombo.clear()
+        self.dlg.inputCombo.addItems(layer_list)
+		#Function to read the Fieldnames
+        def layer_field():
+            # Identify selected layer by its index
+            selectedLayerIndex = self.dlg.inputCombo.currentIndex()
+            selectedLayer = layers[selectedLayerIndex]
+            # Identify fields of the selected layer
+            fields = selectedLayer.pendingFields()
+            # Get field names of the fields
+            fieldnames = [field.name() for field in fields]
+            # Clear comboBox_5
+            self.dlg.zCombo.clear()
+            # Add field names to comboBox_5
+            self.dlg.zCombo.addItems(fieldnames)	
+         #Event on changing the layer is reading the fieldnames
+        self.dlg.inputCombo.currentIndexChanged.connect(layer_field)
+		
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
+
+			#Reading all combofields to variables
+            QgsMessageLog.logMessage(str("test"), 'MyPlugin')
+			
             pass
+
+			
+
+		
