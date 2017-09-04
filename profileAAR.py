@@ -195,19 +195,21 @@ class profileAAR:
         #add entries in combo box
         self.dlg.inputCombo.clear()
         self.dlg.inputCombo.addItems(layer_list)
+        #TODO: ONLY POINT VECTOR LAYER
 		#Function to read the Fieldnames
         def layer_field():
             # Identify selected layer by its index
             selectedLayerIndex = self.dlg.inputCombo.currentIndex()
             selectedLayer = layers[selectedLayerIndex]
+            QgsMessageLog.logMessage(str(selectedLayer), 'MyPlugin')
             # Identify fields of the selected layer
             fields = selectedLayer.pendingFields()
             # Get field names of the fields
             fieldnames = [field.name() for field in fields]
-            # Clear comboBox_5
+            # Clear zCombo
             self.dlg.zCombo.clear()
-            # Add field names to comboBox_5
-            self.dlg.zCombo.addItems(fieldnames)	
+            # Add field names to zCombo
+            self.dlg.zCombo.addItems(fieldnames)
          #Event on changing the layer is reading the fieldnames
         self.dlg.inputCombo.currentIndexChanged.connect(layer_field)
 		
@@ -220,7 +222,11 @@ class profileAAR:
 
 			#Reading all combofields to variables
             QgsMessageLog.logMessage(str("test"), 'MyPlugin')
-			
+			#Reading the ComboBoxes
+            method = unicode(self.dlg.methodCombo.currentText())
+            view = unicode(self.dlg.viewCombo.currentText())
+            zColumn = unicode(self.dlg.viewCombo.currentText())
+            #Reading layer xyz and profile and view to dataframe		
             pass
 
 			
