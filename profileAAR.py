@@ -185,12 +185,12 @@ class profileAAR:
         """Run method that performs all the real work"""
         self.dlg.show()		
         #read layers from qgis layers
-
         layers = self.iface.legendInterface().layers()
         #list to save layers
         layer_list = []
         #read all entrys
         for layer in layers:
+			#Check if it is an vectorlayer
             layer_list.append(layer.name())
         #add entries in combo box
         self.dlg.inputCombo.clear()
@@ -201,8 +201,7 @@ class profileAAR:
             # Identify selected layer by its index
             selectedLayerIndex = self.dlg.inputCombo.currentIndex()
             selectedLayer = layers[selectedLayerIndex]
-            QgsMessageLog.logMessage(str(selectedLayer), 'MyPlugin')
-            # Identify fields of the selected layer
+            # Identify fields of the selected layer		
             fields = selectedLayer.pendingFields()
             # Get field names of the fields
             fieldnames = [field.name() for field in fields]
@@ -219,14 +218,31 @@ class profileAAR:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-
 			#Reading all combofields to variables
-            QgsMessageLog.logMessage(str("test"), 'MyPlugin')
 			#Reading the ComboBoxes
             method = unicode(self.dlg.methodCombo.currentText())
             view = unicode(self.dlg.viewCombo.currentText())
             zColumn = unicode(self.dlg.viewCombo.currentText())
-            #Reading layer xyz and profile and view to dataframe		
+			#Reading layer xyz and profile and view to a list
+			#Identify selected layer by its index
+            selectedLayerIndex = self.dlg.inputCombo.currentIndex()		
+            selectedLayer = layers[selectedLayerIndex]
+            iter = selectedLayer.getFeatures()		
+            for feature in iter:
+                # retrieve every feature with its geometry and attributes
+                # fetch geometry
+                geom = feature.geometry()
+                x,y = str(geom.asPoint()).split(",")
+                x = x.replace("(","")
+                y = y.replace(")","")
+                #write coordinates and attributes (view, profile and z) in a list
+                coord = [x,y]
+
+                # fetch attributes
+                attrs = feature.attributes()
+
+                # attrs is a list. It contains all the attribute values of this feature
+                #print attrs			
             pass
 
 			
