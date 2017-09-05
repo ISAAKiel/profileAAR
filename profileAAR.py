@@ -252,7 +252,9 @@ class profileAAR:
                 index = index + 1
 			#Reading layer xyz and profile and view to a list
             #Go thought all data rows in the selected layer
-            iter = selectedLayer.getFeatures()		
+            iter = selectedLayer.getFeatures()
+            #list for the data
+            coord = []	
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
@@ -261,8 +263,11 @@ class profileAAR:
                 x = geom.asPoint().x()
                 y = geom.asPoint().y()
                 #write coordinates and attributes (view, profile and z) in a list
-                coord = [x,y,feature.attributes()[z_col],feature.attributes()[view_col],feature.attributes()[profile_col]]
-                QgsMessageLog.logMessage("test"+str(coord), 'MyPlugin')			
+                coord.append([x,y,feature.attributes()[z_col],feature.attributes()[view_col],feature.attributes()[profile_col]])
+
+            #counting the amount of profiles for the loop
+            prnames = len(set(coord[,4]))
+            QgsMessageLog.logMessage("test"+str(coord), 'MyPlugin')    
             pass
 
 			
