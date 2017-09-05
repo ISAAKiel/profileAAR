@@ -213,6 +213,9 @@ class profileAAR:
             #same for the view column
             self.dlg.viewCombo.clear()
             self.dlg.viewCombo.addItems(fieldnames)
+            #and for the profile column
+            self.dlg.profileCombo.clear()
+            self.dlg.profileCombo.addItems(fieldnames)
          #Event on changing the layer is reading the fieldnames
         self.dlg.inputCombo.currentIndexChanged.connect(layer_field)
 		
@@ -235,6 +238,7 @@ class profileAAR:
             #variable for column index
             view_col = -1        
             z_col = -1
+            profile_col = -1
             #get the index of column view and column z
             index = 0
             #Look for all fields, if a fieldname is like the selected column get the index
@@ -243,6 +247,8 @@ class profileAAR:
                     z_col = index
                 if field.name() == self.dlg.viewCombo.currentText():
                     view_col = index
+                if field.name() == self.dlg.profileCombo.currentText():
+                    profile_col = index
                 index = index + 1
 			#Reading layer xyz and profile and view to a list
             #Go thought all data rows in the selected layer
@@ -255,8 +261,8 @@ class profileAAR:
                 x = geom.asPoint().x()
                 y = geom.asPoint().y()
                 #write coordinates and attributes (view, profile and z) in a list
-                coord = [x,y,feature.attributes()[z_col],feature.attributes()[view_col]]
-                #QgsMessageLog.logMessage("test"+str(coord), 'MyPlugin')			
+                coord = [x,y,feature.attributes()[z_col],feature.attributes()[view_col],feature.attributes()[profile_col]]
+                QgsMessageLog.logMessage("test"+str(coord), 'MyPlugin')			
             pass
 
 			
