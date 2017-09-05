@@ -22,9 +22,10 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
-from qgis.core import QgsMessageLog
+from qgis.core import QgsMessageLog, QgsVectorDataProvider
 # Initialize Qt resources from file resources.py
 import resources
+import sys
 # Import the code for the dialog
 from profileAAR_dialog import profileAARDialog
 import os.path
@@ -209,6 +210,9 @@ class profileAAR:
             self.dlg.zCombo.clear()
             # Add field names to zCombo
             self.dlg.zCombo.addItems(fieldnames)
+            #same for the view column
+            self.dlg.viewCombo.clear()
+            self.dlg.viewCombo.addItems(fieldnames)
          #Event on changing the layer is reading the fieldnames
         self.dlg.inputCombo.currentIndexChanged.connect(layer_field)
 		
@@ -220,29 +224,39 @@ class profileAAR:
             # substitute with your code.
 			#Reading all combofields to variables
 			#Reading the ComboBoxes
-            method = unicode(self.dlg.methodCombo.currentText())
-            view = unicode(self.dlg.viewCombo.currentText())
-            zColumn = unicode(self.dlg.viewCombo.currentText())
-			#Reading layer xyz and profile and view to a list
-			#Identify selected layer by its index
-            selectedLayerIndex = self.dlg.inputCombo.currentIndex()		
+            #Wich layer is selected?
+            selectedLayerIndex = self.dlg.inputCombo.currentIndex()        
             selectedLayer = layers[selectedLayerIndex]
+            #Read the method that is selected
+            method = unicode(self.dlg.methodCombo.currentText())
+            #read the direction, that is selected
+            method = unicode(self.dlg.directionCombo.currentText())
+            #Now get the column indices of the z-col and the view-col to get dataaccess
+            #variable for column index
+            view_col = -1        
+            z_col = -1
+            #get the index of column view and column z
+            index = 0
+            #Look for all fields, if a fieldname is like the selected column get the index
+            for field in selectedLayer.pendingFields():
+                if field.name() == self.dlg.zCombo.currentText():
+                    z_col = index
+                if field.name() == self.dlg.viewCombo.currentText():
+                    view_col = index
+                index = index + 1
+			#Reading layer xyz and profile and view to a list
+            #Go thought all data rows in the selected layer
             iter = selectedLayer.getFeatures()		
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
                 geom = feature.geometry()
-                x,y = str(geom.asPoint()).split(",")
-                x = x.replace("(","")
-                y = y.replace(")","")
+                #getting x and y coordinate
+                x = geom.asPoint().x()
+                y = geom.asPoint().y()
                 #write coordinates and attributes (view, profile and z) in a list
-                coord = [x,y]
-
-                # fetch attributes
-                attrs = feature.attributes()
-
-                # attrs is a list. It contains all the attribute values of this feature
-                #print attrs			
+                coord = [x,y,feature.attributes()[z_col],feature.attributes()[view_col]]
+                #QgsMessageLog.logMessage("test"+str(coord), 'MyPlugin')			
             pass
 
 			
