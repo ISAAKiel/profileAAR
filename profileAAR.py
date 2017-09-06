@@ -254,7 +254,7 @@ class profileAAR:
             #Go thought all data rows in the selected layer
             iter = selectedLayer.getFeatures()
             #list for the data
-            coord = []	
+            coord = []
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
@@ -266,8 +266,34 @@ class profileAAR:
                 coord.append([x,y,feature.attributes()[z_col],feature.attributes()[view_col],feature.attributes()[profile_col]])
 
             #counting the amount of profiles for the loop
-            prnames = len(set(coord[,4]))
-            QgsMessageLog.logMessage("test"+str(coord), 'MyPlugin')    
+            #At first get the amount of points in the list
+            listlength = len(coord)
+            #list to store the profilenumbers
+            prnumber = []
+            #store all profile numers in the list
+            for k in range (0,listlength):  
+                prnumber.append(str(coord[k][4]))
+            #getting the amount of profiles
+            prnames = set(prnumber)
+
+            #Creating list for storing the results
+            templist = [None]*5
+            coord_export= []
+            for j in range (0,listlength):
+                coord_export.append(templist)
+
+            QgsMessageLog.logMessage("test"+str(len(coord_export)), 'MyPlugin')
+         
+            
+            #starting with the first profile
+            i = 0
+            #for i in range (0, len(prnames)):
+            ##### LOOP START
+            #Writing the values of the profile i in a list
+
+                
+            
+            ###LOOP END
             pass
 
 			
