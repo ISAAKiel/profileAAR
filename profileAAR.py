@@ -7,7 +7,7 @@
                               -------------------
         begin                : 2017-08-31
         git sha              : $Format:%H$
-        copyright            : (C) 2017 by Moritz Mennenga / NIhK WHV / ISAAKiel
+        copyright            : (C) 2017 by Moritz Mennenga & Kay Schmütz / NIhK WHV / UFG CAU KIEL / ISAAKiel
         email                : mennenga@nihk.de
  ***************************************************************************/
 
