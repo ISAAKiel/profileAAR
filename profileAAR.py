@@ -7,7 +7,7 @@
                               -------------------
         begin                : 2017-08-31
         git sha              : $Format:%H$
-        copyright            : (C) 2017 by Moritz Mennenga & Kay Schmütz / NIhK WHV / UFG CAU KIEL / ISAAKiel
+        copyright            : (C) 2017 by Moritz Mennenga & Kay Schmï¿½tz / NIhK WHV / UFG CAU KIEL / ISAAKiel
         email                : mennenga@nihk.de
  ***************************************************************************/
 
@@ -21,8 +21,9 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon
-from qgis.core import QgsMessageLog, QgsVectorDataProvider
+from PyQt4.QtGui import QAction, QIcon, QFileDialog #Import qfiledialog
+from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
+
 # Initialize Qt resources from file resources.py
 import resources
 import sys
@@ -67,6 +68,7 @@ class profileAAR:
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'profileAAR')
         self.toolbar.setObjectName(u'profileAAR')
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -134,9 +136,6 @@ class profileAAR:
         :rtype: QAction
         """
 
-        # Create the dialog (after translation) and keep reference
-        self.dlg = profileAARDialog()
-
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -180,81 +179,86 @@ class profileAAR:
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
-		
+
+
+    def layer_field(self):
+        '''Function to read the Fieldnames in the select infos in GUI section'''
+        # Read all layers from Qgis
+        all_layers = self.iface.legendInterface().layers()
+        # Identify selected Input layer by its index
+        selectedLayerIndex = self.dlg.inputCombo.currentIndex()
+        selectedLayer = all_layers[selectedLayerIndex]
+        # Identify fields of the selected layer
+        fields = selectedLayer.pendingFields()
+        # Get field names of the fields
+        fieldnames = [field.name() for field in fields]
+        # Clear zCombo
+        self.dlg.zCombo.clear()
+        # Add field names to zCombo
+        self.dlg.zCombo.addItems(fieldnames)
+        # same for the view column
+        self.dlg.viewCombo.clear()
+        self.dlg.viewCombo.addItems(fieldnames)
+        # and for the profile column
+        self.dlg.profileCombo.clear()
+        self.dlg.profileCombo.addItems(fieldnames)
+
 
     def run(self):
         """Run method that performs all the real work"""
-        self.dlg.show()		
+        # Create the dialog (after translation) and keep reference
+        self.dlg = profileAARDialog()
+
+        '''SELECT INPUT IN GUI'''
+        # CHOOSE INPUT LAYER
         #read layers from qgis layers
         layers = self.iface.legendInterface().layers()
         #list to save layers
         layer_list = []
         #read all entrys
         for layer in layers:
-			#Check if it is an vectorlayer
-            layer_list.append(layer.name())
+		    #Check if it is a point-vectorlayer and will only show them for selection
+            if layer.geometryType() == QGis.Point:
+                layer_list.append(layer.name())
         #add entries in combo box
         self.dlg.inputCombo.clear()
         self.dlg.inputCombo.addItems(layer_list)
-        #TODO: ONLY POINT VECTOR LAYER
-		#Function to read the Fieldnames
-        def layer_field():
-            # Identify selected layer by its index
-            selectedLayerIndex = self.dlg.inputCombo.currentIndex()
-            selectedLayer = layers[selectedLayerIndex]
-            # Identify fields of the selected layer		
-            fields = selectedLayer.pendingFields()
-            # Get field names of the fields
-            fieldnames = [field.name() for field in fields]
-            # Clear zCombo
-            self.dlg.zCombo.clear()
-            # Add field names to zCombo
-            self.dlg.zCombo.addItems(fieldnames)
-            #same for the view column
-            self.dlg.viewCombo.clear()
-            self.dlg.viewCombo.addItems(fieldnames)
-            #and for the profile column
-            self.dlg.profileCombo.clear()
-            self.dlg.profileCombo.addItems(fieldnames)
-         #Event on changing the layer is reading the fieldnames
-        self.dlg.inputCombo.currentIndexChanged.connect(layer_field)
-		
+
+        # CHOOSE COLUMNS FOR Z-VALUE, VIEW AND PR-NUMBER
+        # CALLS FUNCTION LAYER_FIELD (once on startup on activation, to enable using when only one point fc is present)
+        self.dlg.inputCombo.activated.connect(self.layer_field)
+        # Event on changing the layer is reading the fieldnames
+        self.dlg.inputCombo.currentIndexChanged.connect(self.layer_field)
+
+
+        # create/show the dialog
+        self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-			#Reading all combofields to variables
-			#Reading the ComboBoxes
-            #Wich layer is selected?
-            selectedLayerIndex = self.dlg.inputCombo.currentIndex()        
-            selectedLayer = layers[selectedLayerIndex]
+
+            '''GET INPUT FROM GUI TO VARIABLES/PREPARE LIST OF DATA'''
+            #GET TEXT FROM METHOD AND DIRECTION
             #Read the method that is selected
             method = unicode(self.dlg.methodCombo.currentText())
             #read the direction, that is selected
-            method = unicode(self.dlg.directionCombo.currentText())
-            #Now get the column indices of the z-col and the view-col to get dataaccess
-            #variable for column index
-            view_col = -1        
-            z_col = -1
-            profile_col = -1
-            #get the index of column view and column z
-            index = 0
-            #Look for all fields, if a fieldname is like the selected column get the index
-            for field in selectedLayer.pendingFields():
-                if field.name() == self.dlg.zCombo.currentText():
-                    z_col = index
-                if field.name() == self.dlg.viewCombo.currentText():
-                    view_col = index
-                if field.name() == self.dlg.profileCombo.currentText():
-                    profile_col = index
-                index = index + 1
-			#Reading layer xyz and profile and view to a list
+            direction = unicode(self.dlg.directionCombo.currentText())
+
+            #GET REFERENCE TO SELECTED LAYER
+            layers = self.iface.legendInterface().layers()
+            selectedLayerIndex = self.dlg.inputCombo.currentIndex()        
+            selectedLayer = layers[selectedLayerIndex]
+
+            #PREPARE DATA LIST
             #Go thought all data rows in the selected layer
             iter = selectedLayer.getFeatures()
             #list for the data
             coord = []
+            #list for the different profile names
+            prnames = []
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
@@ -263,19 +267,28 @@ class profileAAR:
                 x = geom.asPoint().x()
                 y = geom.asPoint().y()
                 #write coordinates and attributes (view, profile and z) in a list
-                coord.append([x,y,feature.attributes()[z_col],feature.attributes()[view_col],feature.attributes()[profile_col]])
+                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()],feature[self.dlg.profileCombo.currentText()]])
+                #write a list of profilenames (unique entries)
+                if feature[self.dlg.profileCombo.currentText()] not in prnames:
+                    prnames.append(feature[self.dlg.profileCombo.currentText()])
 
-            #counting the amount of profiles for the loop
-            #At first get the amount of points in the list
-            listlength = len(coord)
-            #list to store the profilenumbers
-            prnumber = []
-            #store all profile numers in the list
-            for k in range (0,listlength):  
-                prnumber.append(str(coord[k][4]))
-            #getting the amount of profiles
-            prnames = set(prnumber)
 
+
+            '''WORK ON EVERY PROFILE IN LOOP'''
+            # CREATE A LIST OF DATA FOR EVERY PROFILE
+            # select every single profile in a loop
+            for i in range(len(prnames)):
+                # instanciate a temporary list for a single profile
+                templist = []
+                # iterate through the features in coord, if the profilename matches store the features datalist in templist
+                for x in range(len(coord)):
+                    if coord[x][4] == prnames[i]:
+                        templist.append(coord[x])
+                QgsMessageLog.logMessage(str(templist), 'MyPlugin')
+
+
+
+            '''
             #Creating list for storing the results
             templist = [None]*5
             coord_export= []
@@ -292,8 +305,9 @@ class profileAAR:
             #Writing the values of the profile i in a list
 
                 
-            
-            ###LOOP END
+
+            #LOOP END
+            '''
             pass
 
 			
