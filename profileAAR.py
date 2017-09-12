@@ -23,6 +23,7 @@
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon, QFileDialog #Import qfiledialog
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
+import scipy
 
 # Initialize Qt resources from file resources.py
 import resources
@@ -253,6 +254,7 @@ class profileAAR:
             selectedLayer = layers[selectedLayerIndex]
 
             #PREPARE DATA LIST
+            #TODO: Check columns for fieldtypes, z has to be float etc.
             #Go thought all data rows in the selected layer
             iter = selectedLayer.getFeatures()
             #list for the data
@@ -284,7 +286,17 @@ class profileAAR:
                 for x in range(len(coord)):
                     if coord[x][4] == prnames[i]:
                         templist.append(coord[x])
+
+                # TODO: check if there are 5 or more points per profile
                 QgsMessageLog.logMessage(str(templist), 'MyPlugin')
+
+                '''CALCULATE SLOPE OF THE PROFILE'''
+                QgsMessageLog.logMessage("Bis hier bin ich", 'MyPlugin')
+                x = scipy.array([1,2,3])
+                y = scipy.array([2,3,4])
+                slope = scipy.stats.linregress(x,y)[0]
+                QgsMessageLog.logMessage(str(slope), 'MyPlugin')
+
 
 
 
