@@ -23,6 +23,7 @@
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon, QFileDialog #Import qfiledialog
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
+from qgis.gui import QgsMessageBar
 import scipy
 
 # Initialize Qt resources from file resources.py
@@ -260,7 +261,7 @@ class profileAAR:
             #list for the data
             coord = []
             #list for the different profile names
-            prnames = []
+            profile_names = []
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
@@ -271,27 +272,31 @@ class profileAAR:
                 #write coordinates and attributes (view, profile and z) in a list
                 coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()],feature[self.dlg.profileCombo.currentText()]])
                 #write a list of profilenames (unique entries)
-                if feature[self.dlg.profileCombo.currentText()] not in prnames:
-                    prnames.append(feature[self.dlg.profileCombo.currentText()])
+                if feature[self.dlg.profileCombo.currentText()] not in profile_names:
+                    profile_names.append(feature[self.dlg.profileCombo.currentText()])
 
 
 
             '''WORK ON EVERY PROFILE IN LOOP'''
             # CREATE A LIST OF DATA FOR EVERY PROFILE
             # select every single profile in a loop
-            for i in range(len(prnames)):
+            for i in range(len(profile_names)):
                 # instanciate a temporary list for a single profile
-                templist = []
+                coord_proc = []
                 # iterate through the features in coord, if the profilename matches store the features datalist in templist
                 for x in range(len(coord)):
-                    if coord[x][4] == prnames[i]:
-                        templist.append(coord[x])
+                    if coord[x][4] == profile_names[i]:
+                        coord_proc.append(coord[x])
 
-                # TODO: check if there are 5 or more points per profile
-                QgsMessageLog.logMessage(str(templist), 'MyPlugin')
+                #check if actual profile has less then 4 points
+                if len(coord_proc) <= 4:   
+                    #if it is less, print error message
+                    self.iface.messageBar().pushMessage("Error", "A profile needs min. 4 points. Error on profile: "+str(profile_names[i]), level=QgsMessageBar.CRITICAL)
+                    #cancel execution of the script
+                    sys.exitfunc()
 
-                '''CALCULATE SLOPE OF THE PROFILE'''
                 QgsMessageLog.logMessage("Bis hier bin ich", 'MyPlugin')
+                '''CALCULATE SLOPE OF THE PROFILE'''   
                 x = scipy.array([1,2,3])
                 y = scipy.array([2,3,4])
                 slope = scipy.stats.linregress(x,y)[0]
