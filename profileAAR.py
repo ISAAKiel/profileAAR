@@ -190,6 +190,7 @@ class profileAAR:
         # Identify selected Input layer by its index
         selectedLayerIndex = self.dlg.inputCombo.currentIndex()
         selectedLayer = all_layers[selectedLayerIndex]
+        #TODO: fix the indexing problem with rasters present in the layers
         # Identify fields of the selected layer
         fields = selectedLayer.pendingFields()
         # Get field names of the fields
@@ -220,18 +221,11 @@ class profileAAR:
         layer_list = []
         #read all entrys
         for layer in layers:
-<<<<<<< HEAD
-            # TODO: check if a raster is present
-		    #Check if it is a point-vectorlayer and will only show them for selection
-            if layer.geometryType() == QGis.Point:
-                layer_list.append(layer.name())
-=======
             #check if it is an vectorlayer and dismiss raster
-            if layer.type() == 0:
+            if layer.type() == QgsMapLayer.VectorLayer:
                 #Check if it is a point-vectorlayer and will only show them for selection
                 if layer.geometryType() == QGis.Point:
                     layer_list.append(layer.name())
->>>>>>> ec9ec7e0c3c9b2eade85eeb42d76811ba590bd29
         #add entries in combo box
         self.dlg.inputCombo.clear()
         self.dlg.inputCombo.addItems(layer_list)
