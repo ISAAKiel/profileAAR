@@ -211,6 +211,7 @@ class profileAAR:
         # Create the dialog (after translation) and keep reference
         self.dlg = profileAARDialog()
 
+
         '''SELECT INPUT IN GUI'''
         # CHOOSE INPUT LAYER
         #read layers from qgis layers
@@ -219,6 +220,7 @@ class profileAAR:
         layer_list = []
         #read all entrys
         for layer in layers:
+            # TODO: check if a raster is present
 		    #Check if it is a point-vectorlayer and will only show them for selection
             if layer.geometryType() == QGis.Point:
                 layer_list.append(layer.name())
@@ -233,6 +235,7 @@ class profileAAR:
         self.dlg.inputCombo.currentIndexChanged.connect(self.layer_field)
 
 
+        '''SHORT BLOCK OF PLUGIN CODE (runs the dialog and triggers the event after the OK button was pressed)'''
         # create/show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -241,6 +244,7 @@ class profileAAR:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
+
 
             '''GET INPUT FROM GUI TO VARIABLES/PREPARE LIST OF DATA'''
             #GET TEXT FROM METHOD AND DIRECTION
@@ -281,50 +285,57 @@ class profileAAR:
             # CREATE A LIST OF DATA FOR EVERY PROFILE
             # select every single profile in a loop
             for i in range(len(profile_names)):
-                # instanciate a temporary list for a single profile
+                # instantiate a temporary list for a single profile
                 coord_proc = []
+                # instantiate lists for the x and y values, which will be transformed into arrays for the linear regression
+                x_coord_proc = []
+                y_coord_proc = []
+                # instantiate list for the view to check if all entries in one profile are the same
+                view_check = []
                 # iterate through the features in coord, if the profilename matches store the features datalist in templist
                 for x in range(len(coord)):
                     if coord[x][4] == profile_names[i]:
                         coord_proc.append(coord[x])
+                        x_coord_proc.append(coord[x][0])
+                        y_coord_proc.append(coord[x][1])
+                        # write the unique view values in the checklist
+                        if coord[x][3] not in view_check:
+                            view_check.append(coord[x][3])
 
-                #check if actual profile has less then 4 points
-                if len(coord_proc) <= 4:   
+
+                # check if actual profile has less then 4 points
+                if len(coord_proc) <= 4:
                     #if it is less, print error message
-                    self.iface.messageBar().pushMessage("Error", "A profile needs min. 4 points. Error on profile: "+str(profile_names[i]), level=QgsMessageBar.CRITICAL)
+                    self.iface.messageBar().pushMessage("Error", "A profile needs min. 5 points. Error on profile: "+str(profile_names[i]), level=QgsMessageBar.CRITICAL)
                     #cancel execution of the script
                     sys.exitfunc()
 
-                QgsMessageLog.logMessage("Bis hier bin ich", 'MyPlugin')
+                # check if the view value is the same in all features
+                if len(view_check) != 1:
+                    # if it is not the same, print error message
+                    self.iface.messageBar().pushMessage("Error", "The view column of your data is inconsistant (either non or two different views are present). Error on profile: " + str(profile_names[i]), level=QgsMessageBar.CRITICAL)
+                    # cancel execution of the script
+                    sys.exitfunc()
+
+                # check if the view is one of the four cardinal directions
+                if view_check[0].upper() not in ["N", "E", "S", "W"]:
+                    # if it is not the same, print error message
+                    self.iface.messageBar().pushMessage("Error", "The view value is not one of the four cardinal directions. Error on profile: " + str(profile_names[i]), level=QgsMessageBar.CRITICAL)
+                    # cancel execution of the script
+                    sys.exitfunc()
+
+
+
                 '''CALCULATE SLOPE OF THE PROFILE'''   
-                x = scipy.array([1,2,3])
-                y = scipy.array([2,3,4])
-                slope = scipy.stats.linregress(x,y)[0]
+                # transform the x and y coordinate lists into scipy arrays
+                x_array = scipy.array(x_coord_proc)
+                y_array = scipy.array(y_coord_proc)
+
+                # calculate the slope of the linear regression
+                slope = scipy.stats.linregress(x_array,y_array)[0]
                 QgsMessageLog.logMessage(str(slope), 'MyPlugin')
 
 
-
-
-            '''
-            #Creating list for storing the results
-            templist = [None]*5
-            coord_export= []
-            for j in range (0,listlength):
-                coord_export.append(templist)
-
-            QgsMessageLog.logMessage("test"+str(len(coord_export)), 'MyPlugin')
-         
-            
-            #starting with the first profile
-            i = 0
-            #for i in range (0, len(prnames)):
-            ##### LOOP START
-            #Writing the values of the profile i in a list
-
-                
-
-            #LOOP END
-            '''
             pass
 
 			
