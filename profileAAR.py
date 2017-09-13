@@ -219,9 +219,11 @@ class profileAAR:
         layer_list = []
         #read all entrys
         for layer in layers:
-		    #Check if it is a point-vectorlayer and will only show them for selection
-            if layer.geometryType() == QGis.Point:
-                layer_list.append(layer.name())
+            #check if it is an vectorlayer and dismiss raster
+            if layer.type() == 0:
+                #Check if it is a point-vectorlayer and will only show them for selection
+                if layer.geometryType() == QGis.Point:
+                    layer_list.append(layer.name())
         #add entries in combo box
         self.dlg.inputCombo.clear()
         self.dlg.inputCombo.addItems(layer_list)
