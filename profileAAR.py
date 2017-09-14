@@ -188,9 +188,10 @@ class profileAAR:
         # Read all layers from Qgis
         all_layers = self.iface.legendInterface().layers()
         # Identify selected Input layer by its index
+        # TODO: Maybe change Qcombobox for QgsMapLayerCombobox
+        # TODO: fix the indexing problem with rasters present in the layers
         selectedLayerIndex = self.dlg.inputCombo.currentIndex()
         selectedLayer = all_layers[selectedLayerIndex]
-        #TODO: fix the indexing problem with rasters present in the layers
         # Identify fields of the selected layer
         fields = selectedLayer.pendingFields()
         # Get field names of the fields
@@ -283,6 +284,7 @@ class profileAAR:
                 x = geom.asPoint().x()
                 y = geom.asPoint().y()
                 #write coordinates and attributes (view, profile and z) in a list
+                # TODO: Use dictinary or object
                 coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()],feature[self.dlg.profileCombo.currentText()]])
                 #write a list of profilenames (unique entries)
                 if feature[self.dlg.profileCombo.currentText()] not in profile_names:
@@ -309,11 +311,12 @@ class profileAAR:
                         if coord[x][3] not in view_check:
                             view_check.append(coord[x][3])
 
-
+                # TODO: check for consistency before calculation
+                # TODO: check for spatial consistency (no points should be more than x meters apart)
                 # check if actual profile has less then 4 points
-                if len(coord_proc) <= 4:
+                if len(coord_proc) <= 3:
                     #if it is less, print error message
-                    self.iface.messageBar().pushMessage("Error", "A profile needs min. 5 points. Error on profile: "+str(profile_names[i]), level=QgsMessageBar.CRITICAL)
+                    self.iface.messageBar().pushMessage("Error", "A profile needs min. 4 points. Error on profile: "+str(profile_names[i]), level=QgsMessageBar.CRITICAL)
                     #cancel execution of the script
                     sys.exitfunc()
 
@@ -341,6 +344,7 @@ class profileAAR:
                 # calculate the slope of the linear regression
                 slope = scipy.stats.linregress(x_array,y_array)[0]
                 QgsMessageLog.logMessage(str(slope), 'MyPlugin')
+                # TODO: calculate slope radiants in degrees
 
 
             pass
