@@ -225,7 +225,14 @@ class profileAAR:
             if layer.type() == QgsMapLayer.VectorLayer:
                 #Check if it is a point-vectorlayer and will only show them for selection
                 if layer.geometryType() == QGis.Point:
-                    layer_list.append(layer.name())
+                    #Check if layer is projected
+                    if layer.crs().geographicFlag() == True:
+                        #if it is geographic drop it and tell the user
+                        self.iface.messageBar().pushMessage("Information", "Layer "+layer.name()+ " was dropped, because it is not projected. ", level=QgsMessageBar.INFO)
+                    else:
+                        #if it is projected make it choosable
+                        layer_list.append(layer.name())
+                    
         #add entries in combo box
         self.dlg.inputCombo.clear()
         self.dlg.inputCombo.addItems(layer_list)
@@ -280,8 +287,6 @@ class profileAAR:
                 #write a list of profilenames (unique entries)
                 if feature[self.dlg.profileCombo.currentText()] not in profile_names:
                     profile_names.append(feature[self.dlg.profileCombo.currentText()])
-
-
 
             '''WORK ON EVERY PROFILE IN LOOP'''
             # CREATE A LIST OF DATA FOR EVERY PROFILE
