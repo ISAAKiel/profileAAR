@@ -20,17 +20,21 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant
 from PyQt4.QtGui import QAction, QIcon, QFileDialog #Import qfiledialog
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
 from qgis.gui import QgsMessageBar
-import scipy
+
+
 
 # Initialize Qt resources from file resources.py
 import resources
 import sys
 #errorhandling is managed here
 from errorhandling import ErrorHandler
+
+# the magic happens here
+from magic_box import Magic_Box
 
 # Import the code for the dialog
 from profileAAR_dialog import profileAARDialog
@@ -217,6 +221,7 @@ class profileAAR:
         self.dlg = profileAARDialog()
         #initialize the Errorhandler
         errorhandler = ErrorHandler(self.iface)
+        magicbox = Magic_Box(self.iface)
 
         '''SELECT INPUT IN GUI'''
         # CHOOSE INPUT LAYER
@@ -295,20 +300,16 @@ class profileAAR:
             # CREATE A LIST OF DATA FOR EVERY PROFILE
             # select every single profile in a loop
 
+            coord_trans = []
             for i in range(len(profile_names)):
                 # instantiate a temporary list for a single profile
                 coord_proc = []
-                # instantiate lists for the x and y values, which will be transformed into arrays for the linear regression
-                x_coord_proc = []
-                y_coord_proc = []
                 # instantiate list for the view to check if all entries in one profile are the same
                 view_check = []
                 # iterate through the features in coord, if the profilename matches store the features datalist in templist
                 for x in range(len(coord)):
                     if coord[x][4] == profile_names[i]:
                         coord_proc.append(coord[x])
-                        x_coord_proc.append(coord[x][0])
-                        y_coord_proc.append(coord[x][1])
 
                         # write the unique view values in the checklist
                         if coord[x][3] not in view_check:
@@ -318,19 +319,88 @@ class profileAAR:
                 #Errorhandling: Checking the single Profiles for inconsestency
                 #Therefore we need the data of the actual profile, the view_check with the view values and actual profile name
                 errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]))
-                
-                '''CALCULATE SLOPE OF THE PROFILE'''   
-                # transform the x and y coordinate lists into scipy arrays
-                x_array = scipy.array(x_coord_proc)
-                y_array = scipy.array(y_coord_proc)
 
-                # calculate the slope of the linear regression
-                slope = scipy.stats.linregress(x_array,y_array)[0]
+
+
+                '''CALCULATE SLOPE OF THE PROFILE'''
+
+                coord_trans.append(magicbox.transformation(coord_proc))
                 # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
                 # TODO: calculate slope radiants in degrees
 
+            QgsMessageLog.logMessage(str(coord_trans), 'MyPlugin')
+            '''Create Vektor Layer'''
+            export_fields = QgsFields()
+            export_fields.append(QgsField("x", QVariant.Double))
+            export_fields.append(QgsField("y", QVariant.Double))
+            export_fields.append(QgsField("z", QVariant.Double))
+            export_fields.append(QgsField("prnumber", QVariant.String))
+
+            writer = QgsVectorFileWriter(r"c:\\test.shp", "utf-8", export_fields, QGis.WKBPoint, None, "ESRI Shapefile")
+            if writer.hasError() != QgsVectorFileWriter.NoError:
+                print "Error when creating shapefile: "
+
+            export_feature = QgsFeature()
+            for x in range(len(coord_trans)):
+                for i in range(len(coord_trans[x])):
+                    export_feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(coord_trans[x][i][0], coord_trans[x][i][2])))
+                    QgsMessageLog.logMessage(str(coord_trans[x][i][0]) + " " + str(coord_trans[x][i][2]), 'Coordinates')
+                    export_feature.setAttributes([float(coord_trans[x][i][0]), float(coord_trans[x][i][1]), float(coord_trans[x][i][2]),str(coord_trans[x][i][3])])
+                    writer.addFeature(export_feature)
+
+
+
+            del writer
+
+            # TODO: epsg übernehmen - Moritz
+            # TODO: Gui anpassen mit Speicherpfad - Kay
+            # TODO: Magic Box weiter übersetzen - Kay
+            # TODO: Standartfehler o.ä. Warnung - Christoph
+            # TODO: Nils staubsaugen ;P
+
 
             pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 			
 
