@@ -46,3 +46,8 @@ class ErrorHandler:
         else:
             check = True
         return check
+    
+    def linreg_residuals:
+        #calculate the residuals for each point and add the as an Attribute
+        
+        #print the mean, min, max residuals of each profile
