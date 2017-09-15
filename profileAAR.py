@@ -274,6 +274,9 @@ class profileAAR:
             coord = []
             #list for the different profile names
             profile_names = []
+            #check if the z values have the correct type
+            errorhandler.field_check(selectedLayer, self.dlg.zCombo.currentText())
+                
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
@@ -306,17 +309,16 @@ class profileAAR:
                         coord_proc.append(coord[x])
                         x_coord_proc.append(coord[x][0])
                         y_coord_proc.append(coord[x][1])
+
                         # write the unique view values in the checklist
                         if coord[x][3] not in view_check:
                             view_check.append(coord[x][3])
-
+                
+                #Handle Errors depending on the attributes in the fields
                 #Errorhandling: Checking the single Profiles for inconsestency
                 #Therefore we need the data of the actual profile, the view_check with the view values and actual profile name
                 errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]))
-
-
-
-
+                
                 '''CALCULATE SLOPE OF THE PROFILE'''   
                 # transform the x and y coordinate lists into scipy arrays
                 x_array = scipy.array(x_coord_proc)

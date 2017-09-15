@@ -5,6 +5,7 @@ class ErrorHandler:
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
 
+#Checks that have to do on every single Profile
     def singleprofile(self, coord_proc, view_check, profile_name):
         # TODO: check for consistency before calculation
         # TODO: check for spatial consistency (no points should be more than x meters apart)
@@ -30,6 +31,20 @@ class ErrorHandler:
             # cancel execution of the script
             sys.exitfunc()
             
+#general checks for the fields of the layer after the import
+    def field_check (self, layer, z_field):
+        for field in layer.fields():
+            QgsMessageLog.logMessage(field.name() +" " + field.typeName(), 'MyPlugin')
+            #Take a look for the z Field
+            if str(field.name()) == str(z_field):
+                # if the z value is not a float
+                if field.typeName() != "Real":
+                    #Give a message
+                    self.qgisInterface.messageBar().pushMessage("Error", "The z-Value needs to be a float. Check the field type of the z-Value", level=QgsMessageBar.CRITICAL)
+                    # cancel execution of the script
+                    sys.exitfunc()
+    
+#checks for the attributes of the layer before the algorythm starts            
     def singlelayer(self, layer):
         #check will be the return after checking the data
         check = False
@@ -47,7 +62,7 @@ class ErrorHandler:
             check = True
         return check
     
-    def linreg_residuals:
+    #def linreg_residuals:
         #calculate the residuals for each point and add the as an Attribute
         
         #print the mean, min, max residuals of each profile
