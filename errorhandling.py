@@ -34,7 +34,6 @@ class ErrorHandler:
 #general checks for the fields of the layer after the import
     def field_check (self, layer, z_field):
         for field in layer.fields():
-            QgsMessageLog.logMessage(field.name() +" " + field.typeName(), 'MyPlugin')
             #Take a look for the z Field
             if str(field.name()) == str(z_field):
                 # if the z value is not a float
