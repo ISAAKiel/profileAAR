@@ -36,6 +36,9 @@ from errorhandling import ErrorHandler
 # the magic happens here
 from magic_box import Magic_Box
 
+#the export to a shapefile happens here
+from export import Export
+
 # Import the code for the dialog
 from profileAAR_dialog import profileAARDialog
 import os.path
@@ -77,6 +80,7 @@ class profileAAR:
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'profileAAR')
         self.toolbar.setObjectName(u'profileAAR')
+        
 
 
     # noinspection PyMethodMayBeStatic
@@ -222,7 +226,11 @@ class profileAAR:
         #initialize the Errorhandler
         errorhandler = ErrorHandler(self.iface)
         magicbox = Magic_Box(self.iface)
-
+        export = Export(self.iface)
+        '''DEFINE OUTPUT PATH'''
+        #Choose file if button is clicked
+        self.dlg.outputPath.clear()
+        self.dlg.outputButton.clicked.connect(self.select_output_file)
         '''SELECT INPUT IN GUI'''
         # CHOOSE INPUT LAYER
         #read layers from qgis layers
@@ -257,7 +265,9 @@ class profileAAR:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-
+            
+            #Check if input fields are filled correctly
+            errorhandler.input_check(self.dlg.outputPath.text())
 
             '''GET INPUT FROM GUI TO VARIABLES/PREPARE LIST OF DATA'''
             #GET TEXT FROM METHOD AND DIRECTION
@@ -322,46 +332,27 @@ class profileAAR:
 
 
 
-                '''CALCULATE SLOPE OF THE PROFILE'''
-
+                '''Doing the magic stuff'''
+                #Calculating the profile and add it to the list
                 coord_trans.append(magicbox.transformation(coord_proc))
                 # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
-                # TODO: calculate slope radiants in degrees
-
-            QgsMessageLog.logMessage(str(coord_trans), 'MyPlugin')
-            '''Create Vektor Layer'''
-            export_fields = QgsFields()
-            export_fields.append(QgsField("x", QVariant.Double))
-            export_fields.append(QgsField("y", QVariant.Double))
-            export_fields.append(QgsField("z", QVariant.Double))
-            export_fields.append(QgsField("prnumber", QVariant.String))
-
-            writer = QgsVectorFileWriter(r"c:\\test.shp", "utf-8", export_fields, QGis.WKBPoint, None, "ESRI Shapefile")
-            if writer.hasError() != QgsVectorFileWriter.NoError:
-                print "Error when creating shapefile: "
-
-            export_feature = QgsFeature()
-            for x in range(len(coord_trans)):
-                for i in range(len(coord_trans[x])):
-                    export_feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(coord_trans[x][i][0], coord_trans[x][i][2])))
-                    QgsMessageLog.logMessage(str(coord_trans[x][i][0]) + " " + str(coord_trans[x][i][2]), 'Coordinates')
-                    export_feature.setAttributes([float(coord_trans[x][i][0]), float(coord_trans[x][i][1]), float(coord_trans[x][i][2]),str(coord_trans[x][i][3])])
-                    writer.addFeature(export_feature)
-
-
-
-            del writer
-
-            # TODO: epsg übernehmen - Moritz
-            # TODO: Gui anpassen mit Speicherpfad - Kay
+            
+            '''Export the data'''
+            #For exporting we need the data, the path and the crs of the input data
+            export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
+            
+            
+            # TODO: Gui h�bschmachen, QgsMapsLayerComboBox oder wie das hies zur Filterung der Daten, damit der Index stimmt - Kay
             # TODO: Magic Box weiter übersetzen - Kay
             # TODO: Standartfehler o.ä. Warnung - Christoph
             # TODO: Nils staubsaugen ;P
 
-
+    
             pass
 
-
+    def select_output_file(self):
+        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.shp')
+        self.dlg.outputPath.setText(filename)
 
 
 

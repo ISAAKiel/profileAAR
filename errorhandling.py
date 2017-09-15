@@ -60,7 +60,12 @@ class ErrorHandler:
         else:
             check = True
         return check
-    
+
+#checks if the inputfields are filled correct
+    def input_check(self, value):
+        if str(value) == "":
+            self.qgisInterface.messageBar().pushMessage("Error", "Please choose an output file!", level=QgsMessageBar.CRITICAL)
+            
     #def linreg_residuals:
         #calculate the residuals for each point and add the as an Attribute
         
