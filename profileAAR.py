@@ -29,6 +29,9 @@ import scipy
 # Initialize Qt resources from file resources.py
 import resources
 import sys
+#errorhandling is managed here
+from errorhandling import ErrorHandler
+
 # Import the code for the dialog
 from profileAAR_dialog import profileAARDialog
 import os.path
@@ -212,7 +215,8 @@ class profileAAR:
         """Run method that performs all the real work"""
         # Create the dialog (after translation) and keep reference
         self.dlg = profileAARDialog()
-
+        #initialize the Errorhandler
+        errorhandler = ErrorHandler(self.iface)
 
         '''SELECT INPUT IN GUI'''
         # CHOOSE INPUT LAYER
@@ -222,17 +226,11 @@ class profileAAR:
         layer_list = []
         #read all entrys
         for layer in layers:
-            #check if it is an vectorlayer and dismiss raster
-            if layer.type() == QgsMapLayer.VectorLayer:
-                #Check if it is a point-vectorlayer and will only show them for selection
-                if layer.geometryType() == QGis.Point:
-                    #Check if layer is projected
-                    if layer.crs().geographicFlag() == True:
-                        #if it is geographic drop it and tell the user
-                        self.iface.messageBar().pushMessage("Information", "Layer "+layer.name()+ " was dropped, because it is not projected. ", level=QgsMessageBar.INFO)
-                    else:
-                        #if it is projected make it choosable
-                        layer_list.append(layer.name())
+            #check for unsabale data
+            layercheck = errorhandler.singlelayer(layer)
+            #if the layer is usable for our purposes add it
+            if layercheck == True:
+                layer_list.append(layer.name())
                     
         #add entries in combo box
         self.dlg.inputCombo.clear()
@@ -293,6 +291,7 @@ class profileAAR:
             '''WORK ON EVERY PROFILE IN LOOP'''
             # CREATE A LIST OF DATA FOR EVERY PROFILE
             # select every single profile in a loop
+
             for i in range(len(profile_names)):
                 # instantiate a temporary list for a single profile
                 coord_proc = []
@@ -311,28 +310,10 @@ class profileAAR:
                         if coord[x][3] not in view_check:
                             view_check.append(coord[x][3])
 
-                # TODO: check for consistency before calculation
-                # TODO: check for spatial consistency (no points should be more than x meters apart)
-                # check if actual profile has less then 4 points
-                if len(coord_proc) <= 3:
-                    #if it is less, print error message
-                    self.iface.messageBar().pushMessage("Error", "A profile needs min. 4 points. Error on profile: "+str(profile_names[i]), level=QgsMessageBar.CRITICAL)
-                    #cancel execution of the script
-                    sys.exitfunc()
+                #Errorhandling: Checking the single Profiles for inconsestency
+                #Therefore we need the data of the actual profile, the view_check with the view values and actual profile name
+                errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]))
 
-                # check if the view value is the same in all features
-                if len(view_check) != 1:
-                    # if it is not the same, print error message
-                    self.iface.messageBar().pushMessage("Error", "The view column of your data is inconsistant (either non or two different views are present). Error on profile: " + str(profile_names[i]), level=QgsMessageBar.CRITICAL)
-                    # cancel execution of the script
-                    sys.exitfunc()
-
-                # check if the view is one of the four cardinal directions
-                if view_check[0].upper() not in ["N", "E", "S", "W"]:
-                    # if it is not the same, print error message
-                    self.iface.messageBar().pushMessage("Error", "The view value is not one of the four cardinal directions. Error on profile: " + str(profile_names[i]), level=QgsMessageBar.CRITICAL)
-                    # cancel execution of the script
-                    sys.exitfunc()
 
 
 
@@ -343,7 +324,7 @@ class profileAAR:
 
                 # calculate the slope of the linear regression
                 slope = scipy.stats.linregress(x_array,y_array)[0]
-                QgsMessageLog.logMessage(str(slope), 'MyPlugin')
+                # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
                 # TODO: calculate slope radiants in degrees
 
 
