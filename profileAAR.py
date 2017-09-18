@@ -334,7 +334,7 @@ class profileAAR:
 
                 '''Doing the magic stuff'''
                 #Calculating the profile and add it to the list
-                coord_trans.append(magicbox.transformation(coord_proc))
+                coord_trans.append(magicbox.transformation(coord_proc, method, direction))
                 # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
             
             '''Export the data'''
@@ -342,7 +342,7 @@ class profileAAR:
             export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
             
             
-            # TODO: Gui h�bschmachen, QgsMapsLayerComboBox oder wie das hies zur Filterung der Daten, damit der Index stimmt - Kay
+            # TODO: Gui h�bschmachen, QgsMapsLayerComboBox oder wie das hies zur Filterung der Daten, damit der Index stimmt - Kay
             # TODO: Magic Box weiter übersetzen - Kay
             # TODO: Standartfehler o.ä. Warnung - Christoph
             # TODO: Nils staubsaugen ;P

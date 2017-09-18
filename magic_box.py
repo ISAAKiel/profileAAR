@@ -10,7 +10,7 @@ class Magic_Box:
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
 
-    def transformation(self, coord_proc):
+    def transformation(self, coord_proc, method, dircetion):
         # instantiate an empty list for the transformed coordinates and other values
         coord_trans = []
         # instantiate lists for the x and y values
@@ -73,7 +73,53 @@ class Magic_Box:
         for i in range(len(coord_proc)):
             coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
 
-        # TODO: Optionen mit übernehmen und Script weiter übersetzen - Kay
+        #If the aim is to get the view of the surface, the x-axis has to be rotated aswell
+        if method == "surface":
+            # calculating the slope, therefore preparing lists
+            z_yw = []
+            z_zw =[]
+            for i in range(len(coord_proc)):
+                z_yw.append(y_trans[i] - min(y_trans + z_trans))
+                z_zw.append(z_trans[i] - min(y_trans + z_trans))
+
+            # actual calculation of the slope using the linear regression again
+            z_slope = scipy.stats.linregress(scipy.array(z_yw), scipy.array(z_zw))[0]
+
+            # transform the radians of the slope into degrees
+            z_slope_deg = 0.0
+            if z_slope < 0:
+                z_slope_deg = -(90 -fabs(((atan(z_slope) * 180) / pi)))
+            elif z_slope > 0:
+                z_slope_deg = 90 - ((atan(z_slope) * 180)/pi)
+            elif z_slope == 0:
+                z_slope_deg = 0.0
+
+            # calculate the centerpoint
+            z_center_y = mean(y_trans)
+            z_center_z = mean(z_trans)
+
+            # rewrite the lists for the y and z values
+            y_trans = []
+            z_trans = []
+            for i in range(len(coord_trans)):
+                y_trans.append(z_center_y + (coord_trans[i][1] - z_center_y) * cos(z_slope_deg / 180 * pi) - (coord_trans[i][2] - z_center_z) * sin(z_slope_deg / 180 * pi))
+                z_trans.append(z_center_z + (coord_trans[i][1] - z_center_y) * sin(z_slope_deg / 180 * pi) + (coord_trans[i][2] - z_center_z) * cos(z_slope_deg / 180 * pi))
+
+            # empty and rewrite the output list
+            coord_trans = []
+            for i in range(len(coord_proc)):
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
+
+
+
+
+
+
+
+
+
+
+
 
 
         return coord_trans
