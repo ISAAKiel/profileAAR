@@ -123,7 +123,7 @@ class Magic_Box:
             x_trans = []
             z_trans = []
             for i in range(len(coord_trans)):
-                x_trans.append(y_center_x + (coord_trans[i][0] - y_center_x) * cos(y_slope_deg / 180 * pi) - (coord_trans[i][2] - y_center_z) * cos(y_slope_deg / 180 * pi))
+                x_trans.append(y_center_x + (coord_trans[i][0] - y_center_x) * cos(y_slope_deg / 180 * pi) - (coord_trans[i][2] - y_center_z) * sin(y_slope_deg / 180 * pi))
                 z_trans.append(y_center_z + (coord_trans[i][0] - y_center_x) * sin(y_slope_deg / 180 * pi) + (coord_trans[i][2] - y_center_z) * cos(y_slope_deg / 180 * pi))
 
             # empty and rewrite the output list
