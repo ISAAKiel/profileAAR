@@ -37,7 +37,7 @@ class ErrorHandler:
             #Take a look for the z Field
             if str(field.name()) == str(z_field):
                 # if the z value is not a float
-                if field.typeName() != "Real":
+                if field.typeName() != "Real" and field.typeName() != "double":
                     #Give a message
                     self.qgisInterface.messageBar().pushMessage("Error", "The z-Value needs to be a float. Check the field type of the z-Value", level=QgsMessageBar.CRITICAL)
                     # cancel execution of the script

@@ -10,7 +10,7 @@ class Magic_Box:
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
 
-    def transformation(self, coord_proc, method, dircetion):
+    def transformation(self, coord_proc, method, direction):
         # instantiate an empty list for the transformed coordinates and other values
         coord_trans = []
         # instantiate lists for the x and y values
@@ -110,16 +110,26 @@ class Magic_Box:
             for i in range(len(coord_proc)):
                 coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
 
+        # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
+        if direction == "original":
+            # the rotation angle is the negative angle of the first rotation
+            y_slope_deg = -slope_deg
 
+            # get the centerpoint
+            y_center_x = mean(x_trans)
+            y_center_z = mean(z_trans)
 
+            #rewrite the lists for the x and z values
+            x_trans = []
+            z_trans = []
+            for i in range(len(coord_trans)):
+                x_trans.append(y_center_x + (coord_trans[i][0] - y_center_x) * cos(y_slope_deg / 180 * pi) - (coord_trans[i][2] - y_center_z) * cos(y_slope_deg / 180 * pi))
+                z_trans.append(y_center_z + (coord_trans[i][0] - y_center_x) * sin(y_slope_deg / 180 * pi) + (coord_trans[i][2] - y_center_z) * cos(y_slope_deg / 180 * pi))
 
-
-
-
-
-
-
-
+            # empty and rewrite the output list
+            coord_trans = []
+            for i in range(len(coord_proc)):
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
 
 
         return coord_trans
