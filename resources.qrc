@@ -2,4 +2,7 @@
     <qresource prefix="/plugins/profileAAR" >
         <file>icon.png</file>
     </qresource>
+    <qresource prefix="/plugins/profileAAR" >
+        <file>icon_dialogue.png</file>
+    </qresource>
 </RCC>

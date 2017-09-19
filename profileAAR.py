@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant
-from PyQt4.QtGui import QAction, QIcon, QFileDialog
+from PyQt4.QtGui import QAction, QIcon, QFileDialog, QPixmap
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
 from qgis.gui import QgsMessageBar, QgsMapLayerComboBox, QgsMapLayerProxyModel
 
@@ -317,7 +317,6 @@ class profileAAR:
             
             
             # TODO: Standartfehler o.ä. Warnung - Christoph
-            # TODO: Nils staubsaugen ;P
 
     
             pass
