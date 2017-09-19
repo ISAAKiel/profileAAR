@@ -33,6 +33,13 @@ class ErrorHandler:
             
 #general checks for the fields of the layer after the import
     def field_check (self, layer, z_field):
+        #Check if the vectorlayer is projected
+        if layer.crs().geographicFlag() == True:
+            self.qgisInterface.messageBar().pushMessage("Information", "Layer "+layer.name()+ " is not projected. Please choose an projected reference system.", level=QgsMessageBar.CRITICAL)
+            # cancel execution of the script
+            sys.exitfunc()
+            
+        #check the z-field
         for field in layer.fields():
             #Take a look for the z Field
             if str(field.name()) == str(z_field):
@@ -42,29 +49,15 @@ class ErrorHandler:
                     self.qgisInterface.messageBar().pushMessage("Error", "The z-Value needs to be a float. Check the field type of the z-Value", level=QgsMessageBar.CRITICAL)
                     # cancel execution of the script
                     sys.exitfunc()
-    
-#checks for the attributes of the layer before the algorythm starts            
-    def singlelayer(self, layer):
-        #check will be the return after checking the data
-        check = False
-        #only use vector layers
-        if layer.type() != QgsMapLayer.VectorLayer:
-            check = False
-        #only use point vector layers (check of vector before, because this crashes on rasterdata)
-        elif layer.geometryType() != QGis.Point:
-            check = False
-        #Check if the vectorlayer is projected
-        elif layer.crs().geographicFlag() == True:
-            self.qgisInterface.messageBar().pushMessage("Information", "Layer "+layer.name()+ " was dropped, because it is not projected. ", level=QgsMessageBar.INFO)
-            check = False
-        else:
-            check = True
-        return check
+        
+
 
 #checks if the inputfields are filled correct
     def input_check(self, value):
         if str(value) == "":
             self.qgisInterface.messageBar().pushMessage("Error", "Please choose an output file!", level=QgsMessageBar.CRITICAL)
+            # cancel execution of the script
+            sys.exitfunc()
             
     #def linreg_residuals:
         #calculate the residuals for each point and add the as an Attribute

@@ -243,10 +243,8 @@ class profileAAR:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            
-            #Check if input fields are filled correctly
+           
+            #Check if input fields are filled correctly an if the layer has correct properties
             errorhandler.input_check(self.dlg.outputPath.text())
 
             '''GET INPUT FROM GUI TO VARIABLES/PREPARE LIST OF DATA'''
@@ -255,12 +253,8 @@ class profileAAR:
             method = unicode(self.dlg.methodCombo.currentText())
             #read the direction, that is selected
             direction = unicode(self.dlg.directionCombo.currentText())
-
-            #GET REFERENCE TO SELECTED LAYER
-            layers = self.iface.legendInterface().layers()
-            selectedLayerIndex = self.dlg.inputCombo.currentIndex()        
-            selectedLayer = layers[selectedLayerIndex]
-
+            #Get the selected layer
+            selectedLayer = self.dlg.inputCombo.currentLayer()
             #PREPARE DATA LIST
             #TODO: Check columns for fieldtypes, z has to be float etc.
             #Go thought all data rows in the selected layer
@@ -269,7 +263,7 @@ class profileAAR:
             coord = []
             #list for the different profile names
             profile_names = []
-            #check if the z values have the correct type
+            #check if the z values have the correct type and if the crs is projected
             errorhandler.field_check(selectedLayer, self.dlg.zCombo.currentText())
                 
             for feature in iter:
@@ -322,8 +316,6 @@ class profileAAR:
             export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
             
             
-            # TODO: Gui h�bschmachen, QgsMapsLayerComboBox oder wie das hies zur Filterung der Daten, damit der Index stimmt - Kay
-            # TODO: Magic Box weiter übersetzen - Kay
             # TODO: Standartfehler o.ä. Warnung - Christoph
             # TODO: Nils staubsaugen ;P
 
