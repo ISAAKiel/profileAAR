@@ -21,9 +21,9 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant
-from PyQt4.QtGui import QAction, QIcon, QFileDialog #Import qfiledialog
+from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
-from qgis.gui import QgsMessageBar
+from qgis.gui import QgsMessageBar, QgsMapLayerComboBox, QgsMapLayerProxyModel
 
 
 
@@ -196,13 +196,8 @@ class profileAAR:
 
     def layer_field(self):
         '''Function to read the Fieldnames in the select infos in GUI section'''
-        # Read all layers from Qgis
-        all_layers = self.iface.legendInterface().layers()
-        # Identify selected Input layer by its index
-        # TODO: Maybe change Qcombobox for QgsMapLayerCombobox
-        # TODO: fix the indexing problem with rasters present in the layers
-        selectedLayerIndex = self.dlg.inputCombo.currentIndex()
-        selectedLayer = all_layers[selectedLayerIndex]
+        # get the selected layer from the inputCombobox
+        selectedLayer = self.dlg.inputCombo.currentLayer()
         # Identify fields of the selected layer
         fields = selectedLayer.pendingFields()
         # Get field names of the fields
@@ -233,26 +228,11 @@ class profileAAR:
         self.dlg.outputButton.clicked.connect(self.select_output_file)
         '''SELECT INPUT IN GUI'''
         # CHOOSE INPUT LAYER
-        #read layers from qgis layers
-        layers = self.iface.legendInterface().layers()
-        #list to save layers
-        layer_list = []
-        #read all entrys
-        for layer in layers:
-            #check for unsabale data
-            layercheck = errorhandler.singlelayer(layer)
-            #if the layer is usable for our purposes add it
-            if layercheck == True:
-                layer_list.append(layer.name())
-                    
-        #add entries in combo box
-        self.dlg.inputCombo.clear()
-        self.dlg.inputCombo.addItems(layer_list)
-
+        # read layers from qgis layers and filter out the pointlayers to display in the input combobox
+        self.dlg.inputCombo.setFilters(QgsMapLayerProxyModel.PointLayer)
         # CHOOSE COLUMNS FOR Z-VALUE, VIEW AND PR-NUMBER
         # CALLS FUNCTION LAYER_FIELD (once on startup on activation, to enable using when only one point fc is present)
         self.dlg.inputCombo.activated.connect(self.layer_field)
-        # Event on changing the layer is reading the fieldnames
         self.dlg.inputCombo.currentIndexChanged.connect(self.layer_field)
 
 
