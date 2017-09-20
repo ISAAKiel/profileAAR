@@ -65,8 +65,7 @@ class ErrorHandler:
         intercept = linegress[1]
         rvalue = linegress[2]
         for k in range(len(xw)):
-            d_y = (intercept + rvalue * xw[k]) - yw[k]
             QgsMessageLog.logMessage(str(prnumber), 'MyPlugin')
             QgsMessageLog.logMessage(str(k), 'MyPlugin')
-            QgsMessageLog.logMessage(str((intercept + rvalue * xw[k])-yw[k]), 'MyPlugin')
+            QgsMessageLog.logMessage(str(yw[k] - (intercept + rvalue * xw[k])), 'MyPlugin')
         #print the mean, min, max residuals of each profile
