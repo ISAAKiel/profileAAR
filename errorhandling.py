@@ -1,6 +1,7 @@
 from qgis.gui import QgsMessageBar
 from qgis.core import *
 import sys
+from math import pi
 class ErrorHandler: 
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
@@ -59,7 +60,13 @@ class ErrorHandler:
             # cancel execution of the script
             sys.exitfunc()
             
-    #def linreg_residuals:
+    def linreg_residuals (self, linegress, xw, yw, prnumber):
         #calculate the residuals for each point and add the as an Attribute
-        
+        intercept = linegress[1]
+        rvalue = linegress[2]
+        for k in range(len(xw)):
+            d_y = (intercept + rvalue * xw[k]) - yw[k]
+            QgsMessageLog.logMessage(str(prnumber), 'MyPlugin')
+            QgsMessageLog.logMessage(str(k), 'MyPlugin')
+            QgsMessageLog.logMessage(str((intercept + rvalue * xw[k])-yw[k]), 'MyPlugin')
         #print the mean, min, max residuals of each profile

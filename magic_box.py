@@ -5,12 +5,15 @@ from qgis.core import *
 import scipy
 from math import atan, fabs, pi, cos, sin
 from numpy import mean
+from errorhandling import ErrorHandler
 
 class Magic_Box:
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
 
     def transformation(self, coord_proc, method, direction):
+        #initialize the Errorhandler
+        errorhandler = ErrorHandler(self)
         # instantiate an empty list for the transformed coordinates and other values
         coord_trans = []
         # instantiate lists for the x and y values
@@ -33,7 +36,10 @@ class Magic_Box:
         #QgsMessageLog.logMessage(str(xw), 'MyPlugin')
 
         # calculate the slope of the profile using a linear regression
-        slope = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))[0]
+        linegress = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
+        errorhandler.linreg_residuals(linegress, scipy.array(xw), scipy.array(yw),coord_proc[0][4])
+        #get the slope
+        slope =linegress[0]
         # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
 
         # calculate the degree of the slope
