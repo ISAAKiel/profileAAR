@@ -314,7 +314,11 @@ class profileAAR:
             '''Export the data'''
             #For exporting we need the data, the path and the crs of the input data
             export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
-            
+            #Load the file to qgis automaticly
+            layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
+            #if the loading of the layer fails, give a message
+            if not layer:
+                self.qgisInterface.messageBar().pushMessage("ERROR", "Failed to open "+self.dlg.outputPath.text()+ ".", level=QgsMessageBar.CRITICAL)  
             
             # TODO: Standartfehler o.ä. Warnung - Christoph
 
