@@ -100,7 +100,7 @@ class ErrorHandler:
             result_check.append(round((yw[k] - (intercept + slope * xw[k])), 4))
             
         #give a summary on each profile
-        QgsMessageLog.logMessage("Profile: "+str(prnumber) + " MinResiduals: " + str(min(result_check)) + " MaxResiaduals: " + str(max(result_check)) ,'MyPlugin')
+        QgsMessageLog.logMessage("Profile: "+str(prnumber) + " MinResiduals: " + str(min(result_check)) + " MaxResiduals: " + str(max(result_check)) ,'profileAAR')
         #and print it to the log
         for k in range(len(result_check)):
-            QgsMessageLog.logMessage("Profile: "+str(prnumber) + " Point: " + str(k) + " Residual: " + str(result_check[k]) ,'MyPlugin')
+            QgsMessageLog.logMessage("Profile: "+str(prnumber) + " Point: " + str(k) + " Residual: " + str(result_check[k]) ,'profileAAR')
