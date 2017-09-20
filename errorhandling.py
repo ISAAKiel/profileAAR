@@ -1,8 +1,32 @@
+# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+ profileAARDialog
+                                 A QGIS plugin
+ profileAAR des
+                             -------------------
+        begin                : 2017-08-31
+        git sha              : $Format:%H$
+        copyright            : (C) 2017 by Moritz Mennenga / Kay Schmütz / Christoph Rinne
+        email                : mennenga@nihk.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
+
 from qgis.gui import QgsMessageBar
 from qgis.core import *
 from numpy import std, mean
 import sys
 from math import pi
+import matplotlib.pyplot as plt
 
 #columreader in a "table" (list of lists)
 def columnreader(list_in_list_object, columnindex):
@@ -98,9 +122,16 @@ class ErrorHandler:
         for k in range(len(xw)):
             #append them to result_check and round to 4 dec
             result_check.append(round((yw[k] - (intercept + slope * xw[k])), 4))
+        if prnumber == 4 or prnumber == 6 or prnumber == 3:
+            plt.plot(xw, yw, 'o', label='original data')
+            plt.plot(xw, intercept + slope*xw, 'r', label='fitted line')
+            plt.plot(xw, intercept + slope*xw, 'o', label='fitted points')
+            plt.legend()
+            plt.show()
             
         #give a summary on each profile
         QgsMessageLog.logMessage("Profile: "+str(prnumber) + " MinResiduals: " + str(min(result_check)) + " MaxResiduals: " + str(max(result_check)) ,'profileAAR')
+        QgsMessageLog.logMessage("Intercept: "+str(intercept) + " Slope: " + str(slope) ,'profileAAR')
         #and print it to the log
         for k in range(len(result_check)):
             QgsMessageLog.logMessage("Profile: "+str(prnumber) + " Point: " + str(k) + " Residual: " + str(result_check[k]) ,'profileAAR')
