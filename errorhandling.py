@@ -1,8 +1,17 @@
 from qgis.gui import QgsMessageBar
 from qgis.core import *
+from numpy import std, mean
 import sys
 from math import pi
-class ErrorHandler: 
+
+#columreader in a "table" (list of lists)
+def columnreader(list_in_list_object, columnindex):
+    columnvalues = []
+    for i in range(len(list_in_list_object)):
+        columnvalues.append(list_in_list_object[i][columnindex])
+    return columnvalues
+
+class ErrorHandler:
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
 
@@ -31,7 +40,25 @@ class ErrorHandler:
             self.qgisInterface.messageBar().pushMessage("Error", "The view value is not one of the four cardinal directions. Error on profile: " + str(profile_name), level=QgsMessageBar.CRITICAL)
             # cancel execution of the script
             sys.exitfunc()
-            
+
+        # check if the coordinates x, y, z fall into 2 sigma range
+        #instance a table like list of lists with i rows and j columns
+        warning_message = []
+        for i in range(3):
+            xyz = []
+            xyz_lower = []
+            xyz_upper = []
+            xyz = columnreader(coord_proc, i)
+            xyz_lower = mean(xyz) - (2 * std(xyz))
+            xyz_upper = mean(xyz) + (2 * std(xyz))
+            for j in range(len(xyz)):
+                if xyz[j] < xyz_lower or xyz[j] > xyz_upper:
+                    QgsMessageLog.logMessage('Range profile ' + str(profile_name) + ': ' + str(xyz_lower) + " - " + str(xyz_upper), 'MyPlugin')
+                    QgsMessageLog.logMessage('value ' + str(xyz[j]), 'MyPlugin')
+                    #warning_message.append("Warning: Profile " )+ str(profile_name) + chr(120+i) + str(j) + 'excedes th 2 std interval of ' + chr(120+i))
+                    self.qgisInterface.messageBar().pushMessage("Warning: Profile " + str(profile_name) +': '+ chr(120+i) + 'Pt ' + str(j+1) + ' exceeds the 2std interval of ' + chr(120+i))
+        #self.qgisInterface.messageBar().pushMessage('\n'.join(warning_message), level=QgsMessageBar.INFO)
+
 #general checks for the fields of the layer after the import
     def field_check (self, layer, z_field):
         #Check if the vectorlayer is projected
