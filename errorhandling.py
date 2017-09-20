@@ -89,10 +89,18 @@ class ErrorHandler:
             
     def linreg_residuals (self, linegress, xw, yw, prnumber):
         #calculate the residuals for each point and add the as an Attribute
+        # to predict the values for x on the regression we need the intercept and the slope
         intercept = linegress[1]
-        rvalue = linegress[2]
+        slope = linegress[0]
+        #the result for each point will be stored in
+        result_check = []
+        #calculate the residuals
         for k in range(len(xw)):
-            QgsMessageLog.logMessage(str(prnumber), 'MyPlugin')
-            QgsMessageLog.logMessage(str(k), 'MyPlugin')
-            QgsMessageLog.logMessage(str(yw[k] - (intercept + rvalue * xw[k])), 'MyPlugin')
-        #print the mean, min, max residuals of each profile
+            #append them to result_check and round to 4 dec
+            result_check.append(round((yw[k] - (intercept + slope * xw[k])), 4))
+            
+        #give a summary on each profile
+        QgsMessageLog.logMessage("Profile: "+str(prnumber) + " MinResiduals: " + str(min(result_check)) + " MaxResiaduals: " + str(max(result_check)) ,'MyPlugin')
+        #and print it to the log
+        for k in range(len(result_check)):
+            QgsMessageLog.logMessage("Profile: "+str(prnumber) + " Point: " + str(k) + " Residual: " + str(result_check[k]) ,'MyPlugin')
