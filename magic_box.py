@@ -37,7 +37,7 @@ class Magic_Box:
 
         # calculate the slope of the profile using a linear regression
         linegress = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
-        errorhandler.linreg_residuals(linegress, scipy.array(xw), scipy.array(yw),coord_proc[0][4])
+        QgsMessageLog.logMessage("Profile: "+str(coord_proc[0][4]) + " MinResiduals: " + str(linegress[4]) ,'profileAAR')
         #get the slope
         slope =linegress[0]
         # QgsMessageLog.logMessage(str(slope), 'MyPlugin')

@@ -111,27 +111,4 @@ class ErrorHandler:
             # cancel execution of the script
             sys.exitfunc()
             
-    def linreg_residuals (self, linegress, xw, yw, prnumber):
-        #calculate the residuals for each point and add the as an Attribute
-        # to predict the values for x on the regression we need the intercept and the slope
-        intercept = linegress[1]
-        slope = linegress[0]
-        #the result for each point will be stored in
-        result_check = []
-        #calculate the residuals
-        for k in range(len(xw)):
-            #append them to result_check and round to 4 dec
-            result_check.append(round((yw[k] - (intercept + slope * xw[k])), 4))
-        if prnumber == 4 or prnumber == 6 or prnumber == 3:
-            plt.plot(xw, yw, 'o', label='original data')
-            plt.plot(xw, intercept + slope*xw, 'r', label='fitted line')
-            plt.plot(xw, intercept + slope*xw, 'o', label='fitted points')
-            plt.legend()
-            plt.show()
-            
-        #give a summary on each profile
-        QgsMessageLog.logMessage("Profile: "+str(prnumber) + " MinResiduals: " + str(min(result_check)) + " MaxResiduals: " + str(max(result_check)) ,'profileAAR')
-        QgsMessageLog.logMessage("Intercept: "+str(intercept) + " Slope: " + str(slope) ,'profileAAR')
-        #and print it to the log
-        for k in range(len(result_check)):
-            QgsMessageLog.logMessage("Profile: "+str(prnumber) + " Point: " + str(k) + " Residual: " + str(result_check[k]) ,'profileAAR')
+      
