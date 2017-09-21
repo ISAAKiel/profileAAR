@@ -25,7 +25,7 @@ from qgis.gui import QgsMessageBar
 from qgis.core import *
 from numpy import std, mean
 import sys
-from math import pi
+from math import pi, fabs
 import matplotlib.pyplot as plt
 import scipy
 
@@ -113,30 +113,20 @@ class ErrorHandler:
             sys.exitfunc()
             
 
-    def linreg_residuals (self, xw, yw, prnumber):
-        #calculate the residuals for each point and add the as an Attribute
-        # to predict the values for x on the regression we need the intercept and the slope
-        linegressx = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
-        interceptx = linegressx[1]
-        slopex = linegressx[0]
-        linegressy = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
-        intercepty = linegressy[1]
-        slopey = linegressy[0]
-        #the result for each point will be stored in
-        result_check = []
-        #calculate the residuals
-        for k in range(len(xw)):
-            #append them to result_check and round to 4 dec
-            result_check.append(round(  (yw[k] - (interceptx + slopex * xw[k])) + (xw[k] - (intercepty + slopey * yw[k])), 4))
-        if prnumber == 4 or prnumber == 6 or prnumber == 3 or prnumber == 5:
-            plt.plot(xw, yw, 'o', label='original data')
-            plt.plot(xw, interceptx + slopex*xw, 'r', label='fitted line')
-            plt.plot(xw, interceptx + slopex*xw, 'o', label='fitted points')
-            plt.legend()
-            plt.show()          
-        #give a summary on each profile
-        QgsMessageLog.logMessage("Profile: "+str(prnumber) + " MinResiduals: " + str(min(result_check)) + " MaxResiduals: " + str(max(result_check)) ,'profileAAR')
-        QgsMessageLog.logMessage("Intercept: "+str(interceptx) + " Slope: " + str(slopex) ,'profileAAR')
-        #and print it to the log
-        for k in range(len(result_check)):
-            QgsMessageLog.logMessage("Profile: "+str(prnumber) + " Point: " + str(k) + " Residual: " + str(result_check[k]) ,'profileAAR')      
+    def result_check (self, coord_trans):
+        #for checking the accuracy of the points we create an line throught the profile. (Do it the easy way: y-value of a point - mean y-Value)
+        #the distances from each point to the profile will lead to a comparable number
+        #mean value of all Y values
+        ymean = mean(columnreader(coord_trans,1))
+        #list for the result
+        check_result = []
+        #go throught the profile
+        for i in range(len(coord_trans)):
+            #calculate for each point the absolute distance to a virtual line that is parallel to the x axis in the middle of the profile
+            check_result.append(fabs(coord_trans[i][1]- ymean))
+        #print the min max and mean values
+        QgsMessageLog.logMessage('Profile:' + str(coord_trans[0][3]), 'profileAAR')
+        QgsMessageLog.logMessage('Y-Error min:' + str(round(min(check_result),2)), 'profileAAR')
+        QgsMessageLog.logMessage('Y-Error mean:' + str(round(mean(check_result),2)), 'profileAAR')
+        QgsMessageLog.logMessage('Y-Error max:' + str(round(max(check_result),2)), 'profileAAR')
+        QgsMessageLog.logMessage(' ', 'profileAAR')        

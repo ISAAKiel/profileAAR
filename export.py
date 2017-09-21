@@ -7,7 +7,7 @@
                              -------------------
         begin                : 2017-08-31
         git sha              : $Format:%H$
-        copyright            : (C) 2017 by Moritz Mennenga
+        copyright            : (C) 2017 by Moritz Mennenga / Kay Schmütz
         email                : mennenga@nihk.de
  ***************************************************************************/
 
