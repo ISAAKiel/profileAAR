@@ -24,7 +24,7 @@ from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVa
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QPixmap
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
 from qgis.gui import QgsMessageBar, QgsMapLayerComboBox, QgsMapLayerProxyModel
-
+from qgis.utils import showPluginHelp
 
 
 # Initialize Qt resources from file resources.py
@@ -216,6 +216,8 @@ class profileAAR:
 
     def run(self):
         """Run method that performs all the real work"""
+        #trigger help button
+        #helpButton.clicked.connect(showPluginHelp())
         # Create the dialog (after translation) and keep reference
         self.dlg = profileAARDialog()
         #initialize the Errorhandler

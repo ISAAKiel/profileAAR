@@ -78,7 +78,7 @@ class ErrorHandler:
             xyz_upper = mean(xyz) + (2 * std(xyz))
             for j in range(len(xyz)):
                 if xyz[j] < xyz_lower or xyz[j] > xyz_upper:
-                    QgsMessageLog.logMessage('Range profile ' + str(profile_name) + ': ' + str(xyz_lower) + " - " + str(xyz_upper), 'MyPlugin')
+                    QgsMessageLog.logMessage('Range profile ' + str(profile_name) + ': ' + str(xyz_lower) + " - " + str(xyz_upper), 'profileAAR')
                     QgsMessageLog.logMessage('value ' + str(xyz[j]), 'MyPlugin')
                     #warning_message.append("Warning: Profile " )+ str(profile_name) + chr(120+i) + str(j) + 'excedes th 2 std interval of ' + chr(120+i))
                     self.qgisInterface.messageBar().pushMessage("Warning: Profile " + str(profile_name) +': '+ chr(120+i) + 'Pt ' + str(j+1) + ' exceeds the 2std interval of ' + chr(120+i))

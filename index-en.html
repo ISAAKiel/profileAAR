@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>profileAAR help</title>
+  </head>
+  <body>
+    <p> <b>You will find the detailed information about how it works in our Publication</b>
+    <p> <a href="https://journal.caa-international.org"><b>PLEASE CITE THE PUBLICATION</b></a></p>
+    <h1>How to use the profileAAR-Plugin</h1>
+	<p>This tool is created to transform fotogrammetric controll points from archaeological exacavation, 
+	that it is possible to georeference profiles is Qgis.</p>
+	<h2>1. Input data</h2>
+	<p>At first we need the dataset.</p>
+	<p>All we need is a shapefile with the fotogrammetric control points.</p>
+	<p>As attributes we need:</p>
+	<ul>
+	<li> the <b>z-value</b> [float/double/real] </li>
+	<li> the lable of the <b>profile</b> (e.g. number of the profile [text or number]</li>
+	<li> the <b>view</b> direction (defined by the position of the observer related to the profile as N, E, S or W [text])</li>
+	<img src="./img/view.jpg" alt="View" style="width:250px;height:228px;">
+	<p>If a profile is NE - SW orientated it doesn't matter if you choose E or S.</p>
+	</ul>
+	<p>All profiles and points will be checked for errors that can cause problems while rectifing the images.</p>
+	<ul>
+	<li> all profiles need at least 4 points </li>
+	<li> one profile can have only one direction of view </li>
+	<li> the view directions have to be one of the four cardinal directions</li>
+	<li> the layer has to have an projected CRS</li>
+	<p><b>You will get the best results, if your are careful on the excavation and prepare a perfectly straight profile!</b></p>
+	</ul>
+
+	
+  </body>
+</html>
