@@ -27,6 +27,7 @@ from numpy import std, mean
 import sys
 from math import pi
 import matplotlib.pyplot as plt
+import scipy
 
 #columreader in a "table" (list of lists)
 def columnreader(list_in_list_object, columnindex):
@@ -111,4 +112,31 @@ class ErrorHandler:
             # cancel execution of the script
             sys.exitfunc()
             
-      
+
+    def linreg_residuals (self, xw, yw, prnumber):
+        #calculate the residuals for each point and add the as an Attribute
+        # to predict the values for x on the regression we need the intercept and the slope
+        linegressx = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
+        interceptx = linegressx[1]
+        slopex = linegressx[0]
+        linegressy = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
+        intercepty = linegressy[1]
+        slopey = linegressy[0]
+        #the result for each point will be stored in
+        result_check = []
+        #calculate the residuals
+        for k in range(len(xw)):
+            #append them to result_check and round to 4 dec
+            result_check.append(round(  (yw[k] - (interceptx + slopex * xw[k])) + (xw[k] - (intercepty + slopey * yw[k])), 4))
+        if prnumber == 4 or prnumber == 6 or prnumber == 3 or prnumber == 5:
+            plt.plot(xw, yw, 'o', label='original data')
+            plt.plot(xw, interceptx + slopex*xw, 'r', label='fitted line')
+            plt.plot(xw, interceptx + slopex*xw, 'o', label='fitted points')
+            plt.legend()
+            plt.show()          
+        #give a summary on each profile
+        QgsMessageLog.logMessage("Profile: "+str(prnumber) + " MinResiduals: " + str(min(result_check)) + " MaxResiduals: " + str(max(result_check)) ,'profileAAR')
+        QgsMessageLog.logMessage("Intercept: "+str(interceptx) + " Slope: " + str(slopex) ,'profileAAR')
+        #and print it to the log
+        for k in range(len(result_check)):
+            QgsMessageLog.logMessage("Profile: "+str(prnumber) + " Point: " + str(k) + " Residual: " + str(result_check[k]) ,'profileAAR')      
