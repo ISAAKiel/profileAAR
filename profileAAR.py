@@ -237,6 +237,7 @@ class profileAAR:
         self.dlg.inputCombo.activated.connect(self.layer_field)
         self.dlg.inputCombo.currentIndexChanged.connect(self.layer_field)
 
+        self.dlg.helpButton.clicked.connect(self.show_help)
 
         '''SHORT BLOCK OF PLUGIN CODE (runs the dialog and triggers the event after the OK button was pressed)'''
         # create/show the dialog
@@ -332,7 +333,8 @@ class profileAAR:
         self.dlg.outputPath.setText(filename)
 
 
-
+    def show_help(self):
+        showPluginHelp()
 
 
 
