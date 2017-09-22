@@ -30,7 +30,42 @@
 	<li> the layer has to have an projected CRS</li>
 	<p><b>You will get the best results, if your are careful on the excavation and prepare a perfectly straight profile!</b></p>
 	</ul>
+	<p></p>
+	<h2>2. You have the choise</h2>
+	<p>At first you have to select the layer, then the attributes are visible in the <b>z coord</b>, the <b>pr number</b> and the <b>view column</b> boxes. </p>
+	<p>Please select the matching attributes.</p>
+	<p>In the next two boxes, you have to choose:</p>
+	<ul>
+	<p>In the <b>Method</b> box:</p>
+	<li>1.: <b>Projected</b>. The profile will be projected on a vertical projection pane. This is like a drawing in the field.</li>
+	<li>2.: <b>Surface</b>. The profile will be projected on a pane, that is parallel to the profile. This is like drawing the surface of the profile.</li>
+	<img src="./img/method.jpg" alt="Method" style="width:630px;height:234px;">
+	<p> View on a profile (0). The result after choosing projected (1) or surface (2).</p>
 
-	
-  </body>
+	<p>In the <b>Direction</b> box:</p>
+	<li>1.: <b>Original</b>. The points will be parallel to the profile.</li>
+	<li>2.: <b>Horizontal</b>. The points will be parallel to the x-axis.</li>
+	<img src="./img/direction.jpg" alt="Direction" style="width:630px;height:234px;">
+	<p> View on a profile(0). The result after choosing original (1) or horizontal (2).</p>
+	</ul>
+	<h2>3. Run the magic box</h2>	
+	<p>If you press the OK Button the magic happens.</p>
+	<p>Some hints for a good result</p>
+	<ul>
+	<li>If you have a straight profile you will have the best results</li>
+	<li>If profiles are long sometimes it is better to split them (we plan a function for the next version to do it the easy way for the user)</li>
+	<li>You will find a complete workflow in the <a href="https://www.Youtube.com"><b>screencast</b></a></p>
+	</ul>
+	<h2>4. Accuracy and logfile</h2>
+	<p>You can open the logfile via: View -> Panels -> LogMessagePanel </p>
+	<p>For each profile you will find three error values. Min, Max and Mean-Error</p>
+	<ul>
+	<p>An example</p>
+	<img src="./img/error.jpg" alt="Error" style="width:630px;height:234px;">
+	<p> View on a profile.</p>
+	<li>Case 1: We have a perfect profile: All values are 0 (In reality all three will be low)</li>
+	<li>Case 2: One point is rubbish: Min and Mean have low values. Max have a hight value. The value descripes the distance of the worst point from a perfect profile in cm.</li>
+	</ul>
+
+	</body>
 </html>
