@@ -23,9 +23,10 @@
 
 from qgis.gui import QgsMessageBar
 from qgis.core import *
-from numpy import std, mean
+#from numpy import std, mean, cross
+from numpy import *
 import sys
-from math import pi, fabs
+from math import pi, fabs, atan
 import matplotlib.pyplot as plt
 import scipy
 
@@ -111,22 +112,35 @@ class ErrorHandler:
             self.qgisInterface.messageBar().pushMessage("Error", "Please choose an output file!", level=QgsMessageBar.CRITICAL)
             # cancel execution of the script
             sys.exitfunc()
-            
-
-    def result_check (self, coord_trans):
-        #for checking the accuracy of the points we create an line throught the profile. (Do it the easy way: y-value of a point - mean y-Value)
-        #the distances from each point to the profile will lead to a comparable number
-        #mean value of all Y values
-        ymean = mean(columnreader(coord_trans,1))
-        #list for the result
-        check_result = []
-        #go throught the profile
-        for i in range(len(coord_trans)):
-            #calculate for each point the absolute distance to a virtual line that is parallel to the x axis in the middle of the profile
-            check_result.append(fabs(coord_trans[i][1]- ymean))
-        #print the min max and mean values
-        QgsMessageLog.logMessage('Profile:' + str(coord_trans[0][3]), 'profileAAR')
-        QgsMessageLog.logMessage('Y-Error min:' + str(round(min(check_result),2)), 'profileAAR')
-        QgsMessageLog.logMessage('Y-Error mean:' + str(round(mean(check_result),2)), 'profileAAR')
-        QgsMessageLog.logMessage('Y-Error max:' + str(round(max(check_result),2)), 'profileAAR')
-        QgsMessageLog.logMessage(' ', 'profileAAR')        
+                    
+        
+    def plot(self,linegress,xw,yw,prnumber,coord_proc):
+        QgsMessageLog.logMessage('Not supported yet', 'profileAAR')
+        #intercept = linegress[1]
+        #slope = linegress[0]
+        #xwpl =scipy.array(xw)
+        #ywpl = scipy.array(yw)
+        #if prnumber == 1 or prnumber == 2:
+        #    plt.plot(xwpl, ywpl, 'o', label='original data')
+        #    plt.plot(xwpl, intercept + slope*xwpl, 'r', label=('fitted line'+str(prnumber)))
+        #    plt.plot(xwpl, intercept + slope*xwpl, 'o', label='fitted points'+str(prnumber))
+        #    plt.legend()
+        #    plt.show()
+        #predict points on line
+        #for i in range(len(xw)):
+        #    Predict the value for the minmal x
+        #    if xw[i] == min(xw):
+        #        x1pred = xw[i]
+        #        y1pred = intercept + slope*xw[i]
+        #        p1= (x1pred ,y1pred)
+        #    Predict the value for the maximal x
+        #    if xw[i] == max(xw):
+        #        x2pred = xw[i]
+        #        y2pred = intercept + slope*xw[i]
+        #        p2 =  (x2pred ,y2pred)   
+        #Calculate the distance from every point to the line. 
+        #Export this value to every point, and give a sum of all distances indicator: sum = 0, fine; sum = max point (this is the bad one) ; sum > max point (maybe more than one are bad)         
+        #for i in range(len(coord_proc)):
+        #    p3 = (coord_proc[i][0],coord_proc[i][1])
+        #    distance = linalg.norm(cross(p2-p1, p1-p3))/linalg.norm(p2-p1)
+            #QgsMessageLog.logMessage(uz, 'profileAAR')

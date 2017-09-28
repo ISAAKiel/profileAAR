@@ -39,8 +39,8 @@ class Magic_Box:
         linegress = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))      
         #get the slope
         slope =linegress[0]
-        # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
-
+        # TODO: implement this
+        errorhandler.plot(linegress,xw,yw, coord_proc[0][4], coord_proc)
         # calculate the degree of the slope
         slope_deg = 0.0
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:
@@ -77,10 +77,8 @@ class Magic_Box:
         # build the finished list
         for i in range(len(coord_proc)):
             coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
-        
-        #TODO: errorhandling
-        errorhandler.result_check(coord_trans)
-        
+       
+      
         #If the aim is to get the view of the surface, the x-axis has to be rotated aswell
         if method == "surface":
             # calculating the slope, therefore preparing lists
