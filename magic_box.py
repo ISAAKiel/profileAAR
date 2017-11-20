@@ -27,6 +27,7 @@ class Magic_Box:
             z_coord_proc.append(coord_proc[i][2])
 
         # create the valuelists that are used
+		#EINFUEGEN WENN Spalte = x verwenden
         xw = []
         yw = []
         for x in range(len(x_coord_proc)):
@@ -40,7 +41,7 @@ class Magic_Box:
         #get the slope
         slope =linegress[0]
         # TODO: implement this
-        errorhandler.plot(linegress,xw,yw, coord_proc[0][4], coord_proc)
+        distance = errorhandler.plot(linegress,xw,yw, coord_proc[0][4])
         # calculate the degree of the slope
         slope_deg = 0.0
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:

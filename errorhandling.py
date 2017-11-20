@@ -114,33 +114,29 @@ class ErrorHandler:
             sys.exitfunc()
                     
         
-    def plot(self,linegress,xw,yw,prnumber,coord_proc):
-        QgsMessageLog.logMessage('Not supported yet', 'profileAAR')
-        #intercept = linegress[1]
-        #slope = linegress[0]
-        #xwpl =scipy.array(xw)
-        #ywpl = scipy.array(yw)
-        #if prnumber == 1 or prnumber == 2:
-        #    plt.plot(xwpl, ywpl, 'o', label='original data')
-        #    plt.plot(xwpl, intercept + slope*xwpl, 'r', label=('fitted line'+str(prnumber)))
-        #    plt.plot(xwpl, intercept + slope*xwpl, 'o', label='fitted points'+str(prnumber))
-        #    plt.legend()
-        #    plt.show()
+    def plot(self,linegress,xw,yw,prnumber):
+        QgsMessageLog.logMessage('Not supported yet:' + str(prnumber), 'profileAAR')
+        intercept = linegress[1]
+        slope = linegress[0]
+        xwpl =scipy.array(xw)
+        ywpl = scipy.array(yw)
+       
         #predict points on line
-        #for i in range(len(xw)):
-        #    Predict the value for the minmal x
-        #    if xw[i] == min(xw):
-        #        x1pred = xw[i]
-        #        y1pred = intercept + slope*xw[i]
-        #        p1= (x1pred ,y1pred)
-        #    Predict the value for the maximal x
-        #    if xw[i] == max(xw):
-        #        x2pred = xw[i]
-        #        y2pred = intercept + slope*xw[i]
-        #        p2 =  (x2pred ,y2pred)   
-        #Calculate the distance from every point to the line. 
+        for i in range(len(xw)):
+            #Predict the value for the minmal x
+            if xw[i] == min(xw):
+                x1pred = xw[i]
+                y1pred = intercept + slope*xw[i]
+                p1= scipy.array([x1pred ,y1pred])
+            #Predict the value for the maximal x
+            if xw[i] == max(xw):
+                x2pred = xw[i]
+                y2pred = intercept + slope*xw[i]
+                p2 =  scipy.array([x2pred ,y2pred])   
+        #Calculate the distance from every point to the line.
+        distance = []		
         #Export this value to every point, and give a sum of all distances indicator: sum = 0, fine; sum = max point (this is the bad one) ; sum > max point (maybe more than one are bad)         
-        #for i in range(len(coord_proc)):
-        #    p3 = (coord_proc[i][0],coord_proc[i][1])
-        #    distance = linalg.norm(cross(p2-p1, p1-p3))/linalg.norm(p2-p1)
-            #QgsMessageLog.logMessage(uz, 'profileAAR')
+        for i in range(len(xw)):
+            p3 = scipy.array([xw[i],yw[i]])
+            distance.append(linalg.norm(cross(p2-p1, p1-p3))/linalg.norm(p2-p1))
+		return distance
