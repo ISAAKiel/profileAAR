@@ -41,7 +41,8 @@ class Magic_Box:
         #get the slope
         slope =linegress[0]
         # TODO: implement this
-        distance = errorhandler.plot(linegress,xw,yw, coord_proc[0][4])
+        distance = errorhandler.calculateError(linegress,xw,yw, coord_proc[0][4])
+
         # calculate the degree of the slope
         slope_deg = 0.0
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:
@@ -67,17 +68,20 @@ class Magic_Box:
         y_trans = []
         z_trans = []
 
+
         for i in range(len(coord_proc)):
             x_trans.append(center_x + (coord_proc[i][0] - center_x) * cos(slope_deg / 180 * pi) - sin(slope_deg / 180 * pi) * (coord_proc[i][1] - center_y))
             y_trans.append(center_y + (coord_proc[i][0] - center_x) * sin(slope_deg / 180 * pi) + (coord_proc[i][1] - center_y) * cos(slope_deg / 180 * pi))
             z_trans.append(coord_proc[i][2] + center_y - mean(z_coord_proc))
+
 
         # instantiate a list for the transformed coordinates
         coord_trans = []
 
         # build the finished list
         for i in range(len(coord_proc)):
-            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
+            #CHANGE
+            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i]])
        
       
         #If the aim is to get the view of the surface, the x-axis has to be rotated aswell
@@ -115,7 +119,8 @@ class Magic_Box:
             # empty and rewrite the output list
             coord_trans = []
             for i in range(len(coord_proc)):
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
+                # CHANGE
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i]])
 
         # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
         if direction == "original":
@@ -136,7 +141,8 @@ class Magic_Box:
             # empty and rewrite the output list
             coord_trans = []
             for i in range(len(coord_proc)):
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4]])
+                # CHANGE
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i]])
 
 
         return coord_trans

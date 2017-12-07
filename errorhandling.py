@@ -112,10 +112,10 @@ class ErrorHandler:
             self.qgisInterface.messageBar().pushMessage("Error", "Please choose an output file!", level=QgsMessageBar.CRITICAL)
             # cancel execution of the script
             sys.exitfunc()
-                    
-        
-    def plot(self,linegress,xw,yw,prnumber):
-        QgsMessageLog.logMessage('Not supported yet:' + str(prnumber), 'profileAAR')
+
+        # CHANGE
+    def calculateError(self,linegress,xw,yw,prnumber):
+
         intercept = linegress[1]
         slope = linegress[0]
         xwpl =scipy.array(xw)
