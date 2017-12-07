@@ -139,4 +139,4 @@ class ErrorHandler:
         for i in range(len(xw)):
             p3 = scipy.array([xw[i],yw[i]])
             distance.append(linalg.norm(cross(p2-p1, p1-p3))/linalg.norm(p2-p1))
-		return distance
+        return distance
