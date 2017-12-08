@@ -306,7 +306,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>export hight as point</string>
+    <string>export height as point</string>
    </property>
   </widget>
  </widget>
