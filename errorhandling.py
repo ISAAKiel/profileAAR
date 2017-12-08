@@ -42,7 +42,7 @@ class ErrorHandler:
         self.qgisInterface = qgisInterface
 
 #Checks that have to do on every single Profile
-    def singleprofile(self, coord_proc, view_check, profile_name):
+    def singleprofile(self, coord_proc, view_check, profile_name, selection_check):
         # TODO: check for consistency before calculation
         # TODO: check for spatial consistency (no points should be more than x meters apart)
         
@@ -67,6 +67,15 @@ class ErrorHandler:
             # cancel execution of the script
             sys.exitfunc()
 
+        # CHANGE check if the selection is 0 or 1
+        QgsMessageLog.logMessage(str(len(selection_check)), 'MyPlugin')
+        for i in range(len(selection_check)):
+            if str(selection_check[i]) not in ["1", "0"]:
+                # if it is not the same, print error message
+                self.qgisInterface.messageBar().pushMessage("Error", "Only 0 or 1 are allowed in the selection. Error on profile: " + str(profile_name), level=QgsMessageBar.CRITICAL)
+                # cancel execution of the script
+                sys.exitfunc()
+
         # check if the coordinates x, y, z fall into 2 sigma range
         #instance a table like list of lists with i rows and j columns
         warning_message = []
@@ -79,8 +88,6 @@ class ErrorHandler:
             xyz_upper = mean(xyz) + (2 * std(xyz))
             for j in range(len(xyz)):
                 if xyz[j] < xyz_lower or xyz[j] > xyz_upper:
-                    QgsMessageLog.logMessage('Range profile ' + str(profile_name) + ': ' + str(xyz_lower) + " - " + str(xyz_upper), 'profileAAR')
-                    QgsMessageLog.logMessage('value ' + str(xyz[j]), 'MyPlugin')
                     #warning_message.append("Warning: Profile " )+ str(profile_name) + chr(120+i) + str(j) + 'excedes th 2 std interval of ' + chr(120+i))
                     self.qgisInterface.messageBar().pushMessage("Warning: Profile " + str(profile_name) +': '+ chr(120+i) + 'Pt ' + str(j+1) + ' exceeds the 2std interval of ' + chr(120+i))
         #self.qgisInterface.messageBar().pushMessage('\n'.join(warning_message), level=QgsMessageBar.INFO)
@@ -114,7 +121,7 @@ class ErrorHandler:
             sys.exitfunc()
 
         # CHANGE
-    def calculateError(self,linegress,xw,yw,prnumber):
+    def calculateError(self, linegress, xw, yw, prnumber):
 
         intercept = linegress[1]
         slope = linegress[0]

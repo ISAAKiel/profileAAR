@@ -212,6 +212,10 @@ class profileAAR:
         # and for the profile column
         self.dlg.profileCombo.clear()
         self.dlg.profileCombo.addItems(fieldnames)
+        # CHANGE
+        # and for the selection Column
+        self.dlg.useCombo.clear()
+        self.dlg.useCombo.addItems(fieldnames)
 
 
     def run(self):
@@ -259,7 +263,6 @@ class profileAAR:
             #Get the selected layer
             selectedLayer = self.dlg.inputCombo.currentLayer()
             #PREPARE DATA LIST
-            #TODO: Check columns for fieldtypes, z has to be float etc.
             #Go thought all data rows in the selected layer
             iter = selectedLayer.getFeatures()
             #list for the data
@@ -268,7 +271,9 @@ class profileAAR:
             profile_names = []
             #check if the z values have the correct type and if the crs is projected
             errorhandler.field_check(selectedLayer, self.dlg.zCombo.currentText())
-                
+            height = False
+            if self.dlg.hightBox.isChecked():
+                height = True
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
@@ -278,7 +283,7 @@ class profileAAR:
                 y = geom.asPoint().y()
                 #write coordinates and attributes (view, profile and z) in a list
                 # TODO: Use dictinary or object
-                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()],feature[self.dlg.profileCombo.currentText()]])
+                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()], feature[self.dlg.profileCombo.currentText()], feature[self.dlg.useCombo.currentText()]])
                 #write a list of profilenames (unique entries)
                 if feature[self.dlg.profileCombo.currentText()] not in profile_names:
                     profile_names.append(feature[self.dlg.profileCombo.currentText()])
@@ -288,11 +293,14 @@ class profileAAR:
             # select every single profile in a loop
 
             coord_trans = []
+            height_points = []
             for i in range(len(profile_names)):
                 # instantiate a temporary list for a single profile
                 coord_proc = []
                 # instantiate list for the view to check if all entries in one profile are the same
                 view_check = []
+                #CHANGE  # instantiate list for the selection to check if all entries in one profile are the same
+                selection_check = []
                 # iterate through the features in coord, if the profilename matches store the features datalist in templist
                 for x in range(len(coord)):
                     if coord[x][4] == profile_names[i]:
@@ -301,24 +309,40 @@ class profileAAR:
                         # write the unique view values in the checklist
                         if coord[x][3] not in view_check:
                             view_check.append(coord[x][3])
+
+                        # CHANGE  write the unique selection values in the checklist
+                        if coord[x][4] not in selection_check:
+                            selection_check.append(coord[x][5])
                 
                 #Handle Errors depending on the attributes in the fields
                 #Errorhandling: Checking the single Profiles for inconsestency
-                #Therefore we need the data of the actual profile, the view_check with the view values and actual profile name
-                errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]))
+                #Therefore we need the data of the actual profile, the view_check with the view values and actual profile name, selection is 0 or 1
+                errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]), selection_check)
 
 
 
                 '''Doing the magic stuff'''
                 #Calculating the profile and add it to the list
-                coord_trans.append(magicbox.transformation(coord_proc, method, direction))
+                coord_height_list = magicbox.transformation(coord_proc, method, direction)
+                coord_trans.append(coord_height_list)
                 # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
+                #CHANGE If checked, the upper right poitn has to be exportet as point
+                if height == True:
+                    height_points.append(magicbox.height_points(coord_height_list))
             
             '''Export the data'''
             #For exporting we need the data, the path and the crs of the input data
             export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
+            #If points are checked, export them #CHANGE
+            if height == True:
+                export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
             #Load the file to qgis automaticly
             layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
+            #CHANGE aufräumen
+            filename = self.dlg.outputPath.text().split(".shp")[0]
+            filename = filename + "_hight.shp"
+            layer = self.iface.addVectorLayer(filename, "", "ogr")
+
             #if the loading of the layer fails, give a message
             if not layer:
                 self.qgisInterface.messageBar().pushMessage("ERROR", "Failed to open "+self.dlg.outputPath.text()+ ".", level=QgsMessageBar.CRITICAL)  

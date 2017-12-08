@@ -180,8 +180,8 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>350</y>
+     <x>20</x>
+     <y>380</y>
      <width>81</width>
      <height>16</height>
     </rect>
@@ -230,8 +230,8 @@
   <widget class="QLineEdit" name="outputPath">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>350</y>
+     <x>110</x>
+     <y>380</y>
      <width>211</width>
      <height>20</height>
     </rect>
@@ -240,8 +240,8 @@
   <widget class="QPushButton" name="outputButton">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>350</y>
+     <x>330</x>
+     <y>380</y>
      <width>61</width>
      <height>23</height>
     </rect>
@@ -273,6 +273,42 @@
     <string>?</string>
    </property>
   </widget>
+  <widget class="QComboBox" name="useCombo">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>340</y>
+     <width>291</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>340</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Use selection</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="hightBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>410</y>
+     <width>121</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>export hight as point</string>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -281,7 +317,6 @@
    <header>qgis.gui</header>
   </customwidget>
  </customwidgets>
- <resources/>
  <connections>
   <connection>
    <sender>button_box</sender>

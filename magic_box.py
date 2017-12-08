@@ -20,28 +20,40 @@ class Magic_Box:
         x_coord_proc = []
         y_coord_proc = []
         z_coord_proc = []
+        selection_proc = []
         # write the x and v values in the corresponding lists
         for i in range(len(coord_proc)):
             x_coord_proc.append(coord_proc[i][0])
             y_coord_proc.append(coord_proc[i][1])
             z_coord_proc.append(coord_proc[i][2])
+            #CHANGE
+            selection_proc.append(coord_proc[i][5])
 
         # create the valuelists that are used
 		#EINFUEGEN WENN Spalte = x verwenden
         xw = []
         yw = []
+        #CHANGE
+        xw_check = []
+        yw_check = []
         for x in range(len(x_coord_proc)):
-            xw.append(x_coord_proc[x] - min(x_coord_proc))
-            yw.append(y_coord_proc[x] - min(y_coord_proc))
+            #CHANGE Nur Auswahl zum berechnen der Steigung verwenden
+            if(selection_proc[x] == 1):
+                xw.append(x_coord_proc[x] - min(x_coord_proc))
+                yw.append(y_coord_proc[x] - min(y_coord_proc))
+            xw_check.append(x_coord_proc[x] - min(x_coord_proc))
+            yw_check.append(y_coord_proc[x] - min(y_coord_proc))
 
         #QgsMessageLog.logMessage(str(xw), 'MyPlugin')
 
         # calculate the slope of the profile using a linear regression
-        linegress = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))      
+        linegress = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
         #get the slope
         slope =linegress[0]
         # TODO: implement this
-        distance = errorhandler.calculateError(linegress,xw,yw, coord_proc[0][4])
+        #CHANGE Check the distance with all points
+
+        distance = errorhandler.calculateError(linegress, xw_check, yw_check, coord_proc[0][4])
 
         # calculate the degree of the slope
         slope_deg = 0.0
@@ -81,7 +93,7 @@ class Magic_Box:
         # build the finished list
         for i in range(len(coord_proc)):
             #CHANGE
-            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i]])
+            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
        
       
         #If the aim is to get the view of the surface, the x-axis has to be rotated aswell
@@ -120,7 +132,7 @@ class Magic_Box:
             coord_trans = []
             for i in range(len(coord_proc)):
                 # CHANGE
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i]])
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
 
         # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
         if direction == "original":
@@ -142,10 +154,26 @@ class Magic_Box:
             coord_trans = []
             for i in range(len(coord_proc)):
                 # CHANGE
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i]])
-
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
 
         return coord_trans
+
+    #CHANGE NEW
+    def height_points (self, coord_trans):
+        #Getting the top right point and export it to a pointshape
+        xw = []
+        yw = []
+        height_point = []
+        upperright_last = 0
+        for i in range(len(coord_trans)):
+            upperright_check = coord_trans[i][0] + coord_trans[i][2]
+            if upperright_check > upperright_last:
+                upperright_last = upperright_check
+                height_point = coord_trans[i]
+        return height_point
+
+
+
 
 
 
