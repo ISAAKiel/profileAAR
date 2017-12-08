@@ -65,7 +65,7 @@ class Export:
             export_fields.append(QgsField("prnumber", QVariant.String))
             export_fields.append(QgsField("org_z", QVariant.String))
             filename = filename.split(".shp")[0]
-            filename = filename + "_hight.shp"
+            filename = filename + "_height.shp"
 
             writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QGis.WKBPoint, corrdinate_system, "ESRI Shapefile")
             if writer.hasError() != QgsVectorFileWriter.NoError:
