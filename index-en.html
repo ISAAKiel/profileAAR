@@ -3,12 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>profileAAR help --- Still in progress</title>
+    <title>profileAAR help</title>
   </head>
   <body>
     <p> <b>You will find the detailed information about how it works in our Publication</b>
+	<p>By Members of <a href="https://isaakiel.github.io">ISAAKiel</a> </p>
+	<p>Moritz Mennenga (Lower Saxony Institute for Historical Coastal Research Wilhelmshaven)</p>
+	<p>Kay Schmütz (Graduate School - Human Developent in Landscapes / CAU Kiel)</p>
+	<p>Nils Hempel (Institute for Classical Archaeology / CAU Kiel)</p>
+	<p>Christoph Rinne (Institute for Pre- and Protohistoric Archaeology / CAU Kiel)</p>
     <h1>How to use the profileAAR-Plugin</h1>
-	<p>This tool is created to transform fotogrammetric controll points from archaeological exacavation, 
+	<p>This tool is created to transform fotogrammetric control points from archaeological excavation,
 	to use them to georeference profiles is Qgis.</p>
 	<h2>1. Input data</h2>
 	<p>At first we need the dataset.</p>
@@ -16,8 +21,9 @@
 	<p>As attributes we need:</p>
 	<ul>
 	<li> the <b>z-value</b> [float/double/real] </li>
-	<li> the lable of the <b>profile</b> (e.g. number of the profile [text or number]</li>
+	<li> the label of the <b>profile</b> (e.g. number of the profile [text or number])</li>
 	<li> the <b>view</b> direction (defined by the position of the observer related to the profile as N, E, S or W [text])</li>
+	<li> the <b>used Points</b> (points that are used to determine the slope of the regression [0/1])</li>
 	<img src="./img/view.jpg" alt="View" style="width:250px;height:228px;">
 	<p>If a profile is NE - SW orientated it doesn't matter if you choose E or S.</p>
 	</ul>
@@ -27,10 +33,11 @@
 	<li> one profile can have only one direction of view </li>
 	<li> the view directions have to be one of the four cardinal directions</li>
 	<li> the layer has to have an projected CRS</li>
+	<li> the used Points column contains only 0 or 1</li>
 	<p><b>You will get the best results, if your are careful on the excavation and prepare a perfectly straight profile!</b></p>
 	</ul>
 	<p></p>
-	<h2>2. You have the choise</h2>
+	<h2>2. You have the choice</h2>
 	<p>At first you have to select the layer, then the attributes are visible in the <b>z coord</b>, the <b>pr number</b> and the <b>view column</b> boxes. </p>
 	<p>Please select the matching attributes.</p>
 	<p>In the next two boxes, you have to choose:</p>
@@ -47,6 +54,10 @@
 	<img src="./img/direction.jpg" alt="Direction" style="width:630px;height:234px;">
 	<p> View on a profile(0). The result after choosing original (1) or horizontal (2).</p>
 	</ul>
+
+	<p><b>Export elevation points</b> will export an additional shapefile containing the upper right fotogrammetric control point and its height and the profile number.</p>
+	<p>This can be very helpful by processing the drawings.</p>
+
 	<h2>3. Run the magic box</h2>	
 	<p>If you press the OK Button the magic happens.</p>
 	<p>Some hints for a good result</p>
@@ -54,9 +65,11 @@
 	<li>If you have a straight profile you will have the best results</li>
 	<li>If profiles are long sometimes it is better to split them (we plan a function for the next version to do it the easy way for the user)</li>
 	</ul>
-	<h2>4. Accuracy and logfile</h2>
-	<p>Not implemented jet: </p>
+	<h2>4. Accuracy</h2>
 	<p>Getting values for the accuracy of the points.</p>
-
+	<p>When you open the attribute table of the rotated points, you will find the column <b>distance</b>.</p>
+  	<p>This value represents the distance of each point to the calculated profile between the points. As higher the value is, as worse is the result.</p>
+  	<p>If there is one point not in the line, this one will have a high distance. If you choose 0 in the original column <b>used Points</b>, this point will be excluded</p>
+	<p>in the calculation of the regression line, but the point will be rotated. This can be used to correct measurement faults.</p>
 	</body>
 </html>

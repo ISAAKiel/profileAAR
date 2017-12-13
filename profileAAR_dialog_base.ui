@@ -293,7 +293,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Use selection</string>
+    <string>Points used</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="hightBox">
@@ -301,12 +301,12 @@
     <rect>
      <x>20</x>
      <y>410</y>
-     <width>121</width>
+     <width>141</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>export height as point</string>
+    <string>export elevation points</string>
    </property>
   </widget>
  </widget>
