@@ -3,9 +3,12 @@ from __future__ import division, print_function
 from qgis.gui import QgsMessageBar
 from qgis.core import *
 import scipy
-from math import atan, fabs, pi, cos, sin
+from math import atan, fabs, pi, cos, sin, tan
 from numpy import mean
 from errorhandling import ErrorHandler
+import matplotlib.pyplot as plt
+
+
 
 class Magic_Box:
     def __init__(self, qgisInterface):
@@ -45,14 +48,28 @@ class Magic_Box:
             yw_check.append(y_coord_proc[x] - min(y_coord_proc))
 
         #QgsMessageLog.logMessage(str(xw), 'MyPlugin')
+        #CHANGE
+        #There is a problem with lingress if the points are nearly N-S oriented
+        #To solve this, it is nessecary to change the input values of the regression
+        # Calculate the regression for both directions
+        linegress_x = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
+        linegress_y = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
+        # get the sum of residuals for both direction
+        #We like to use the regression with less sum of the residuals
+        res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw))
+        res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw))
+        if res_x >= res_y:
+            linegress = linegress_x
+            slope = linegress[0]
 
-        # calculate the slope of the profile using a linear regression
-        linegress = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
-        #get the slope
-        slope =linegress[0]
-        # TODO: implement this
+        elif res_x < res_y:
+             linegress = linegress_y
+             # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
+             slope = tan((-90-(((atan(linegress[0])*180)/pi)))*pi / 180)
+
+
+
         #CHANGE Check the distance with all points
-
         distance = errorhandler.calculateError(linegress, xw_check, yw_check, coord_proc[0][4])
 
         # calculate the degree of the slope
@@ -172,6 +189,18 @@ class Magic_Box:
                 height_point = coord_trans[i]
         return height_point
 
+
+
+
+    def calculateResidual(self, linegress, array1, array2):
+        # This calculates the predicted value for each observed value
+        obs_values = array2
+        pred_values = linegress[0] * array1 + linegress[1]
+
+        # This prints the residual for each pair of observations
+        Residual = obs_values - pred_values
+        QgsMessageLog.logMessage('res: '+str(sum(Residual)), 'MyPlugin')
+        return sum(Residual)
 
 
 
