@@ -339,9 +339,10 @@ class profileAAR:
             #Load the file to qgis automaticly
             layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
             #CHANGE aufräumen
-            filename = self.dlg.outputPath.text().split(".shp")[0]
-            filename = filename + "_height.shp"
-            layer = self.iface.addVectorLayer(filename, "", "ogr")
+            if height == True:
+                filename = self.dlg.outputPath.text().split(".shp")[0]
+                filename = filename + "_height.shp"
+                layer = self.iface.addVectorLayer(filename, "", "ogr")
 
             #if the loading of the layer fails, give a message
             if not layer:
