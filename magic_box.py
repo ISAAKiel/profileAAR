@@ -61,7 +61,6 @@ class Magic_Box:
         if res_x >= res_y:
             linegress = linegress_x
             slope = linegress[0]
-
         elif res_x < res_y:
              linegress = linegress_y
              # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
