@@ -9,6 +9,24 @@ from errorhandling import ErrorHandler
 import matplotlib.pyplot as plt
 
 
+def testplot(self, xw, yw, linegress, prnr):
+    if (prnr == 1 or prnr == 2):
+        intercept = linegress[1]
+        slope = linegress[0]
+        neu_y = []
+        neu_x = []
+        for coords in range(len(xw)):
+            neu_y.append(slope * xw[coords] + intercept)
+        for coords in range(len(yw)):
+            neu_x.append(slope * yw[coords] + intercept)
+        QgsMessageLog.logMessage(str(xw), 'test')
+        plt.plot(xw,yw, 'o', label='original data PR' + str(prnr))
+        plt.plot(xw, neu_y, 'r', label='fitted line_1')
+        plt.plot(neu_x, yw, 'b', label='fitted line_2')
+        #plt.plot(xw, intercept + slope * xw, 'o', label='fitted points')
+        plt.legend()
+        plt.show()
+
 
 class Magic_Box:
     def __init__(self, qgisInterface):
@@ -24,6 +42,7 @@ class Magic_Box:
         y_coord_proc = []
         z_coord_proc = []
         selection_proc = []
+        profilnr_proc =[]
         # write the x and v values in the corresponding lists
         for i in range(len(coord_proc)):
             x_coord_proc.append(coord_proc[i][0])
@@ -31,6 +50,7 @@ class Magic_Box:
             z_coord_proc.append(coord_proc[i][2])
             #CHANGE
             selection_proc.append(coord_proc[i][5])
+            profilnr_proc.append(coord_proc[i][4])
 
         # create the valuelists that are used
 		#EINFUEGEN WENN Spalte = x verwenden
@@ -58,14 +78,19 @@ class Magic_Box:
         #We like to use the regression with less sum of the residuals
         res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw))
         res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw))
+        QgsMessageLog.logMessage(str(profilnr_proc[0]), 'methode')
         if res_x >= res_y:
             linegress = linegress_x
             slope = linegress[0]
+            QgsMessageLog.logMessage(str("1"), 'methode')
         elif res_x < res_y:
              linegress = linegress_y
              # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
              slope = tan((-90-(((atan(linegress[0])*180)/pi)))*pi / 180)
-
+             QgsMessageLog.logMessage(str("2"), 'methode')
+        if (profilnr_proc[0] == '8' or profilnr_proc[0] == '37' ):
+            QgsMessageLog.logMessage(str(profilnr_proc[0]), 'steigung')
+            QgsMessageLog.logMessage(str(slope), 'steigung')
 
 
         #CHANGE Check the distance with all points
@@ -84,7 +109,11 @@ class Magic_Box:
         elif slope == 0 and coord_proc[0][3] == "N":
             slope_deg = 180
 
-            #QgsMessageLog.logMessage(str(coord_proc[0][4]) + " " + str(slope) + " " + str(slope_deg), 'MyPlugin')
+
+        testplot(self, xw, yw, linegress, profilnr_proc[0])
+        #QgsMessageLog.logMessage(str(coord_proc[0][4]) + " " + str(slope) + " " + str(slope_deg), 'MyPlugin')
+
+
 
         # calculate the point of rotation
         center_x = mean(x_coord_proc)

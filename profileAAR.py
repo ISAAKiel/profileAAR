@@ -44,6 +44,11 @@ from profileAAR_dialog import profileAARDialog
 import os.path
 
 
+
+
+
+
+
 class profileAAR:
     """QGIS Plugin Implementation."""
 
@@ -338,7 +343,7 @@ class profileAAR:
                 export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
             #Load the file to qgis automaticly
             layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
-            #CHANGE aufräumen
+            #CHANGE
             if height == True:
                 filename = self.dlg.outputPath.text().split(".shp")[0]
                 filename = filename + "_height.shp"

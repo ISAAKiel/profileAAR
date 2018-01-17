@@ -67,7 +67,7 @@ class ErrorHandler:
             # cancel execution of the script
             sys.exitfunc()
 
-        # CHANGE check if the selection is 0 or 1
+        #CHANGE1  check if the selection is 0 or 1
         QgsMessageLog.logMessage(str(len(selection_check)), 'MyPlugin')
         for i in range(len(selection_check)):
             if str(selection_check[i]) not in ["1", "0"]:
