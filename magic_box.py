@@ -78,14 +78,15 @@ class Magic_Box:
         linegress_y = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
         # get the sum of residuals for both direction
         #We like to use the regression with less sum of the residuals
+        
         res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw), profilnr_proc[0])
         res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw), profilnr_proc[0])
         QgsMessageLog.logMessage(str(profilnr_proc[0]), 'methode')
-        if res_x >= res_y:
+        if lingress_x is not None and res_x >= res_y:
             linegress = linegress_x
             slope = linegress[0]
             QgsMessageLog.logMessage(str("1"), 'methode')
-        elif res_x < res_y:
+        elif lingress_x is None or res_x < res_y:
              linegress = linegress_y
              # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
              slope = tan((-90-(((atan(linegress[0])*180)/pi)))*pi / 180)
