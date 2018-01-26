@@ -49,7 +49,8 @@ class ErrorHandler:
         # check if actual profile has less then 4 points
         if len(coord_proc) <= 3:
             #if it is less, print error message
-            self.qgisInterface.messageBar().pushMessage("Error", "A profile needs min. 4 points. Error on profile: "+str(profile_name), level=QgsMessageBar.CRITICAL)
+            self.qgisInterface.messageBar().pushMessage("Error", "A profile needs min. 4 points. Error on profile: "+str(profile_name),
+                                                        level=QgsMessageBar.CRITICAL)
             #cancel execution of the script
             sys.exitfunc()
 

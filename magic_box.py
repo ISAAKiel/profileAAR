@@ -3,6 +3,7 @@ from __future__ import division, print_function
 from qgis.gui import QgsMessageBar
 from qgis.core import *
 import scipy
+import sys
 from math import atan, fabs, pi, cos, sin, tan
 from numpy import mean
 from errorhandling import ErrorHandler
@@ -10,11 +11,12 @@ import matplotlib.pyplot as plt
 
 
 def testplot(self, xw, yw, linegress, prnr):
-    if (prnr == 1 or prnr == 2):
+    if (prnr == "8" or prnr == "53" or prnr == "37" or prnr == "1"):
         intercept = linegress[1]
         slope = linegress[0]
         neu_y = []
         neu_x = []
+
         for coords in range(len(xw)):
             neu_y.append(slope * xw[coords] + intercept)
         for coords in range(len(yw)):
@@ -76,8 +78,8 @@ class Magic_Box:
         linegress_y = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
         # get the sum of residuals for both direction
         #We like to use the regression with less sum of the residuals
-        res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw))
-        res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw))
+        res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw), profilnr_proc[0])
+        res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw), profilnr_proc[0])
         QgsMessageLog.logMessage(str(profilnr_proc[0]), 'methode')
         if res_x >= res_y:
             linegress = linegress_x
@@ -88,14 +90,20 @@ class Magic_Box:
              # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
              slope = tan((-90-(((atan(linegress[0])*180)/pi)))*pi / 180)
              QgsMessageLog.logMessage(str("2"), 'methode')
-        if (profilnr_proc[0] == '8' or profilnr_proc[0] == '37' ):
-            QgsMessageLog.logMessage(str(profilnr_proc[0]), 'steigung')
-            QgsMessageLog.logMessage(str(slope), 'steigung')
+        else:
+            self.qgisInterface.messageBar().pushMessage("Error", "Calculation failed! Corrupt data!",
+                                                        level=QgsMessageBar.CRITICAL)
+            sys.exitfunc()
+
 
 
         #CHANGE Check the distance with all points
         distance = errorhandler.calculateError(linegress, xw_check, yw_check, coord_proc[0][4])
-
+        QgsMessageLog.logMessage(str(coord_proc[0][4]), 'linegress')
+        QgsMessageLog.logMessage(str(linegress[3]), 'linegress')
+        QgsMessageLog.logMessage(str(linegress[4]), 'linegress')
+        if (linegress[4] > 1):
+            QgsMessageLog.logMessage(str(coord_proc[0][4]), 'scheisse')
         # calculate the degree of the slope
         slope_deg = 0.0
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:
@@ -108,6 +116,14 @@ class Magic_Box:
             slope_deg = 180 - ((atan(slope) * 180) / pi)
         elif slope == 0 and coord_proc[0][3] == "N":
             slope_deg = 180
+
+        #if slope > 0 and slope < 1 and coord_proc[0][3] in ["E"]:
+        #    slope_deg = 90
+        #    QgsMessageLog.logMessage(str(profilnr_proc[0]), 'sonderfall')
+        #if (profilnr_proc[0] == '8' or profilnr_proc[0] == '37' ):
+        #    QgsMessageLog.logMessage(str(profilnr_proc[0]), 'steigung')
+        #    QgsMessageLog.logMessage(str(slope), 'steigung')
+        #    QgsMessageLog.logMessage(str((atan(slope) * 180) / pi), 'steigung')
 
 
         testplot(self, xw, yw, linegress, profilnr_proc[0])
@@ -220,14 +236,15 @@ class Magic_Box:
 
 
 
-    def calculateResidual(self, linegress, array1, array2):
+    def calculateResidual(self, linegress, array1, array2, prnr):
         # This calculates the predicted value for each observed value
         obs_values = array2
         pred_values = linegress[0] * array1 + linegress[1]
 
         # This prints the residual for each pair of observations
         Residual = obs_values - pred_values
-        QgsMessageLog.logMessage('res: '+str(sum(Residual)), 'MyPlugin')
+        if (prnr == "1" or prnr == "8" or prnr == "37"):
+            QgsMessageLog.logMessage('PR:'+ str(prnr)+' res: '+str(sum(Residual)), 'residual')
         return sum(Residual)
 
 
