@@ -69,7 +69,7 @@ def calculate_distance_new(coord_proc):
     return distance
 
 
-def calculate_distance_org(coord_proc):
+def calculate_distance_org(coord_proc, slope):
     # x y z (rang)
 
     #Ranking für jeden Punkt ermitteln
@@ -85,12 +85,14 @@ def calculate_distance_org(coord_proc):
     #jetzt die liste nach Rang sortieren
     #die Werte mit dem geringsten Rang sind die oben.
     #Falls zwei Werte den gleichen Rang haben, ist es der mit dem höheren z wert
-    listsort =  sorted(listsort, key=lambda x: (x[3],x[2]))
+    listsort =  sorted(listsort, key=lambda x: (x[3],-x[2]))
+    QgsMessageLog.logMessage(str(listsort), 'org_dist')
     koordinate1 = listsort[0]
     koordinate2 = listsort[1]
 
     if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
-        distance = sqrt((koordinate2[0] - koordinate1[0])**2 + (koordinate2[0] - koordinate1[0])**2)
+        distance = sqrt((koordinate2[1] - koordinate1[1])**2 + (koordinate2[0] - koordinate1[0])**2)
+        QgsMessageLog.logMessage(str(distance), 'org_dist')
     elif koordinate2[0] == koordinate1[0]:
         distance = abs(koordinate2[1] - koordinate1[1])
     elif koordinate2[1] == koordinate1[1]:
@@ -132,8 +134,6 @@ class Magic_Box:
             del rangcheck_orginal[coords][4]
             del rangcheck_orginal[coords][3]
         #distanz zwischen den beiden Punkten oben CHANGE
-
-        original_distance = calculate_distance_org(rangcheck_orginal)
 
 
 
@@ -193,6 +193,9 @@ class Magic_Box:
             slope_deg = 180 - ((atan(slope) * 180) / pi)
         elif slope == 0 and coord_proc[0][3] == "N":
             slope_deg = 180
+
+        original_distance = calculate_distance_org(rangcheck_orginal, slope_deg)
+
 
         #if slope > 0 and slope < 1 and coord_proc[0][3] in ["E"]:
         #    slope_deg = 90
@@ -297,10 +300,13 @@ class Magic_Box:
 
         #change
         QgsMessageLog.logMessage('PR:' + str(coord_proc[0][4]), 'Distance')
+        QgsMessageLog.logMessage('slope: ' + str(slope_deg), 'Distance')
         QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance')
         new_distance = calculate_distance_new(rangcheck_trans)
         QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance')
-        if abs(original_distance-new_distance)< 1:
+        QgsMessageLog.logMessage('Diff. Distance: ' + str(abs(original_distance-new_distance)), 'Distance')
+
+        if abs(original_distance-new_distance) > 0.01:
             self.qgisInterface.messageBar().pushMessage("Error",
                                                        "Profile was calculated incorrect (1cm acc.) See Log-Window: " + str(
                                                            str(coord_proc[0][4])),
