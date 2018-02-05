@@ -282,10 +282,11 @@ class profileAAR:
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
+                # TODO: 3Nachkommastellen!! Bisher sind es nur 2.....
                 geom = feature.geometry()
                 #getting x and y coordinate
-                x = geom.asPoint().x()
-                y = geom.asPoint().y()
+                x = round(geom.asPoint().x(), 3)
+                y = round(geom.asPoint().y(), 3)
                 #write coordinates and attributes (view, profile and z) in a list
                 # TODO: Use dictinary or object
                 coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()], feature[self.dlg.profileCombo.currentText()], feature[self.dlg.useCombo.currentText()]])

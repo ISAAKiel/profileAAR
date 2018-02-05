@@ -4,7 +4,7 @@ from qgis.gui import QgsMessageBar
 from qgis.core import *
 import scipy
 import sys
-from math import atan, fabs, pi, cos, sin, tan
+from math import atan, fabs, pi, cos, sin, tan, isnan, sqrt
 from numpy import mean
 from errorhandling import ErrorHandler
 import matplotlib.pyplot as plt
@@ -21,13 +21,82 @@ def testplot(self, xw, yw, linegress, prnr):
             neu_y.append(slope * xw[coords] + intercept)
         for coords in range(len(yw)):
             neu_x.append(slope * yw[coords] + intercept)
-        QgsMessageLog.logMessage(str(xw), 'test')
         plt.plot(xw,yw, 'o', label='original data PR' + str(prnr))
         plt.plot(xw, neu_y, 'r', label='fitted line_1')
         plt.plot(neu_x, yw, 'b', label='fitted line_2')
         #plt.plot(xw, intercept + slope * xw, 'o', label='fitted points')
         plt.legend()
         plt.show()
+
+def calculate_distance_new(coord_proc):
+    # x y z (rang)
+
+    # Ranking für jeden Punkt ermitteln
+    # dazu werte nach x sortieren
+    listsort_x = sorted(coord_proc, key=lambda x: (x[0]))
+    # Dann für jeden Punkt den Rang dazuschrieben
+    for points in range(len(listsort_x)):
+        listsort_x[points].append(points)
+    # nach y sortieren und den Rang hinzufuegen
+    listsort_x = sorted(listsort_x, key=lambda x: (x[1]))
+    for points in range(len(listsort_x)):
+        listsort_x[points][3] = listsort_x[points][3] + points
+    # jetzt die liste nach Rang sortieren
+    # die Werte mit dem höchsten Rang sind die oben.
+    # Falls zwei Werte den gleichen Rang haben, ist es der mit dem höheren z wert
+    listsort_x = sorted(listsort_x, key=lambda x: (-x[3], x[2]))
+    koordinate2 = listsort_x[0]
+
+    listsort_x = sorted(coord_proc, key=lambda x: (-x[0]))
+    # Dann für jeden Punkt den Rang dazuschrieben
+    for points in range(len(listsort_x)):
+        listsort_x[points].append(points)
+        # nach y sortieren und den Rang hinzufuegen
+    listsort_x = sorted(listsort_x, key=lambda x: (x[1]))
+    for points in range(len(listsort_x)):
+        listsort_x[points][4] = listsort_x[points][4] + points
+
+    listsort_x = sorted(listsort_x, key=lambda x: (-x[4], x[2]))
+    koordinate1 = listsort_x[0]
+
+    if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
+        distance = sqrt((koordinate2[0] - koordinate1[0]) ** 2 + (koordinate2[1] - koordinate1[1]) ** 2)
+    elif koordinate2[0] == koordinate1[0]:
+        distance = abs(koordinate2[1] - koordinate1[1])
+    elif koordinate2[1] == koordinate1[1]:
+        distance = abs(koordinate2[0] - koordinate1[0])
+
+    return distance
+
+
+def calculate_distance_org(coord_proc):
+    # x y z (rang)
+
+    #Ranking für jeden Punkt ermitteln
+    #dazu werte nach x sortieren
+    listsort = sorted(coord_proc, key=lambda x: (x[0]))
+    #Dann für jeden Punkt den Rang dazuschrieben
+    for points in range(len(listsort)):
+        listsort[points].append(points)
+    #nach y sortieren und den Rang hinzufuegen
+    listsort = sorted(listsort, key=lambda x: (x[1]))
+    for points in range(len(listsort)):
+        listsort[points][3] = listsort[points][3] + points
+    #jetzt die liste nach Rang sortieren
+    #die Werte mit dem geringsten Rang sind die oben.
+    #Falls zwei Werte den gleichen Rang haben, ist es der mit dem höheren z wert
+    listsort =  sorted(listsort, key=lambda x: (x[3],x[2]))
+    koordinate1 = listsort[0]
+    koordinate2 = listsort[1]
+
+    if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
+        distance = sqrt((koordinate2[0] - koordinate1[0])**2 + (koordinate2[0] - koordinate1[0])**2)
+    elif koordinate2[0] == koordinate1[0]:
+        distance = abs(koordinate2[1] - koordinate1[1])
+    elif koordinate2[1] == koordinate1[1]:
+        distance = abs(koordinate2[0] - koordinate1[0])
+
+    return distance
 
 
 class Magic_Box:
@@ -38,13 +107,13 @@ class Magic_Box:
         #initialize the Errorhandler
         errorhandler = ErrorHandler(self)
         # instantiate an empty list for the transformed coordinates and other values
-        coord_trans = []
         # instantiate lists for the x and y values
         x_coord_proc = []
         y_coord_proc = []
         z_coord_proc = []
         selection_proc = []
         profilnr_proc =[]
+        rangcheck_orginal = []
         # write the x and v values in the corresponding lists
         for i in range(len(coord_proc)):
             x_coord_proc.append(coord_proc[i][0])
@@ -53,6 +122,20 @@ class Magic_Box:
             #CHANGE
             selection_proc.append(coord_proc[i][5])
             profilnr_proc.append(coord_proc[i][4])
+            tmplist = []
+            for k in range(len(coord_proc[i])):
+                tmplist.append(coord_proc[i][k])
+            rangcheck_orginal.append(tmplist)
+
+        for coords in range(len(rangcheck_orginal)):
+            del rangcheck_orginal[coords][5]
+            del rangcheck_orginal[coords][4]
+            del rangcheck_orginal[coords][3]
+        #distanz zwischen den beiden Punkten oben CHANGE
+
+        original_distance = calculate_distance_org(rangcheck_orginal)
+
+
 
         # create the valuelists that are used
 		#EINFUEGEN WENN Spalte = x verwenden
@@ -78,19 +161,15 @@ class Magic_Box:
         linegress_y = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
         # get the sum of residuals for both direction
         #We like to use the regression with less sum of the residuals
-        
         res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw), profilnr_proc[0])
         res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw), profilnr_proc[0])
-        QgsMessageLog.logMessage(str(profilnr_proc[0]), 'methode')
-        if lingress_x is not None and res_x >= res_y:
+        if isnan(res_y) or res_x >= res_y:
             linegress = linegress_x
             slope = linegress[0]
-            QgsMessageLog.logMessage(str("1"), 'methode')
-        elif lingress_x is None or res_x < res_y:
+        elif isnan(res_x) or res_x < res_y:
              linegress = linegress_y
              # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
              slope = tan((-90-(((atan(linegress[0])*180)/pi)))*pi / 180)
-             QgsMessageLog.logMessage(str("2"), 'methode')
         else:
             self.qgisInterface.messageBar().pushMessage("Error", "Calculation failed! Corrupt data!",
                                                         level=QgsMessageBar.CRITICAL)
@@ -99,12 +178,9 @@ class Magic_Box:
 
 
         #CHANGE Check the distance with all points
+        #TODO Testen
         distance = errorhandler.calculateError(linegress, xw_check, yw_check, coord_proc[0][4])
-        QgsMessageLog.logMessage(str(coord_proc[0][4]), 'linegress')
-        QgsMessageLog.logMessage(str(linegress[3]), 'linegress')
-        QgsMessageLog.logMessage(str(linegress[4]), 'linegress')
-        if (linegress[4] > 1):
-            QgsMessageLog.logMessage(str(coord_proc[0][4]), 'scheisse')
+
         # calculate the degree of the slope
         slope_deg = 0.0
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:
@@ -126,12 +202,6 @@ class Magic_Box:
         #    QgsMessageLog.logMessage(str(slope), 'steigung')
         #    QgsMessageLog.logMessage(str((atan(slope) * 180) / pi), 'steigung')
 
-
-        testplot(self, xw, yw, linegress, profilnr_proc[0])
-        #QgsMessageLog.logMessage(str(coord_proc[0][4]) + " " + str(slope) + " " + str(slope_deg), 'MyPlugin')
-
-
-
         # calculate the point of rotation
         center_x = mean(x_coord_proc)
         center_y = mean(y_coord_proc)
@@ -151,12 +221,13 @@ class Magic_Box:
 
         # instantiate a list for the transformed coordinates
         coord_trans = []
-
+        #CHANGE
+        rangcheck_trans = []
         # build the finished list
         for i in range(len(coord_proc)):
             #CHANGE
             coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
-       
+            rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
       
         #If the aim is to get the view of the surface, the x-axis has to be rotated aswell
         if method == "surface":
@@ -192,9 +263,11 @@ class Magic_Box:
 
             # empty and rewrite the output list
             coord_trans = []
+            rangcheck_trans = []
             for i in range(len(coord_proc)):
                 # CHANGE
                 coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
+                rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
 
         # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
         if direction == "original":
@@ -209,15 +282,29 @@ class Magic_Box:
             x_trans = []
             z_trans = []
             for i in range(len(coord_trans)):
-                x_trans.append(y_center_x + (coord_trans[i][0] - y_center_x) * cos(y_slope_deg / 180 * pi) - (coord_trans[i][2] - y_center_z) * sin(y_slope_deg / 180 * pi))
-                z_trans.append(y_center_z + (coord_trans[i][0] - y_center_x) * sin(y_slope_deg / 180 * pi) + (coord_trans[i][2] - y_center_z) * cos(y_slope_deg / 180 * pi))
+                x_trans.append(y_center_x + (coord_trans[i][0] - y_center_x) * cos(y_slope_deg / 180 * pi) - (coord_trans[i][2] - y_center_z)
+                               * sin(y_slope_deg / 180 * pi))
+                z_trans.append(y_center_z + (coord_trans[i][0] - y_center_x) * sin(y_slope_deg / 180 * pi) + (coord_trans[i][2] - y_center_z)
+                               * cos(y_slope_deg / 180 * pi))
 
             # empty and rewrite the output list
             coord_trans = []
+            rangcheck_trans = []
             for i in range(len(coord_proc)):
                 # CHANGE
                 coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
+                rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
 
+        #change
+        QgsMessageLog.logMessage('PR:' + str(coord_proc[0][4]), 'Distance')
+        QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance')
+        new_distance = calculate_distance_new(rangcheck_trans)
+        QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance')
+        if abs(original_distance-new_distance)< 1:
+            self.qgisInterface.messageBar().pushMessage("Error",
+                                                       "Profile was calculated incorrect (1cm acc.) See Log-Window: " + str(
+                                                           str(coord_proc[0][4])),
+                                                       level=QgsMessageBar.CRITICAL)
         return coord_trans
 
     #CHANGE NEW
@@ -244,8 +331,7 @@ class Magic_Box:
 
         # This prints the residual for each pair of observations
         Residual = obs_values - pred_values
-        if (prnr == "1" or prnr == "8" or prnr == "37"):
-            QgsMessageLog.logMessage('PR:'+ str(prnr)+' res: '+str(sum(Residual)), 'residual')
+
         return sum(Residual)
 
 
