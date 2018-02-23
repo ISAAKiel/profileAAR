@@ -35,12 +35,12 @@ def calculate_distance_new(coord_proc):
     # dazu werte nach x sortieren
     listsort_x = sorted(coord_proc, key=lambda x: (x[0]))
     # Dann für jeden Punkt den Rang dazuschrieben
-    for points in range(len(listsort_x)):
-        listsort_x[points].append(points)
+    list_add_rowcount_to_column(listsort_x)
+
     # nach y sortieren und den Rang hinzufuegen
     listsort_x = sorted(listsort_x, key=lambda x: (x[1]))
-    for points in range(len(listsort_x)):
-        listsort_x[points][3] = listsort_x[points][3] + points
+    list_plus_rowcount_to_column(listsort_x, 3)
+
     # jetzt die liste nach Rang sortieren
     # die Werte mit dem höchsten Rang sind die oben.
     # Falls zwei Werte den gleichen Rang haben, ist es der mit dem höheren z wert
@@ -49,12 +49,10 @@ def calculate_distance_new(coord_proc):
 
     listsort_x = sorted(coord_proc, key=lambda x: (-x[0]))
     # Dann für jeden Punkt den Rang dazuschrieben
-    for points in range(len(listsort_x)):
-        listsort_x[points].append(points)
-        # nach y sortieren und den Rang hinzufuegen
+    list_add_rowcount_to_column(listsort_x)
+    # nach y sortieren und den Rang hinzufuegen
     listsort_x = sorted(listsort_x, key=lambda x: (x[1]))
-    for points in range(len(listsort_x)):
-        listsort_x[points][4] = listsort_x[points][4] + points
+    list_plus_rowcount_to_column(listsort_x, 4)
 
     listsort_x = sorted(listsort_x, key=lambda x: (-x[4], x[2]))
     koordinate1 = listsort_x[0]
@@ -73,32 +71,102 @@ def calculate_distance_org(coord_proc, slope):
     # x y z (rang)
 
     #Ranking für jeden Punkt ermitteln
-    #dazu werte nach x sortieren
-    listsort = sorted(coord_proc, key=lambda x: (x[0]))
-    #Dann für jeden Punkt den Rang dazuschrieben
-    for points in range(len(listsort)):
-        listsort[points].append(points)
-    #nach y sortieren und den Rang hinzufuegen
-    listsort = sorted(listsort, key=lambda x: (x[1]))
-    for points in range(len(listsort)):
-        listsort[points][3] = listsort[points][3] + points
-    #jetzt die liste nach Rang sortieren
-    #die Werte mit dem geringsten Rang sind die oben.
-    #Falls zwei Werte den gleichen Rang haben, ist es der mit dem höheren z wert
-    listsort =  sorted(listsort, key=lambda x: (x[3],-x[2]))
-    QgsMessageLog.logMessage(str(listsort), 'org_dist')
-    koordinate1 = listsort[0]
-    koordinate2 = listsort[1]
+    # dazu werte nach z sortieren
+    listsort = sorted(coord_proc, key=lambda x: (-x[2]))
+    # Dann für jeden Punkt den Rang dazuschrieben
+    list_add_rowcount_to_column(listsort)
+
+    koordinate1 = []
+    koordinate2 = []
+
+    if slope >= 180 or slope <= -180:
+        #Punkt 1 xmin und ymax \
+        #dazu werte nach x sortieren
+
+        listsort_1 = sorted(listsort, key=lambda x: (x[0]))
+        listsort_1 = list_plus_rowcount_to_column(listsort_1, 3)
+        #nach y sortieren (absteigend) und den Rang hinzufuegen
+        listsort_1 = sorted(listsort_1, key=lambda x: (-x[1]))
+        listsort_1 = list_plus_rowcount_to_column(listsort_1, 3)
+        #Nach Rang sortieren
+        listsort_1 = sorted(listsort_1, key=lambda x: (x[3]))
+        #Erste Koordinate ist oben links
+
+        koordinate1 = listsort_1[0]
+
+        #Punkt2 xmax, ymin
+        #Sortieren nach höchstem x
+        listsort = list_column_zero(listsort, 3)
+
+        listsort_2 = sorted(listsort, key=lambda x: (-x[2]))
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        listsort_2 = sorted(listsort, key=lambda x: (-x[0]))
+        # Dann für jeden Punkt den Rang dazuschrieben
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        # nach y sortieren und den Rang hinzufuegen
+        listsort_2 = sorted(listsort_2, key=lambda x: (x[1]))
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        listsort_2 = sorted(listsort_2, key=lambda x: (x[3]))
+        koordinate2 = listsort_2[0]
+
+
+    elif slope > -180 and slope < 180:
+        # Punkt 1 xmin und ymin /
+        # dazu werte nach x sortieren
+
+        listsort_2 = sorted(listsort, key=lambda x: (x[0]))
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        # nach y sortieren (absteigend) und den Rang hinzufuegen
+        listsort_2 = sorted(listsort_2, key=lambda x: (x[1]))
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        # Nach Rang sortieren
+        listsort_2 = sorted(listsort_2, key=lambda x: (x[3]))
+        # Erste Koordinate ist oben links
+
+        koordinate1 = listsort_2[0]
+
+        # Punkt2 maxx, ymax
+        # Sortieren nach höchstem x
+        listsort = list_column_zero(listsort, 3)
+
+        listsort_2 = sorted(listsort, key=lambda x: (-x[2]))
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        listsort_2 = sorted(listsort, key=lambda x: (-x[0]))
+        # Dann für jeden Punkt den Rang dazuschrieben
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        # nach y sortieren und den Rang hinzufuegen
+        listsort_2 = sorted(listsort_2, key=lambda x: (-x[1]))
+        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
+        listsort_2 = sorted(listsort_2, key=lambda x: (x[3]))
+        koordinate2 = listsort_2[0]
+
+
+
 
     if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
         distance = sqrt((koordinate2[1] - koordinate1[1])**2 + (koordinate2[0] - koordinate1[0])**2)
-        QgsMessageLog.logMessage(str(distance), 'org_dist')
     elif koordinate2[0] == koordinate1[0]:
         distance = abs(koordinate2[1] - koordinate1[1])
     elif koordinate2[1] == koordinate1[1]:
         distance = abs(koordinate2[0] - koordinate1[0])
 
     return distance
+
+
+def list_column_zero(listsort, column):
+    for points in range(len(listsort)):
+        listsort[points][column] = 0
+    return listsort
+
+def list_add_rowcount_to_column(listsort):
+    for points in range(len(listsort)):
+        listsort[points].append(points)
+    return  listsort
+
+def list_plus_rowcount_to_column(listsort, column):
+    for points in range(len(listsort)):
+        listsort[points][column] = listsort[points][column] + points
+    return listsort
 
 
 class Magic_Box:
@@ -236,7 +304,7 @@ class Magic_Box:
         if method == "surface":
             # calculating the slope, therefore preparing lists
             z_yw = []
-            z_zw =[]
+            z_zw = []
             for i in range(len(coord_proc)):
                 z_yw.append(y_trans[i] - min(y_trans + z_trans))
                 z_zw.append(z_trans[i] - min(y_trans + z_trans))
@@ -306,11 +374,20 @@ class Magic_Box:
         QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance')
         QgsMessageLog.logMessage('Diff. Distance: ' + str(abs(original_distance-new_distance)), 'Distance')
 
-        if abs(original_distance-new_distance) > 0.01:
+
+
+
+        if abs(original_distance - new_distance) > 0.01:
             self.qgisInterface.messageBar().pushMessage("Error",
                                                        "Profile was calculated incorrect (1cm acc.) See Log-Window: " + str(
                                                            str(coord_proc[0][4])),
                                                        level=QgsMessageBar.CRITICAL)
+            QgsMessageLog.logMessage('PR:' + str(coord_proc[0][4]), 'Distance > 1cm')
+            QgsMessageLog.logMessage('slope: ' + str(slope_deg), 'Distance > 1cm')
+            QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance > 1cm')
+            QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance > 1cm')
+            QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance > 1cm')
+            QgsMessageLog.logMessage('Diff. Distance: ' + str(abs(original_distance - new_distance)), 'Distance > 1cm')
         return coord_trans
 
     #CHANGE NEW
