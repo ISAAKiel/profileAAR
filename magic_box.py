@@ -58,7 +58,7 @@ def calculate_distance_new(coord_proc):
     koordinate1 = listsort_x[0]
 
     if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
-        distance = sqrt((koordinate2[0] - koordinate1[0]) ** 2 + (koordinate2[1] - koordinate1[1]) ** 2)
+        distance = sqrt((koordinate2[0] - koordinate1[0]) ** 2 + (koordinate2[1] - koordinate1[1]) ** 2 + (koordinate2[2] - koordinate1[2]) ** 2)
     elif koordinate2[0] == koordinate1[0]:
         distance = abs(koordinate2[1] - koordinate1[1])
     elif koordinate2[1] == koordinate1[1]:
@@ -144,7 +144,7 @@ def calculate_distance_org(coord_proc, slope):
 
 
     if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
-        distance = sqrt((koordinate2[1] - koordinate1[1])**2 + (koordinate2[0] - koordinate1[0])**2)
+        distance = sqrt((koordinate2[1] - koordinate1[1])**2 + (koordinate2[0] - koordinate1[0])**2 + (koordinate2[2] - koordinate1[2])**2)
     elif koordinate2[0] == koordinate1[0]:
         distance = abs(koordinate2[1] - koordinate1[1])
     elif koordinate2[1] == koordinate1[1]:
