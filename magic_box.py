@@ -36,10 +36,23 @@ def calculate_distance_new(coord_proc):
     listsort_x = sorted(coord_proc, key=lambda x: (x[0]))
     # Dann für jeden Punkt den Rang dazuschrieben
     list_add_rowcount_to_column(listsort_x)
+    #testgeloet
+    teststring = ""
+    for value in listsort_x:
+        teststring += str(value) + ", "
+
+    QgsMessageLog.logMessage('CalcDistNew: listsort_X1' + teststring)
+    # ende
 
     # nach y sortieren und den Rang hinzufuegen
     listsort_x = sorted(listsort_x, key=lambda x: (x[1]))
     list_plus_rowcount_to_column(listsort_x, 3)
+    #testgeloet
+    teststring = ""
+    for value in listsort_x:
+        teststring += str(value) + ", "
+    QgsMessageLog.logMessage('CalcDistNew: listsort_X2' + teststring)
+    #ende
 
     # jetzt die liste nach Rang sortieren
     # die Werte mit dem höchsten Rang sind die oben.
