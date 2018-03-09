@@ -300,6 +300,8 @@ class profileAAR:
 
             coord_trans = []
             height_points = []
+            outer_points_org = []
+            outer_points_proc = []
             for i in range(len(profile_names)):
                 # instantiate a temporary list for a single profile
                 coord_proc = []
@@ -335,6 +337,8 @@ class profileAAR:
                 #CHANGE If checked, the upper right poitn has to be exportet as point
                 if height == True:
                     height_points.append(magicbox.height_points(coord_height_list))
+                    outer_points_org.append(magicbox.outer_profile_points(coord_proc))
+                    outer_points_proc.append(magicbox.outer_profile_points((coord_height_list)))
             
             '''Export the data'''
             #For exporting we need the data, the path and the crs of the input data
@@ -342,6 +346,8 @@ class profileAAR:
             #If points are checked, export them #CHANGE
             if height == True:
                 export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
+                export.export_outer_profile_points_original(outer_points_org, self.dlg.outputPath.text(), selectedLayer.crs())
+                export.export_outer_profile_points_proc(outer_points_proc, self.dlg.outputPath.text(), selectedLayer.crs())
             #Load the file to qgis automaticly
             layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
             #CHANGE

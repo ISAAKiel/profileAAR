@@ -84,4 +84,49 @@ class Export:
             del writer
 
 
+    def export_outer_profile_points_original(self, coords, filename, coordinate_system):
+
+        export_fields = QgsFields()
+        export_fields.append(QgsField("org_z", QVariant.String))
+        filename = filename.split(".shp")[0]
+        filename = filename + "_outer_profile_points_org.shp"
+
+        writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QGis.WKBPoint, coordinate_system,
+                                     "ESRI Shapefile")
+        if writer.hasError() != QgsVectorFileWriter.NoError:
+            print "Error when creating shapefile: "
+        # CHANGE
+        export_feature = QgsFeature()
+        for x in range(len(coords)):
+            for i in range(len(coords[x])):
+                export_feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(coords[x][i][0], coords[x][i][1])))
+                # TODO Werte runden auf drei nachkommastellen
+                export_feature.setAttributes([str(coords[x][i][3])])
+                writer.addFeature(export_feature)
+        del writer
+
+    def export_outer_profile_points_proc(self, coords, filename, coordinate_system):
+
+        export_fields = QgsFields()
+        export_fields.append(QgsField("org_z", QVariant.String))
+        filename = filename.split(".shp")[0]
+        filename = filename + "_outer_profile_points_proc.shp"
+
+        writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QGis.WKBPoint, coordinate_system,
+                                     "ESRI Shapefile")
+        if writer.hasError() != QgsVectorFileWriter.NoError:
+            print "Error when creating shapefile: "
+        # CHANGE
+        export_feature = QgsFeature()
+        for x in range(len(coords)):
+            for i in range(len(coords[x])):
+                export_feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(coords[x][i][0], coords[x][i][2])))
+                # TODO Werte runden auf drei nachkommastellen
+                export_feature.setAttributes([str(coords[x][i][3])])
+                writer.addFeature(export_feature)
+        del writer
+
+
+
+
 

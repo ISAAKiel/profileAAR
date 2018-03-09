@@ -417,7 +417,23 @@ class Magic_Box:
                 height_point = coord_trans[i]
         return height_point
 
-
+    def outer_profile_points(self, coords):
+        # get the two points with the highest and lowest xvalue
+        coords_sorted = sorted(coords, key=lambda x: (x[0]))
+        two_lowest = coords_sorted[:2]
+        two_highest = coords_sorted[-2:]
+        QgsMessageLog.logMessage("two_lowest: " + str(two_lowest), 'MyPlugin')
+        QgsMessageLog.logMessage("two_highest: " + str(two_highest), 'MyPlugin')
+        #check which one of the points has the higher z value and write it into a variable
+        if two_lowest[1][2] > two_lowest[0][2]:
+            lowestx = two_lowest[1]
+        else:
+            lowestx = two_lowest[0]
+        if two_highest[1][2] > two_highest[0][2]:
+            highestx = two_highest[1]
+        else:
+            highestx = two_highest[0]
+        return [lowestx, highestx]
 
 
     def calculateResidual(self, linegress, array1, array2, prnr):
