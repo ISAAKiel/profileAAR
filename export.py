@@ -73,13 +73,11 @@ class Export:
             #CHANGE
             export_feature = QgsFeature()
             for x in range(len(coord_trans)):
-                QgsMessageLog.logMessage(str(coord_trans[x]), 'MyPlugin')
+                # QgsMessageLog.logMessage(str(coord_trans[x]), 'MyPlugin')
                 export_feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(coord_trans[x][0], coord_trans[x][2])))
                 #TODO Werte runden auf drei nachkommastellen
                 export_feature.setAttributes([str(coord_trans[x][3]), str(coord_trans[x][4])])
                 writer.addFeature(export_feature)
-
-
 
             del writer
 

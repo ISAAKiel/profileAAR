@@ -28,6 +28,7 @@ def testplot(self, xw, yw, linegress, prnr):
         plt.legend()
         plt.show()
 
+
 def calculate_distance_new(coord_proc):
     # x y z (rang)
 
@@ -275,7 +276,7 @@ class Magic_Box:
         elif slope == 0 and coord_proc[0][3] == "N":
             slope_deg = 180
 
-        original_distance = calculate_distance_org(rangcheck_orginal, slope_deg)
+        #original_distance = calculate_distance_org(rangcheck_orginal, slope_deg)
 
 
         #if slope > 0 and slope < 1 and coord_proc[0][3] in ["E"]:
@@ -380,10 +381,22 @@ class Magic_Box:
                 rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
 
         #change
+
+        # check the distances of the outter points from the old points and the converted ones
+        original_outer_points = self.outer_profile_points(coord_proc)
+        original_distance = self.calculate_distance_from_outer_profile_points_orgiginal(original_outer_points)
+
+        new_outer_points = self.outer_profile_points(coord_trans)
+        new_distance = self.calculate_distance_from_outer_profile_points_proc(new_outer_points)
+
+
+
+
+
         QgsMessageLog.logMessage('PR:' + str(coord_proc[0][4]), 'Distance')
-        QgsMessageLog.logMessage('slope: ' + str(slope_deg), 'Distance')
+        #QgsMessageLog.logMessage('slope: ' + str(slope_deg), 'Distance')
         QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance')
-        new_distance = calculate_distance_new(rangcheck_trans)
+        #new_distance = calculate_distance_new(rangcheck_trans)
         QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance')
         QgsMessageLog.logMessage('Diff. Distance: ' + str(abs(original_distance-new_distance)), 'Distance')
 
@@ -397,7 +410,6 @@ class Magic_Box:
                                                        level=QgsMessageBar.CRITICAL)
             QgsMessageLog.logMessage('PR:' + str(coord_proc[0][4]), 'Distance > 1cm')
             QgsMessageLog.logMessage('slope: ' + str(slope_deg), 'Distance > 1cm')
-            QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance > 1cm')
             QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance > 1cm')
             QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance > 1cm')
             QgsMessageLog.logMessage('Diff. Distance: ' + str(abs(original_distance - new_distance)), 'Distance > 1cm')
@@ -422,8 +434,8 @@ class Magic_Box:
         coords_sorted = sorted(coords, key=lambda x: (x[0]))
         two_lowest = coords_sorted[:2]
         two_highest = coords_sorted[-2:]
-        QgsMessageLog.logMessage("two_lowest: " + str(two_lowest), 'MyPlugin')
-        QgsMessageLog.logMessage("two_highest: " + str(two_highest), 'MyPlugin')
+        #QgsMessageLog.logMessage("two_lowest: " + str(two_lowest), 'MyPlugin')
+        #QgsMessageLog.logMessage("two_highest: " + str(two_highest), 'MyPlugin')
         #check which one of the points has the higher z value and write it into a variable
         if two_lowest[1][2] > two_lowest[0][2]:
             lowestx = two_lowest[1]
@@ -434,6 +446,14 @@ class Magic_Box:
         else:
             highestx = two_highest[0]
         return [lowestx, highestx]
+
+    def calculate_distance_from_outer_profile_points_orgiginal(self, outer_points):
+        distance = sqrt((outer_points[1][0]-outer_points[0][0])**2 + (outer_points[1][1]-outer_points[0][1])**2)
+        return distance
+
+    def calculate_distance_from_outer_profile_points_proc(self, outer_points):
+        distance = sqrt((outer_points[1][0]-outer_points[0][0])**2 + (outer_points[1][2]-outer_points[0][2])**2)
+        return distance
 
 
     def calculateResidual(self, linegress, array1, array2, prnr):
