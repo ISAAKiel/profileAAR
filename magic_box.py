@@ -9,7 +9,7 @@ from numpy import mean
 from errorhandling import ErrorHandler
 import matplotlib.pyplot as plt
 
-
+'''
 def testplot(self, xw, yw, linegress, prnr):
     if (prnr == "8" or prnr == "53" or prnr == "37" or prnr == "1"):
         intercept = linegress[1]
@@ -165,7 +165,7 @@ def calculate_distance_org(coord_proc, slope):
         distance = abs(koordinate2[0] - koordinate1[0])
 
     return distance
-
+'''
 
 def list_column_zero(listsort, column):
     for points in range(len(listsort)):
