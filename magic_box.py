@@ -197,6 +197,7 @@ class Magic_Box:
         z_coord_proc = []
         selection_proc = []
         profilnr_proc =[]
+        id_proc = []
         rangcheck_orginal = []
         # write the x and v values in the corresponding lists
         for i in range(len(coord_proc)):
@@ -206,6 +207,7 @@ class Magic_Box:
             #CHANGE
             selection_proc.append(coord_proc[i][5])
             profilnr_proc.append(coord_proc[i][4])
+            id_proc.append(coord_proc[i][6])
             tmplist = []
             for k in range(len(coord_proc[i])):
                 tmplist.append(coord_proc[i][k])
@@ -311,7 +313,7 @@ class Magic_Box:
         # build the finished list
         for i in range(len(coord_proc)):
             #CHANGE
-            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
+            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i], id_proc[i]])
             rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
       
         #If the aim is to get the view of the surface, the x-axis has to be rotated aswell
@@ -351,7 +353,7 @@ class Magic_Box:
             rangcheck_trans = []
             for i in range(len(coord_proc)):
                 # CHANGE
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i],id_proc[i]])
                 rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
 
         # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
@@ -377,7 +379,7 @@ class Magic_Box:
             rangcheck_trans = []
             for i in range(len(coord_proc)):
                 # CHANGE
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i]])
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i], id_proc[i]])
                 rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
 
         #change
@@ -386,7 +388,11 @@ class Magic_Box:
         original_outer_points = self.outer_profile_points(coord_proc)
         original_distance = self.calculate_distance_from_outer_profile_points_orgiginal(original_outer_points)
 
-        new_outer_points = self.outer_profile_points(coord_trans)
+        new_outer_points = []
+        for point in coord_trans:
+            QgsMessageLog.logMessage('PUUUNKT' + str(point[7]))
+            if point[7] == original_outer_points[0][6] or point[7] == original_outer_points[1][6]:
+                new_outer_points.append(point)
         new_distance = self.calculate_distance_from_outer_profile_points_proc(new_outer_points)
 
 

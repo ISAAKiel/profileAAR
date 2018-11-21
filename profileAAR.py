@@ -279,6 +279,8 @@ class profileAAR:
             height = False
             if self.dlg.hightBox.isChecked():
                 height = True
+
+            point_id = 0
             for feature in iter:
                 # retrieve every feature with its geometry and attributes
                 # fetch geometry
@@ -289,7 +291,9 @@ class profileAAR:
                 y = round(geom.asPoint().y(), 3)
                 #write coordinates and attributes (view, profile and z) in a list
                 # TODO: Use dictinary or object
-                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()], feature[self.dlg.profileCombo.currentText()], feature[self.dlg.useCombo.currentText()]])
+                #add an ID to each point
+                point_id += 1
+                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()], feature[self.dlg.profileCombo.currentText()], feature[self.dlg.useCombo.currentText()], point_id])
                 #write a list of profilenames (unique entries)
                 if feature[self.dlg.profileCombo.currentText()] not in profile_names:
                     profile_names.append(feature[self.dlg.profileCombo.currentText()])
@@ -337,8 +341,8 @@ class profileAAR:
                 #CHANGE If checked, the upper right poitn has to be exportet as point
                 if height == True:
                     height_points.append(magicbox.height_points(coord_height_list))
-                    outer_points_org.append(magicbox.outer_profile_points(coord_proc))
-                    outer_points_proc.append(magicbox.outer_profile_points((coord_height_list)))
+                    #outer_points_org.append(magicbox.outer_profile_points(coord_proc))
+                    #outer_points_proc.append(magicbox.outer_profile_points((coord_height_list)))
             
             '''Export the data'''
             #For exporting we need the data, the path and the crs of the input data
@@ -346,8 +350,8 @@ class profileAAR:
             #If points are checked, export them #CHANGE
             if height == True:
                 export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
-                export.export_outer_profile_points_original(outer_points_org, self.dlg.outputPath.text(), selectedLayer.crs())
-                export.export_outer_profile_points_proc(outer_points_proc, self.dlg.outputPath.text(), selectedLayer.crs())
+                #export.export_outer_profile_points_original(outer_points_org[:2], self.dlg.outputPath.text(), selectedLayer.crs())
+                #export.export_outer_profile_points_proc(outer_points_proc[:2], self.dlg.outputPath.text(), selectedLayer.crs())
             #Load the file to qgis automaticly
             layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
             #CHANGE
