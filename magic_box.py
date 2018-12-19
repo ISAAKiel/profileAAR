@@ -182,6 +182,21 @@ def list_plus_rowcount_to_column(listsort, column):
         listsort[points][column] = listsort[points][column] + points
     return listsort
 
+#change
+def check_original_steigung(original_outer_points):
+    # Check the Slope of the outer points, if it´s too close to a S-N orientation rotate the points
+    slope_original_outer_points = (original_outer_points[1][1] - original_outer_points[0][1]) / (
+                original_outer_points[1][0] - original_outer_points[0][0])
+    if slope_original_outer_points > 0:
+        steigung_original_outer_points = atan(slope_original_outer_points)
+        return steigung_original_outer_points
+    elif slope_original_outer_points < 0:
+        steigung_original_outer_points = atan(slope_original_outer_points) + 180
+        return steigung_original_outer_points
+    else:
+        steigung_original_outer_points = 90
+        return steigung_original_outer_points
+
 
 class Magic_Box:
     def __init__(self, qgisInterface):
@@ -394,8 +409,6 @@ class Magic_Box:
             if point[7] == original_outer_points[0][6] or point[7] == original_outer_points[1][6]:
                 new_outer_points.append(point)
         new_distance = self.calculate_distance_from_outer_profile_points_proc(new_outer_points)
-
-
 
 
 
