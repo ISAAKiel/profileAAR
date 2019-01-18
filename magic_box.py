@@ -9,26 +9,27 @@ from numpy import mean
 from errorhandling import ErrorHandler
 import matplotlib.pyplot as plt
 
-'''
+
 def testplot(self, xw, yw, linegress, prnr):
-    if (prnr == "8" or prnr == "53" or prnr == "37" or prnr == "1"):
-        intercept = linegress[1]
-        slope = linegress[0]
-        neu_y = []
-        neu_x = []
+     QgsMessageLog.logMessage(str(prnr), 'Test1111')
 
-        for coords in range(len(xw)):
-            neu_y.append(slope * xw[coords] + intercept)
-        for coords in range(len(yw)):
-            neu_x.append(slope * yw[coords] + intercept)
-        plt.plot(xw,yw, 'o', label='original data PR' + str(prnr))
-        plt.plot(xw, neu_y, 'r', label='fitted line_1')
-        plt.plot(neu_x, yw, 'b', label='fitted line_2')
-        #plt.plot(xw, intercept + slope * xw, 'o', label='fitted points')
-        plt.legend()
-        plt.show()
+     QgsMessageLog.logMessage('Test' , 'Test1111')
+     intercept = linegress[1]
+     slope = linegress[0]
+     neu_y = []
+     neu_x = []
+     for coords in range(len(xw)):
+         neu_y.append(slope * xw[coords] + intercept)
+     for coords in range(len(yw)):
+         neu_x.append(slope * yw[coords] + intercept)
+     plt.plot(xw,yw, 'o', label='original data PR' + str(prnr))
+     plt.plot(xw, neu_y, 'r', label='fitted line_1')
+     plt.plot(neu_x, yw, 'b', label='fitted line_2')
+     '''plt.plot(xw, intercept + slope * xw, 'o', label='fitted points')'''
+     plt.legend()
+     plt.show()
 
-
+'''
 def calculate_distance_new(coord_proc):
     # x y z (rang)
 
@@ -219,10 +220,12 @@ class Magic_Box:
             x_coord_proc.append(coord_proc[i][0])
             y_coord_proc.append(coord_proc[i][1])
             z_coord_proc.append(coord_proc[i][2])
-            #CHANGE
+
             selection_proc.append(coord_proc[i][5])
             profilnr_proc.append(coord_proc[i][4])
             id_proc.append(coord_proc[i][6])
+
+
             tmplist = []
             for k in range(len(coord_proc[i])):
                 tmplist.append(coord_proc[i][k])
@@ -251,17 +254,40 @@ class Magic_Box:
             xw_check.append(x_coord_proc[x] - min(x_coord_proc))
             yw_check.append(y_coord_proc[x] - min(y_coord_proc))
 
+        
         #QgsMessageLog.logMessage(str(xw), 'MyPlugin')
         #CHANGE
         #There is a problem with lingress if the points are nearly N-S oriented
         #To solve this, it is nessecary to change the input values of the regression
         # Calculate the regression for both directions
+
+        #Steigung des noerdlichsten zum suedlichsten Punkt ermitteln
+        x1 =  max(x_coord_proc)
+        x2 =  min(x_coord_proc)
+        y1 = 0
+        y2 = 0
+
+        #Die dazugehoerigen ywerte ermitteln
+        for x in range(len(coord_proc)):
+            if(coord_proc[x][0] == x1):
+                y1 = coord_proc[x][1]
+            if (coord_proc[x][0] == x2):
+                y2 = coord_proc[x][1]
+
+
+
         linegress_x = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
         linegress_y = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
+
+
         # get the sum of residuals for both direction
         #We like to use the regression with less sum of the residuals
         res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw), profilnr_proc[0])
         res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw), profilnr_proc[0])
+        QgsMessageLog.logMessage('PR' + str(profilnr_proc),'gres')
+        QgsMessageLog.logMessage('x'+str(res_x),'gres')
+        QgsMessageLog.logMessage('y' + str(res_y), 'gres')
+
         if isnan(res_y) or res_x >= res_y:
             linegress = linegress_x
             slope = linegress[0]
@@ -274,6 +300,8 @@ class Magic_Box:
                                                         level=QgsMessageBar.CRITICAL)
             sys.exitfunc()
 
+        if int(profilnr_proc[0]) < 9:
+            testplot(self, xw, yw, linegress, profilnr_proc[0])
 
 
         #CHANGE Check the distance with all points
@@ -292,17 +320,6 @@ class Magic_Box:
             slope_deg = 180 - ((atan(slope) * 180) / pi)
         elif slope == 0 and coord_proc[0][3] == "N":
             slope_deg = 180
-
-        #original_distance = calculate_distance_org(rangcheck_orginal, slope_deg)
-
-
-        #if slope > 0 and slope < 1 and coord_proc[0][3] in ["E"]:
-        #    slope_deg = 90
-        #    QgsMessageLog.logMessage(str(profilnr_proc[0]), 'sonderfall')
-        #if (profilnr_proc[0] == '8' or profilnr_proc[0] == '37' ):
-        #    QgsMessageLog.logMessage(str(profilnr_proc[0]), 'steigung')
-        #    QgsMessageLog.logMessage(str(slope), 'steigung')
-        #    QgsMessageLog.logMessage(str((atan(slope) * 180) / pi), 'steigung')
 
         # calculate the point of rotation
         center_x = mean(x_coord_proc)
