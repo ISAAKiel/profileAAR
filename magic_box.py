@@ -10,163 +10,97 @@ from errorhandling import ErrorHandler
 import matplotlib.pyplot as plt
 
 
-def testplot(self, xw, yw, linegress, prnr):
-     QgsMessageLog.logMessage(str(prnr), 'Test1111')
 
-     QgsMessageLog.logMessage('Test' , 'Test1111')
-     intercept = linegress[1]
-     slope = linegress[0]
-     neu_y = []
-     neu_x = []
-     for coords in range(len(xw)):
-         neu_y.append(slope * xw[coords] + intercept)
-     for coords in range(len(yw)):
-         neu_x.append(slope * yw[coords] + intercept)
-     plt.plot(xw,yw, 'o', label='original data PR' + str(prnr))
-     plt.plot(xw, neu_y, 'r', label='fitted line_1')
-     plt.plot(neu_x, yw, 'b', label='fitted line_2')
-     '''plt.plot(xw, intercept + slope * xw, 'o', label='fitted points')'''
-     plt.legend()
-     plt.show()
-
-'''
-def calculate_distance_new(coord_proc):
-    # x y z (rang)
-
-    # Ranking für jeden Punkt ermitteln
-    # dazu werte nach x sortieren
-    listsort_x = sorted(coord_proc, key=lambda x: (x[0]))
-    # Dann für jeden Punkt den Rang dazuschrieben
-    list_add_rowcount_to_column(listsort_x)
-    #testgeloet
-    teststring = ""
-    for value in listsort_x:
-        teststring += str(value) + ", "
-
-    QgsMessageLog.logMessage('CalcDistNew: listsort_X1' + teststring)
-    # ende
-
-    # nach y sortieren und den Rang hinzufuegen
-    listsort_x = sorted(listsort_x, key=lambda x: (x[1]))
-    list_plus_rowcount_to_column(listsort_x, 3)
-    #testgeloet
-    teststring = ""
-    for value in listsort_x:
-        teststring += str(value) + ", "
-    QgsMessageLog.logMessage('CalcDistNew: listsort_X2' + teststring)
-    #ende
-
-    # jetzt die liste nach Rang sortieren
-    # die Werte mit dem höchsten Rang sind die oben.
-    # Falls zwei Werte den gleichen Rang haben, ist es der mit dem höheren z wert
-    listsort_x = sorted(listsort_x, key=lambda x: (-x[3], x[2]))
-    koordinate2 = listsort_x[0]
-
-    listsort_x = sorted(coord_proc, key=lambda x: (-x[0]))
-    # Dann für jeden Punkt den Rang dazuschrieben
-    list_add_rowcount_to_column(listsort_x)
-    # nach y sortieren und den Rang hinzufuegen
-    listsort_x = sorted(listsort_x, key=lambda x: (x[1]))
-    list_plus_rowcount_to_column(listsort_x, 4)
-
-    listsort_x = sorted(listsort_x, key=lambda x: (-x[4], x[2]))
-    koordinate1 = listsort_x[0]
-
-    if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
-        distance = sqrt((koordinate2[0] - koordinate1[0]) ** 2 + (koordinate2[1] - koordinate1[1]) ** 2 + (koordinate2[2] - koordinate1[2]) ** 2)
-    elif koordinate2[0] == koordinate1[0]:
-        distance = abs(koordinate2[1] - koordinate1[1])
-    elif koordinate2[1] == koordinate1[1]:
-        distance = abs(koordinate2[0] - koordinate1[0])
-
-    return distance
+def ns_error_determination(self, xw, yw):
+    # https://www.crashkurs-statistik.de/einfache-lineare-regression/
+    QgsMessageLog.logMessage('xw' + str(xw) , 'error')
+    xStrich = mean(xw)
+    yStrich = mean(yw)
+    QgsMessageLog.logMessage('xStrich' + str(xStrich) , 'error')
+    QgsMessageLog.logMessage('yStrich' + str(yStrich) , 'error')
+    abzugX = []
+    abzugY = []
 
 
-def calculate_distance_org(coord_proc, slope):
-    # x y z (rang)
+    for i in range(len(xw)):
+        abzugX.append(xw[i] - xStrich)
+        if i > 0 and xw[i] < xw[i-1]:
+            x1Gerade = xw[i]
+        elif i > 0 and xw[i] > xw[i-1]:
+            x2Gerade = xw[i]
+        elif i == 0:
+            x1Gerade = xw[i]
+            x2Gerade = xw[i]
 
-    #Ranking für jeden Punkt ermitteln
-    # dazu werte nach z sortieren
-    listsort = sorted(coord_proc, key=lambda x: (-x[2]))
-    # Dann für jeden Punkt den Rang dazuschrieben
-    list_add_rowcount_to_column(listsort)
-
-    koordinate1 = []
-    koordinate2 = []
-
-    if slope >= 180 or slope <= -180:
-        #Punkt 1 xmin und ymax \
-        #dazu werte nach x sortieren
-
-        listsort_1 = sorted(listsort, key=lambda x: (x[0]))
-        listsort_1 = list_plus_rowcount_to_column(listsort_1, 3)
-        #nach y sortieren (absteigend) und den Rang hinzufuegen
-        listsort_1 = sorted(listsort_1, key=lambda x: (-x[1]))
-        listsort_1 = list_plus_rowcount_to_column(listsort_1, 3)
-        #Nach Rang sortieren
-        listsort_1 = sorted(listsort_1, key=lambda x: (x[3]))
-        #Erste Koordinate ist oben links
-
-        koordinate1 = listsort_1[0]
-
-        #Punkt2 xmax, ymin
-        #Sortieren nach höchstem x
-        listsort = list_column_zero(listsort, 3)
-
-        listsort_2 = sorted(listsort, key=lambda x: (-x[2]))
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        listsort_2 = sorted(listsort, key=lambda x: (-x[0]))
-        # Dann für jeden Punkt den Rang dazuschrieben
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        # nach y sortieren und den Rang hinzufuegen
-        listsort_2 = sorted(listsort_2, key=lambda x: (x[1]))
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        listsort_2 = sorted(listsort_2, key=lambda x: (x[3]))
-        koordinate2 = listsort_2[0]
+    QgsMessageLog.logMessage('x1Gerade' + str(x1Gerade) , 'error')
+    QgsMessageLog.logMessage('x2Gerade' + str(x2Gerade) , 'error')
+    QgsMessageLog.logMessage('abzugX' + str(abzugX) , 'error')
+    for i in range(len(yw)):
+        abzugY.append(yw[i] - yStrich)
+        if i > 0 and yw[i] < yw[i-1]:
+            ymin = yw[i]
+            ymin_postition = i
+        elif i > 0 and yw[i] > yw[i-1]:
+            ymax = yw[i]
+            ymax_postition = i
+        elif i == 0:
+            ymin = yw[i]
+            ymin_postition = i
+            ymax = yw[i]
+            ymax_postition = i
+    QgsMessageLog.logMessage('ymax' + str(ymax) , 'error')
+    QgsMessageLog.logMessage('ymin' + str(ymin) , 'error')
+    QgsMessageLog.logMessage('abzugY' + str(abzugY) , 'error')
+    QgsMessageLog.logMessage('ymin_postition' + str(ymin_postition) , 'error')
+    QgsMessageLog.logMessage('ymax_postition' + str(ymax_postition) , 'error')
 
 
-    elif slope > -180 and slope < 180:
-        # Punkt 1 xmin und ymin /
-        # dazu werte nach x sortieren
+    abzugXsum =  0
+    abzugXsum2 = 0
 
-        listsort_2 = sorted(listsort, key=lambda x: (x[0]))
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        # nach y sortieren (absteigend) und den Rang hinzufuegen
-        listsort_2 = sorted(listsort_2, key=lambda x: (x[1]))
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        # Nach Rang sortieren
-        listsort_2 = sorted(listsort_2, key=lambda x: (x[3]))
-        # Erste Koordinate ist oben links
 
-        koordinate1 = listsort_2[0]
+    for i in range(len(abzugX)):
+        abzugXsum = abzugXsum + abzugX[i] * abzugY[i]
+        abzugXsum2 = abzugXsum2 + abzugX[i] * abzugX[i]
 
-        # Punkt2 maxx, ymax
-        # Sortieren nach höchstem x
-        listsort = list_column_zero(listsort, 3)
 
-        listsort_2 = sorted(listsort, key=lambda x: (-x[2]))
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        listsort_2 = sorted(listsort, key=lambda x: (-x[0]))
-        # Dann für jeden Punkt den Rang dazuschrieben
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        # nach y sortieren und den Rang hinzufuegen
-        listsort_2 = sorted(listsort_2, key=lambda x: (-x[1]))
-        listsort_2 = list_plus_rowcount_to_column(listsort_2, 3)
-        listsort_2 = sorted(listsort_2, key=lambda x: (x[3]))
-        koordinate2 = listsort_2[0]
+    QgsMessageLog.logMessage('abzugXsum' + str(abzugXsum) , 'error')
+    QgsMessageLog.logMessage('abzugXsum2' + str(abzugXsum2) , 'error')
+
+    b = abzugXsum / abzugXsum2
+    a = yStrich - b * xStrich
+
+    QgsMessageLog.logMessage('a' + str(a) , 'error')
+    QgsMessageLog.logMessage('b' + str(b) , 'error')
+
+    y1Gerade = a + b * x1Gerade
+    y2Gerade = a + b * x2Gerade
+
+    QgsMessageLog.logMessage('y1Gerade' + str(y1Gerade) , 'error')
+    QgsMessageLog.logMessage('y2Gerade' + str(y2Gerade) , 'error')
+
+    steigung_neu = atan((y2Gerade - y1Gerade) / (x2Gerade - x1Gerade)) * 180 / pi
+    #Falls das Profil perfekt o-w ausgerichtet ist, ist alles ok
+    try:
+        steigung_alt = atan((ymax - ymin) / (xw[ymax_postition] - xw[ymin_postition])) * 180 / pi
+    except ZeroDivisionError:
+        steigung_alt = steigung_neu
+
+    QgsMessageLog.logMessage('ymax - ymin' + str(ymax - ymin) , 'error1')
+    QgsMessageLog.logMessage('xw[ymax_postition] - xw[ymin_postition]' + str(xw[ymax_postition] - xw[ymin_postition]) , 'error1')
+
+    QgsMessageLog.logMessage('steigung_neu' + str(steigung_neu) , 'error')
+    QgsMessageLog.logMessage('steigung_alt' + str(steigung_alt) , 'error')
 
 
 
+    if steigung_neu > (steigung_alt + steigung_alt / 4) or steigung_neu < (steigung_alt - steigung_alt / 4):
+        return bool(True)
+    else:
+        return bool(False)
 
-    if koordinate2[0] != koordinate1[0] and koordinate2[1] != koordinate1[1]:
-        distance = sqrt((koordinate2[1] - koordinate1[1])**2 + (koordinate2[0] - koordinate1[0])**2 + (koordinate2[2] - koordinate1[2])**2)
-    elif koordinate2[0] == koordinate1[0]:
-        distance = abs(koordinate2[1] - koordinate1[1])
-    elif koordinate2[1] == koordinate1[1]:
-        distance = abs(koordinate2[0] - koordinate1[0])
 
-    return distance
-'''
+
 
 def list_column_zero(listsort, column):
     for points in range(len(listsort)):
@@ -261,18 +195,7 @@ class Magic_Box:
         #To solve this, it is nessecary to change the input values of the regression
         # Calculate the regression for both directions
 
-        #Steigung des noerdlichsten zum suedlichsten Punkt ermitteln
-        x1 =  max(x_coord_proc)
-        x2 =  min(x_coord_proc)
-        y1 = 0
-        y2 = 0
 
-        #Die dazugehoerigen ywerte ermitteln
-        for x in range(len(coord_proc)):
-            if(coord_proc[x][0] == x1):
-                y1 = coord_proc[x][1]
-            if (coord_proc[x][0] == x2):
-                y2 = coord_proc[x][1]
 
 
 
@@ -288,6 +211,11 @@ class Magic_Box:
         QgsMessageLog.logMessage('x'+str(res_x),'gres')
         QgsMessageLog.logMessage('y' + str(res_y), 'gres')
 
+        QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Pr_aktuell')
+
+        ns_fehler_vorhanden = ns_error_determination(self, x_coord_proc, y_coord_proc)
+        if ns_fehler_vorhanden:
+            QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Kackprofil')
         if isnan(res_y) or res_x >= res_y:
             linegress = linegress_x
             slope = linegress[0]
@@ -300,8 +228,8 @@ class Magic_Box:
                                                         level=QgsMessageBar.CRITICAL)
             sys.exitfunc()
 
-        if int(profilnr_proc[0]) < 9:
-            testplot(self, xw, yw, linegress, profilnr_proc[0])
+
+
 
 
         #CHANGE Check the distance with all points
