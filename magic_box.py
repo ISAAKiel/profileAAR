@@ -10,10 +10,48 @@ from errorhandling import ErrorHandler
 import matplotlib.pyplot as plt
 
 
+def rotation (self, coord_proc, slope_deg):
+    x_coord_proc = listToList(self, coord_proc, 0)
+    y_coord_proc = listToList(self, coord_proc, 1)
+    z_coord_proc = listToList(self, coord_proc, 2)
 
-def ns_error_determination(self, xw, yw):
+    # calculate the point of rotation
+    center_x = mean(x_coord_proc)
+    center_y = mean(y_coord_proc)
+    # QgsMessageLog.logMessage(str(coord_proc[0][4]) + " " + str(center_x) + " " + str(center_y), 'MyPlugin')
+
+    # instantiate lists for the transformed coordinates
+    x_trans = []
+    y_trans = []
+    z_trans = []
+
+
+    for i in range(len(coord_proc)):
+        x_trans.append(
+            center_x + (coord_proc[i][0] - center_x) * cos(slope_deg / 180 * pi) - sin(slope_deg / 180 * pi) * (
+                        coord_proc[i][1] - center_y))
+        y_trans.append(
+            center_y + (coord_proc[i][0] - center_x) * sin(slope_deg / 180 * pi) + (coord_proc[i][1] - center_y) * cos(
+                slope_deg / 180 * pi))
+        z_trans.append(coord_proc[i][2])
+
+
+    return {'x_trans':x_trans, 'y_trans':y_trans ,'z_trans':z_trans }
+
+def listToList (self, coord_proc, position):
+    newList = []
+    for i in range(len(coord_proc)):
+        newList.append(coord_proc[i][position])
+    return newList
+
+def ns_error_determination(self, coord_proc):
+
+    xw = listToList(self, coord_proc, 0)
+    yw = listToList(self, coord_proc, 1)
+
     # https://www.crashkurs-statistik.de/einfache-lineare-regression/
     QgsMessageLog.logMessage('xw' + str(xw) , 'error')
+    QgsMessageLog.logMessage('yw' + str(yw) , 'error')
     xStrich = mean(xw)
     yStrich = mean(yw)
     QgsMessageLog.logMessage('xStrich' + str(xStrich) , 'error')
@@ -35,12 +73,16 @@ def ns_error_determination(self, xw, yw):
     QgsMessageLog.logMessage('x1Gerade' + str(x1Gerade) , 'error')
     QgsMessageLog.logMessage('x2Gerade' + str(x2Gerade) , 'error')
     QgsMessageLog.logMessage('abzugX' + str(abzugX) , 'error')
+
     for i in range(len(yw)):
-        abzugY.append(yw[i] - yStrich)
-        if i > 0 and yw[i] < yw[i-1]:
+        QgsMessageLog.logMessage('ps' + str(i), 'yy')
+        QgsMessageLog.logMessage('yyy' + str(yw[i]), 'yy')
+
+        if i > 0 and yw[i] < ymin:
             ymin = yw[i]
             ymin_postition = i
-        elif i > 0 and yw[i] > yw[i-1]:
+        elif i > 0 and yw[i] > ymax:
+
             ymax = yw[i]
             ymax_postition = i
         elif i == 0:
@@ -48,6 +90,9 @@ def ns_error_determination(self, xw, yw):
             ymin_postition = i
             ymax = yw[i]
             ymax_postition = i
+        abzugY.append(yw[i] - yStrich)
+
+
     QgsMessageLog.logMessage('ymax' + str(ymax) , 'error')
     QgsMessageLog.logMessage('ymin' + str(ymin) , 'error')
     QgsMessageLog.logMessage('abzugY' + str(abzugY) , 'error')
@@ -81,6 +126,7 @@ def ns_error_determination(self, xw, yw):
 
     steigung_neu = atan((y2Gerade - y1Gerade) / (x2Gerade - x1Gerade)) * 180 / pi
     #Falls das Profil perfekt o-w ausgerichtet ist, ist alles ok
+
     try:
         steigung_alt = atan((ymax - ymin) / (xw[ymax_postition] - xw[ymin_postition])) * 180 / pi
     except ZeroDivisionError:
@@ -91,10 +137,12 @@ def ns_error_determination(self, xw, yw):
 
     QgsMessageLog.logMessage('steigung_neu' + str(steigung_neu) , 'error')
     QgsMessageLog.logMessage('steigung_alt' + str(steigung_alt) , 'error')
+    QgsMessageLog.logMessage('steigung_alt round' + str(abs(round(steigung_alt, 0))), 'error')
 
+    pluszehn = abs(steigung_alt) + (abs(steigung_alt) * 10 / 100)
+    minuszehn = abs(steigung_alt) - (abs(steigung_alt) * 10 / 100)
 
-
-    if steigung_neu > (steigung_alt + steigung_alt / 4) or steigung_neu < (steigung_alt - steigung_alt / 4):
+    if abs(steigung_neu) > pluszehn and abs(round(steigung_alt, 0)) != 45 or  abs(steigung_neu) < minuszehn and abs(round(steigung_alt, 0)) != 45:
         return bool(True)
     else:
         return bool(False)
@@ -140,25 +188,35 @@ class Magic_Box:
     def transformation(self, coord_proc, method, direction):
         #initialize the Errorhandler
         errorhandler = ErrorHandler(self)
+        profilnr_proc = listToList(self, coord_proc, 4)
+
+
+        ns_fehler_vorhanden = ns_error_determination(self, coord_proc)
+        if ns_fehler_vorhanden:
+            QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Kackprofil')
+            # Profil um 45 Grad drehen
+            rotationresult = rotation(self, coord_proc, 45)
+            for i in range(len(coord_proc)):
+                coord_proc[i][0] = rotationresult['x_trans'][i]
+                QgsMessageLog.logMessage(str(coord_proc[i][0]), 'x')
+                coord_proc[i][1] = rotationresult['y_trans'][i]
+                QgsMessageLog.logMessage(str(coord_proc[i][1]), 'y')
+                coord_proc[i][2] = rotationresult['z_trans'][i]
+
+        #write the x and v values in the corresponding lists
+
         # instantiate an empty list for the transformed coordinates and other values
         # instantiate lists for the x and y values
-        x_coord_proc = []
-        y_coord_proc = []
-        z_coord_proc = []
-        selection_proc = []
-        profilnr_proc =[]
-        id_proc = []
+        x_coord_proc = listToList(self, coord_proc, 0)
+        y_coord_proc = listToList(self, coord_proc, 1)
+        z_coord_proc = listToList(self, coord_proc, 2)
+        selection_proc = listToList(self, coord_proc, 5)
+
+        id_proc = listToList(self, coord_proc, 6)
         rangcheck_orginal = []
-        # write the x and v values in the corresponding lists
+
+
         for i in range(len(coord_proc)):
-            x_coord_proc.append(coord_proc[i][0])
-            y_coord_proc.append(coord_proc[i][1])
-            z_coord_proc.append(coord_proc[i][2])
-
-            selection_proc.append(coord_proc[i][5])
-            profilnr_proc.append(coord_proc[i][4])
-            id_proc.append(coord_proc[i][6])
-
 
             tmplist = []
             for k in range(len(coord_proc[i])):
@@ -213,9 +271,10 @@ class Magic_Box:
 
         QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Pr_aktuell')
 
-        ns_fehler_vorhanden = ns_error_determination(self, x_coord_proc, y_coord_proc)
-        if ns_fehler_vorhanden:
-            QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Kackprofil')
+
+
+
+
         if isnan(res_y) or res_x >= res_y:
             linegress = linegress_x
             slope = linegress[0]
