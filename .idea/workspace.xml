@@ -2,20 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c7b05d9a-ebbc-4998-b757-141c93dec821" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/messageWrapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/errorhandling.py" beforeDir="false" afterPath="$PROJECT_DIR$/errorhandling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/export.py" beforeDir="false" afterPath="$PROJECT_DIR$/export.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index-en.html" beforeDir="false" afterPath="$PROJECT_DIR$/index-en.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic_box.py" beforeDir="false" afterPath="$PROJECT_DIR$/transformation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metadata.txt" beforeDir="false" afterPath="$PROJECT_DIR$/metadata.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/profileAAR.py" beforeDir="false" afterPath="$PROJECT_DIR$/profileAAR.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profiel_selection.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profiel_selection.dbf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_3_Point_Profile.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_3_Point_Profile.dbf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_Inconsistent_Viewvalue.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_Inconsistent_Viewvalue.dbf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_Not_Cardinal_Direction.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_Not_Cardinal_Direction.dbf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_z_isString.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_z_isString.dbf" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -64,8 +52,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/errorhandling.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="125" column="49" lean-forward="true" selection-start-line="125" selection-start-column="49" selection-end-line="125" selection-end-column="49" />
+            <state relative-caret-position="103">
+              <caret line="135" column="25" lean-forward="true" selection-start-line="135" selection-start-column="25" selection-end-line="135" selection-end-column="25" />
               <folding>
                 <element signature="e#1529#1552#0" expanded="true" />
               </folding>
@@ -116,8 +104,8 @@
         <option value="$PROJECT_DIR$/export.py" />
         <option value="$PROJECT_DIR$/messageWrapper.py" />
         <option value="$PROJECT_DIR$/transformation.py" />
-        <option value="$PROJECT_DIR$/errorhandling.py" />
         <option value="$PROJECT_DIR$/profileAAR.py" />
+        <option value="$PROJECT_DIR$/errorhandling.py" />
       </list>
     </option>
   </component>
@@ -257,8 +245,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/errorhandling.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="125" column="49" lean-forward="true" selection-start-line="125" selection-start-column="49" selection-end-line="125" selection-end-column="49" />
+        <state relative-caret-position="103">
+          <caret line="135" column="25" lean-forward="true" selection-start-line="135" selection-start-column="25" selection-end-line="135" selection-end-column="25" />
           <folding>
             <element signature="e#1529#1552#0" expanded="true" />
           </folding>

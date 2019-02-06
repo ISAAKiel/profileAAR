@@ -26,15 +26,6 @@
 	<img src="./img/view.jpg" alt="View" style="width:250px;height:228px;">
 	<p>If a profile is NE - SW orientated it doesn't matter if you choose E or S.</p>
 	</ul>
-	<p>All profiles and points will be checked for errors that can cause problems while rectifing the images or transforming the points.</p>
-	<ul>
-	<li> all profiles need at least 4 points </li>
-	<li> one profile can have only one direction of view </li>
-	<li> the view directions have to be one of the four cardinal directions</li>
-	<li> the layer has to have an projected CRS</li>
-	<li> the used Points column contains only 0 or 1</li>
-	<p><b>You will get the best results, if your are careful on the excavation and prepare a perfectly straight profile!</b></p>
-	</ul>
 	<p></p>
 	<h2>2. You have the choice</h2>
 	<p>At first you have to select the layer, then the attributes are visible in the <b>z coord</b>, the <b>pr number</b>, the <b>use</b> and the <b>view column</b> boxes. </p>
@@ -71,5 +62,23 @@
   	<p>This value represents the distance of each point to the calculated profile between the points. As higher the value is, as worse is the result.</p>
   	<p>If there is one point not in the line, this one will have a high distance. If you choose 0 in the original column <b>used Points</b>, this point will be excluded</p>
 	<p>in the calculation of the regression line, but the point will be rotated. This can be used to correct measurement faults.</p>
+	<h2>5. Errorhandling</h2>
+	<p>An errorhandler will check the data during the calculation</p>
+	<p>There are a few errors and warnings possible. All Errors will be shown in a red bar and in the ErrorLOG protocol in the protocol window (View -> Panels -> Log Messages Panel)</p>
+	<ul>
+	<li> <i> A profile needs min. 4 points. Error on profile: XXX </i> </li>
+	<p>Profile XXX has 4 or less points.</p>
+	<li> <i>The view column of your data is inconsistant (either non or two different views are present). Error on profile: XXX </i> </li>
+	<p> The view of the profiles contains different or no values for the points </p>
+	<li> <i>The view value is not one of the four cardinal directions. Error on profile:  XXX </i> </li>
+	<p>The view column holds another direction than N, E, S or W</p>
+	<li> <i>Only 0 or 1 are allowed in the selection/use. Error on profile:  XXX </i> </li>		
+	<p>In the column use are only 1 or 0 allowed as values</p>
+	<li> <i>Layer XXX is not projected. Please choose an projected reference system.</i> </li>
+	<p>The coordinatesystem of the Layer is not a projected one. Save the layer in a projected system</p>
+	<li> <i>The z-Value needs to be a float. Check the field type of the z-Value</i> </li>	
+	<p>Save the column containing the z-value as float</p>
+	<p><b>You will get the best results, if your are careful on the excavation and prepare a perfectly straight profile!</b></p>
+	</ul>
 	</body>
 </html>

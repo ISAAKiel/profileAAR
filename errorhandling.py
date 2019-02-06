@@ -82,7 +82,7 @@ class ErrorHandler:
             printLogMessage(self, str(selection_check[i]), 'sele')
             if str(selection_check[i]) not in ["1", "0"]:
                 # if it is not the same, print error message
-                criticalMessageToBar(self, 'Error', 'Only 0 or 1 are allowed in the selection/use. Error on profile: : ' + str(profile_name))
+                criticalMessageToBar(self, 'Error', 'Only 0 or 1 are allowed in the selection/use. Error on profile: ' + str(profile_name))
                 printLogMessage(self,
                                 'Only 0 or 1 are allowed in the selection/use. Error on profile: : ' + str(profile_name), 'Error_LOG')
                 # cancel execution of the script
