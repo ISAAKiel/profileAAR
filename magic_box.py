@@ -190,12 +190,13 @@ class Magic_Box:
         errorhandler = ErrorHandler(self)
         profilnr_proc = listToList(self, coord_proc, 4)
 
-
+        fehler_check = False
         ns_fehler_vorhanden = ns_error_determination(self, coord_proc)
         if ns_fehler_vorhanden:
             QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Kackprofil')
             # Profil um 45 Grad drehen
             rotationresult = rotation(self, coord_proc, 45)
+            fehler_check = True
             for i in range(len(coord_proc)):
                 coord_proc[i][0] = rotationresult['x_trans'][i]
                 QgsMessageLog.logMessage(str(coord_proc[i][0]), 'x')
@@ -265,13 +266,6 @@ class Magic_Box:
         #We like to use the regression with less sum of the residuals
         res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw), profilnr_proc[0])
         res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw), profilnr_proc[0])
-        QgsMessageLog.logMessage('PR' + str(profilnr_proc),'gres')
-        QgsMessageLog.logMessage('x'+str(res_x),'gres')
-        QgsMessageLog.logMessage('y' + str(res_y), 'gres')
-
-        QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Pr_aktuell')
-
-
 
 
 
@@ -378,7 +372,13 @@ class Magic_Box:
         # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
         if direction == "original":
             # the rotation angle is the negative angle of the first rotation
-            y_slope_deg = -slope_deg
+            QgsMessageLog.logMessage('Fehler:' + str(fehler_check), 'Fehle')
+            if fehler_check == True:
+                y_slope_deg = -slope_deg - 45
+                QgsMessageLog.logMessage('Fehler:' + str('1'), 'Fehle')
+            else:
+                y_slope_deg = -slope_deg
+                QgsMessageLog.logMessage('Fehler:' + str('2'), 'Fehle')
 
             # get the centerpoint
             y_center_x = mean(x_trans)
@@ -400,6 +400,8 @@ class Magic_Box:
                 # CHANGE
                 coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i], id_proc[i]])
                 rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
+
+
 
         #change
 
