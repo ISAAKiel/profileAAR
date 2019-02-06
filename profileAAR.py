@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- profileAAR
+ profileAARDialog
                                  A QGIS plugin
  profileAAR des
-                              -------------------
-        begin                : 2017-08-31
+                             -------------------
+        begin                : 2019-02-06
         git sha              : $Format:%H$
-        copyright            : (C) 2017 by Moritz Mennenga & Kay Schm�tz / NIhK WHV / UFG CAU KIEL / ISAAKiel
+        copyright            : (C) 2019 by Moritz Mennenga / Kay Schmuetz
         email                : mennenga@nihk.de
  ***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
+ *                                                                         '
+ ' A QGIS-Plugin by members of                                             '
+ '          ISAAK (https://isaakiel.github.io/)                            '
+ '           Lower Saxony Institute for Historical Coastal Research        '
+ '           University of Kiel                                            '
+ '   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
@@ -34,10 +39,12 @@ import sys
 from errorhandling import ErrorHandler
 
 # the magic happens here
-from magic_box import Magic_Box
+from transformation import Magic_Box
 
 #the export to a shapefile happens here
 from export import Export
+
+from messageWrapper import printLogMessage
 
 # Import the code for the dialog
 from profileAAR_dialog import profileAARDialog
@@ -255,9 +262,10 @@ class profileAAR:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-           
+            inputCheck = False
+            fieldCheck = False
             #Check if input fields are filled correctly an if the layer has correct properties
-            errorhandler.input_check(self.dlg.outputPath.text())
+            inputCheck = errorhandler.input_check(self.dlg.outputPath.text())
 
             '''GET INPUT FROM GUI TO VARIABLES/PREPARE LIST OF DATA'''
             #GET TEXT FROM METHOD AND DIRECTION
@@ -275,8 +283,15 @@ class profileAAR:
             #list for the different profile names
             profile_names = []
             #check if the z values have the correct type and if the crs is projected
-            errorhandler.field_check(selectedLayer, self.dlg.zCombo.currentText())
+            fieldCheck = errorhandler.field_check(selectedLayer, self.dlg.zCombo.currentText())
+            printLogMessage(self, str(fieldCheck), 'AA')
+
+
             height = False
+
+            if fieldCheck == True or inputCheck == True:
+                sys.exitfunc()
+
             if self.dlg.hightBox.isChecked():
                 height = True
 
@@ -329,42 +344,44 @@ class profileAAR:
                 #Handle Errors depending on the attributes in the fields
                 #Errorhandling: Checking the single Profiles for inconsestency
                 #Therefore we need the data of the actual profile, the view_check with the view values and actual profile name, selection is 0 or 1
-                errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]), selection_check)
+                profileCheck = False
+                if fieldCheck == False and inputCheck == False:
+
+                    profileCheck = errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]), selection_check)
 
 
 
-                '''Doing the magic stuff'''
-                #Calculating the profile and add it to the list
-                coord_height_list = magicbox.transformation(coord_proc, method, direction)
-                coord_trans.append(coord_height_list)
-                # QgsMessageLog.logMessage(str(slope), 'MyPlugin')
-                #CHANGE If checked, the upper right poitn has to be exportet as point
+                if profileCheck == False and fieldCheck == False and inputCheck == False:
+
+                    #Calculating the profile and add it to the list
+                    coord_height_list = magicbox.transformation(coord_proc, method, direction)
+                    coord_trans.append(coord_height_list)
+                    #CHANGE If checked, the upper right poitn has to be exportet as point
+                    if height == True:
+                        height_points.append(magicbox.height_points(coord_height_list))
+                        #outer_points_org.append(magicbox.outer_profile_points(coord_proc))
+                        #outer_points_proc.append(magicbox.outer_profile_points((coord_height_list)))
+
+            if profileCheck == False:
+                '''Export the data'''
+                #For exporting we need the data, the path and the crs of the input data
+                export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
+                #If points are checked, export them #CHANGE
                 if height == True:
-                    height_points.append(magicbox.height_points(coord_height_list))
-                    #outer_points_org.append(magicbox.outer_profile_points(coord_proc))
-                    #outer_points_proc.append(magicbox.outer_profile_points((coord_height_list)))
-            
-            '''Export the data'''
-            #For exporting we need the data, the path and the crs of the input data
-            export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
-            #If points are checked, export them #CHANGE
-            if height == True:
-                export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
-                #export.export_outer_profile_points_original(outer_points_org[:2], self.dlg.outputPath.text(), selectedLayer.crs())
-                #export.export_outer_profile_points_proc(outer_points_proc[:2], self.dlg.outputPath.text(), selectedLayer.crs())
-            #Load the file to qgis automaticly
-            layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
-            #CHANGE
-            if height == True:
-                filename = self.dlg.outputPath.text().split(".shp")[0]
-                filename = filename + "_height.shp"
-                layer = self.iface.addVectorLayer(filename, "", "ogr")
+                    export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
+                    #export.export_outer_profile_points_original(outer_points_org[:2], self.dlg.outputPath.text(), selectedLayer.crs())
+                    #export.export_outer_profile_points_proc(outer_points_proc[:2], self.dlg.outputPath.text(), selectedLayer.crs())
+                #Load the file to qgis automaticly
+                layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
+                #CHANGE
+                if height == True:
+                    filename = self.dlg.outputPath.text().split(".shp")[0]
+                    filename = filename + "_height.shp"
+                    layer = self.iface.addVectorLayer(filename, "", "ogr")
 
-            #if the loading of the layer fails, give a message
-            if not layer:
-                self.qgisInterface.messageBar().pushMessage("ERROR", "Failed to open "+self.dlg.outputPath.text()+ ".", level=QgsMessageBar.CRITICAL)  
-            
-            # TODO: Standartfehler o.ä. Warnung - Christoph
+                #if the loading of the layer fails, give a message
+                if not layer:
+                    criticalMessageToBar(self, 'Error', 'Failed to open '+self.dlg.outputPath.text())
 
     
             pass

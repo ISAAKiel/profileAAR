@@ -1,6 +1,31 @@
 # -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+ profileAARDialog
+                                 A QGIS plugin
+ profileAAR des
+                             -------------------
+        begin                : 2019-02-06
+        git sha              : $Format:%H$
+        copyright            : (C) 2019 by Moritz Mennenga / Kay Schmuetz
+        email                : mennenga@nihk.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *                                                                         '
+ ' A QGIS-Plugin by members of                                             '
+ '          ISAAK (https://isaakiel.github.io/)                            '
+ '           Lower Saxony Institute for Historical Coastal Research        '
+ '           University of Kiel                                            '
+ '   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
 from __future__ import division, print_function
-from qgis.gui import QgsMessageBar
 from qgis.core import *
 import scipy
 import sys
@@ -8,9 +33,10 @@ from math import atan, fabs, pi, cos, sin, tan, isnan, sqrt
 from numpy import mean
 from errorhandling import ErrorHandler
 import matplotlib.pyplot as plt
+from messageWrapper import criticalMessageToBar, printLogMessage
 
 
-def rotation (self, coord_proc, slope_deg):
+def rotation (self, coord_proc, slope_deg, zAdaption):
     x_coord_proc = listToList(self, coord_proc, 0)
     y_coord_proc = listToList(self, coord_proc, 1)
     z_coord_proc = listToList(self, coord_proc, 2)
@@ -33,7 +59,10 @@ def rotation (self, coord_proc, slope_deg):
         y_trans.append(
             center_y + (coord_proc[i][0] - center_x) * sin(slope_deg / 180 * pi) + (coord_proc[i][1] - center_y) * cos(
                 slope_deg / 180 * pi))
-        z_trans.append(coord_proc[i][2])
+        if zAdaption == True:
+            z_trans.append(coord_proc[i][2] + center_y - mean(z_coord_proc))
+        else:
+            z_trans.append(coord_proc[i][2])
 
 
     return {'x_trans':x_trans, 'y_trans':y_trans ,'z_trans':z_trans }
@@ -48,14 +77,12 @@ def ns_error_determination(self, coord_proc):
 
     xw = listToList(self, coord_proc, 0)
     yw = listToList(self, coord_proc, 1)
-
-    # https://www.crashkurs-statistik.de/einfache-lineare-regression/
-    QgsMessageLog.logMessage('xw' + str(xw) , 'error')
-    QgsMessageLog.logMessage('yw' + str(yw) , 'error')
+    # Due to mathematical problems with exactly north-south orientated profiles it is nessecary to determine them
+    #Therefore a linear regression has to be calculated "by hand" and the slope between the the most northern und southern
+    #points has to be compared with the slope of the linegress (the results of the lingress function are not sufficent)
+    #The calculation is after https://www.crashkurs-statistik.de/einfache-lineare-regression/
     xStrich = mean(xw)
     yStrich = mean(yw)
-    QgsMessageLog.logMessage('xStrich' + str(xStrich) , 'error')
-    QgsMessageLog.logMessage('yStrich' + str(yStrich) , 'error')
     abzugX = []
     abzugY = []
 
@@ -70,13 +97,9 @@ def ns_error_determination(self, coord_proc):
             x1Gerade = xw[i]
             x2Gerade = xw[i]
 
-    QgsMessageLog.logMessage('x1Gerade' + str(x1Gerade) , 'error')
-    QgsMessageLog.logMessage('x2Gerade' + str(x2Gerade) , 'error')
-    QgsMessageLog.logMessage('abzugX' + str(abzugX) , 'error')
 
     for i in range(len(yw)):
-        QgsMessageLog.logMessage('ps' + str(i), 'yy')
-        QgsMessageLog.logMessage('yyy' + str(yw[i]), 'yy')
+
 
         if i > 0 and yw[i] < ymin:
             ymin = yw[i]
@@ -93,12 +116,6 @@ def ns_error_determination(self, coord_proc):
         abzugY.append(yw[i] - yStrich)
 
 
-    QgsMessageLog.logMessage('ymax' + str(ymax) , 'error')
-    QgsMessageLog.logMessage('ymin' + str(ymin) , 'error')
-    QgsMessageLog.logMessage('abzugY' + str(abzugY) , 'error')
-    QgsMessageLog.logMessage('ymin_postition' + str(ymin_postition) , 'error')
-    QgsMessageLog.logMessage('ymax_postition' + str(ymax_postition) , 'error')
-
 
     abzugXsum =  0
     abzugXsum2 = 0
@@ -109,36 +126,24 @@ def ns_error_determination(self, coord_proc):
         abzugXsum2 = abzugXsum2 + abzugX[i] * abzugX[i]
 
 
-    QgsMessageLog.logMessage('abzugXsum' + str(abzugXsum) , 'error')
-    QgsMessageLog.logMessage('abzugXsum2' + str(abzugXsum2) , 'error')
 
     b = abzugXsum / abzugXsum2
     a = yStrich - b * xStrich
 
-    QgsMessageLog.logMessage('a' + str(a) , 'error')
-    QgsMessageLog.logMessage('b' + str(b) , 'error')
 
     y1Gerade = a + b * x1Gerade
     y2Gerade = a + b * x2Gerade
 
-    QgsMessageLog.logMessage('y1Gerade' + str(y1Gerade) , 'error')
-    QgsMessageLog.logMessage('y2Gerade' + str(y2Gerade) , 'error')
 
     steigung_neu = atan((y2Gerade - y1Gerade) / (x2Gerade - x1Gerade)) * 180 / pi
-    #Falls das Profil perfekt o-w ausgerichtet ist, ist alles ok
 
+    #If the profile is perfectly E-W orentated there is no problem, the new slope can be the old one
     try:
         steigung_alt = atan((ymax - ymin) / (xw[ymax_postition] - xw[ymin_postition])) * 180 / pi
     except ZeroDivisionError:
         steigung_alt = steigung_neu
 
-    QgsMessageLog.logMessage('ymax - ymin' + str(ymax - ymin) , 'error1')
-    QgsMessageLog.logMessage('xw[ymax_postition] - xw[ymin_postition]' + str(xw[ymax_postition] - xw[ymin_postition]) , 'error1')
-
-    QgsMessageLog.logMessage('steigung_neu' + str(steigung_neu) , 'error')
-    QgsMessageLog.logMessage('steigung_alt' + str(steigung_alt) , 'error')
-    QgsMessageLog.logMessage('steigung_alt round' + str(abs(round(steigung_alt, 0))), 'error')
-
+    #If the slope of the regression and the original points differs more than 10%, the Profile has to be considered separately
     pluszehn = abs(steigung_alt) + (abs(steigung_alt) * 10 / 100)
     minuszehn = abs(steigung_alt) - (abs(steigung_alt) * 10 / 100)
 
@@ -147,38 +152,6 @@ def ns_error_determination(self, coord_proc):
     else:
         return bool(False)
 
-
-
-
-def list_column_zero(listsort, column):
-    for points in range(len(listsort)):
-        listsort[points][column] = 0
-    return listsort
-
-def list_add_rowcount_to_column(listsort):
-    for points in range(len(listsort)):
-        listsort[points].append(points)
-    return  listsort
-
-def list_plus_rowcount_to_column(listsort, column):
-    for points in range(len(listsort)):
-        listsort[points][column] = listsort[points][column] + points
-    return listsort
-
-#change
-def check_original_steigung(original_outer_points):
-    # Check the Slope of the outer points, if it´s too close to a S-N orientation rotate the points
-    slope_original_outer_points = (original_outer_points[1][1] - original_outer_points[0][1]) / (
-                original_outer_points[1][0] - original_outer_points[0][0])
-    if slope_original_outer_points > 0:
-        steigung_original_outer_points = atan(slope_original_outer_points)
-        return steigung_original_outer_points
-    elif slope_original_outer_points < 0:
-        steigung_original_outer_points = atan(slope_original_outer_points) + 180
-        return steigung_original_outer_points
-    else:
-        steigung_original_outer_points = 90
-        return steigung_original_outer_points
 
 
 class Magic_Box:
@@ -193,15 +166,12 @@ class Magic_Box:
         fehler_check = False
         ns_fehler_vorhanden = ns_error_determination(self, coord_proc)
         if ns_fehler_vorhanden:
-            QgsMessageLog.logMessage('Pr' + str(profilnr_proc), 'Kackprofil')
             # Profil um 45 Grad drehen
-            rotationresult = rotation(self, coord_proc, 45)
+            rotationresult = rotation(self, coord_proc, 45, False)
             fehler_check = True
             for i in range(len(coord_proc)):
                 coord_proc[i][0] = rotationresult['x_trans'][i]
-                QgsMessageLog.logMessage(str(coord_proc[i][0]), 'x')
                 coord_proc[i][1] = rotationresult['y_trans'][i]
-                QgsMessageLog.logMessage(str(coord_proc[i][1]), 'y')
                 coord_proc[i][2] = rotationresult['z_trans'][i]
 
         #write the x and v values in the corresponding lists
@@ -254,10 +224,6 @@ class Magic_Box:
         #To solve this, it is nessecary to change the input values of the regression
         # Calculate the regression for both directions
 
-
-
-
-
         linegress_x = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
         linegress_y = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
 
@@ -277,8 +243,7 @@ class Magic_Box:
              # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
              slope = tan((-90-(((atan(linegress[0])*180)/pi)))*pi / 180)
         else:
-            self.qgisInterface.messageBar().pushMessage("Error", "Calculation failed! Corrupt data!",
-                                                        level=QgsMessageBar.CRITICAL)
+            criticalMessageToBar(self,' Error', 'Calculation failed! Corrupt data!')
             sys.exitfunc()
 
 
@@ -286,7 +251,6 @@ class Magic_Box:
 
 
         #CHANGE Check the distance with all points
-        #TODO Testen
         distance = errorhandler.calculateError(linegress, xw_check, yw_check, coord_proc[0][4])
 
         # calculate the degree of the slope
@@ -302,22 +266,15 @@ class Magic_Box:
         elif slope == 0 and coord_proc[0][3] == "N":
             slope_deg = 180
 
-        # calculate the point of rotation
-        center_x = mean(x_coord_proc)
-        center_y = mean(y_coord_proc)
-        #QgsMessageLog.logMessage(str(coord_proc[0][4]) + " " + str(center_x) + " " + str(center_y), 'MyPlugin')
-
         # instantiate lists for the transformed coordinates
         x_trans = []
         y_trans = []
         z_trans = []
-
-
+        first_rotationresult = rotation(self, coord_proc, slope_deg, True)
         for i in range(len(coord_proc)):
-            x_trans.append(center_x + (coord_proc[i][0] - center_x) * cos(slope_deg / 180 * pi) - sin(slope_deg / 180 * pi) * (coord_proc[i][1] - center_y))
-            y_trans.append(center_y + (coord_proc[i][0] - center_x) * sin(slope_deg / 180 * pi) + (coord_proc[i][1] - center_y) * cos(slope_deg / 180 * pi))
-            z_trans.append(coord_proc[i][2] + center_y - mean(z_coord_proc))
-
+            x_trans.append(first_rotationresult['x_trans'][i])
+            y_trans.append(first_rotationresult['y_trans'][i])
+            z_trans.append(first_rotationresult['z_trans'][i])
 
         # instantiate a list for the transformed coordinates
         coord_trans = []
@@ -325,7 +282,6 @@ class Magic_Box:
         rangcheck_trans = []
         # build the finished list
         for i in range(len(coord_proc)):
-            #CHANGE
             coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i], id_proc[i]])
             rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
       
@@ -411,33 +367,22 @@ class Magic_Box:
 
         new_outer_points = []
         for point in coord_trans:
-            QgsMessageLog.logMessage('PUUUNKT' + str(point[7]))
             if point[7] == original_outer_points[0][6] or point[7] == original_outer_points[1][6]:
                 new_outer_points.append(point)
         new_distance = self.calculate_distance_from_outer_profile_points_proc(new_outer_points)
 
-
-
-        QgsMessageLog.logMessage('PR:' + str(coord_proc[0][4]), 'Distance')
-        #QgsMessageLog.logMessage('slope: ' + str(slope_deg), 'Distance')
-        QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance')
-        #new_distance = calculate_distance_new(rangcheck_trans)
-        QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance')
-        QgsMessageLog.logMessage('Diff. Distance: ' + str(abs(original_distance-new_distance)), 'Distance')
+        printLogMessage(self, 'PR:' + str(coord_proc[0][4]), 'Distance')
+        printLogMessage(self, 'Original Distance: ' + str(original_distance), 'Distance')
+        printLogMessage(self, 'New Distance: ' + str(new_distance), 'Distance')
+        printLogMessage(self, 'Diff. Distance: ' + str(abs(original_distance-new_distance)), 'Distance')
 
 
 
 
         if abs(original_distance - new_distance) > 0.01:
-            self.qgisInterface.messageBar().pushMessage("Error",
-                                                       "Profile was calculated incorrect (1cm acc.) See Log-Window: " + str(
-                                                           str(coord_proc[0][4])),
-                                                       level=QgsMessageBar.CRITICAL)
-            QgsMessageLog.logMessage('PR:' + str(coord_proc[0][4]), 'Distance > 1cm')
-            QgsMessageLog.logMessage('slope: ' + str(slope_deg), 'Distance > 1cm')
-            QgsMessageLog.logMessage('Original Distance: ' + str(original_distance), 'Distance > 1cm')
-            QgsMessageLog.logMessage('New Distance: ' + str(new_distance), 'Distance > 1cm')
-            QgsMessageLog.logMessage('Diff. Distance: ' + str(abs(original_distance - new_distance)), 'Distance > 1cm')
+            criticalMessageToBar(self, 'Error', 'Profile was calculated incorrect (1cm acc.) See Log-Window: ' + str(str(coord_proc[0][4])))
+            printLogMessage(self, 'DISTANCE WARNING!', 'Distance')
+
         return coord_trans
 
     #CHANGE NEW
@@ -459,9 +404,7 @@ class Magic_Box:
         coords_sorted = sorted(coords, key=lambda x: (x[0]))
         two_lowest = coords_sorted[:2]
         two_highest = coords_sorted[-2:]
-        #QgsMessageLog.logMessage("two_lowest: " + str(two_lowest), 'MyPlugin')
-        #QgsMessageLog.logMessage("two_highest: " + str(two_highest), 'MyPlugin')
-        #check which one of the points has the higher z value and write it into a variable
+
         if two_lowest[1][2] > two_lowest[0][2]:
             lowestx = two_lowest[1]
         else:

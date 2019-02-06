@@ -2,8 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c7b05d9a-ebbc-4998-b757-141c93dec821" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/messageWrapper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic_box.py" beforeDir="false" afterPath="$PROJECT_DIR$/magic_box.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/errorhandling.py" beforeDir="false" afterPath="$PROJECT_DIR$/errorhandling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/export.py" beforeDir="false" afterPath="$PROJECT_DIR$/export.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index-en.html" beforeDir="false" afterPath="$PROJECT_DIR$/index-en.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic_box.py" beforeDir="false" afterPath="$PROJECT_DIR$/transformation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/metadata.txt" beforeDir="false" afterPath="$PROJECT_DIR$/metadata.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/profileAAR.py" beforeDir="false" afterPath="$PROJECT_DIR$/profileAAR.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_data/Test_Profiel_selection.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profiel_selection.dbf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_3_Point_Profile.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_3_Point_Profile.dbf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_Inconsistent_Viewvalue.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_Inconsistent_Viewvalue.dbf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_Not_Cardinal_Direction.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_Not_Cardinal_Direction.dbf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile_Error_z_isString.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile_Error_z_isString.dbf" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,11 +25,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/magic_box.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/transformation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="382" column="33" lean-forward="true" selection-start-line="382" selection-start-column="33" selection-end-line="382" selection-end-column="33" />
+            <state relative-caret-position="374">
+              <caret line="274" column="62" lean-forward="true" selection-start-line="274" selection-start-column="62" selection-end-line="274" selection-end-column="62" />
+              <folding>
+                <element signature="e#1527#1574#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/messageWrapper.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="646">
+              <caret line="38" column="19" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="19" />
+              <folding>
+                <element signature="e#1161#1195#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -25,27 +52,47 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/profileAAR.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5372">
-              <caret line="337" column="66" selection-start-line="337" selection-start-column="66" selection-end-line="337" selection-end-column="66" />
+            <state relative-caret-position="561">
+              <caret line="346" column="36" selection-start-line="346" selection-start-column="36" selection-end-line="346" selection-end-column="36" />
+              <folding>
+                <element signature="e#1527#1612#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/errorhandling.py">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="391">
+              <caret line="125" column="49" lean-forward="true" selection-start-line="125" selection-start-column="49" selection-end-line="125" selection-end-column="49" />
+              <folding>
+                <element signature="e#1529#1552#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/export.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1224">
-              <caret line="74" column="40" selection-start-line="74" selection-start-column="40" selection-end-line="74" selection-end-column="40" />
+            <state relative-caret-position="612">
+              <caret line="123" column="25" lean-forward="true" selection-start-line="123" selection-start-column="25" selection-end-line="123" selection-end-column="25" />
+              <folding>
+                <element signature="e#1143#1177#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -53,6 +100,10 @@
       <find>steigung</find>
       <find>sk</find>
       <find>orig</find>
+      <find>messageBar</find>
+      <find>magic</find>
+      <find>mag</find>
+      <find>singleprof</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -61,8 +112,12 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/profileAAR.py" />
         <option value="$PROJECT_DIR$/magic_box.py" />
+        <option value="$PROJECT_DIR$/export.py" />
+        <option value="$PROJECT_DIR$/messageWrapper.py" />
+        <option value="$PROJECT_DIR$/transformation.py" />
+        <option value="$PROJECT_DIR$/errorhandling.py" />
+        <option value="$PROJECT_DIR$/profileAAR.py" />
       </list>
     </option>
   </component>
@@ -160,27 +215,53 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/magic_box.py">
+    <entry file="file://$PROJECT_DIR$/export.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="382" column="33" lean-forward="true" selection-start-line="382" selection-start-column="33" selection-end-line="382" selection-end-column="33" />
+        <state relative-caret-position="612">
+          <caret line="123" column="25" lean-forward="true" selection-start-line="123" selection-start-column="25" selection-end-line="123" selection-end-column="25" />
+          <folding>
+            <element signature="e#1143#1177#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/messageWrapper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="646">
+          <caret line="38" column="19" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="19" />
+          <folding>
+            <element signature="e#1161#1195#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/transformation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="274" column="62" lean-forward="true" selection-start-line="274" selection-start-column="62" selection-end-line="274" selection-end-column="62" />
+          <folding>
+            <element signature="e#1527#1574#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/profileAAR.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5372">
-          <caret line="337" column="66" selection-start-line="337" selection-start-column="66" selection-end-line="337" selection-end-column="66" />
+        <state relative-caret-position="561">
+          <caret line="346" column="36" selection-start-line="346" selection-start-column="36" selection-end-line="346" selection-end-column="36" />
+          <folding>
+            <element signature="e#1527#1612#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/errorhandling.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/export.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1224">
-          <caret line="74" column="40" selection-start-line="74" selection-start-column="40" selection-end-line="74" selection-end-column="40" />
+        <state relative-caret-position="391">
+          <caret line="125" column="49" lean-forward="true" selection-start-line="125" selection-start-column="49" selection-end-line="125" selection-end-column="49" />
+          <folding>
+            <element signature="e#1529#1552#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

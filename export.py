@@ -5,15 +5,20 @@
                                  A QGIS plugin
  profileAAR des
                              -------------------
-        begin                : 2017-08-31
+        begin                : 2019-02-06
         git sha              : $Format:%H$
-        copyright            : (C) 2017 by Moritz Mennenga / Kay Schmuetz
+        copyright            : (C) 2019 by Moritz Mennenga / Kay Schmuetz
         email                : mennenga@nihk.de
  ***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
+ *                                                                         '
+ ' A QGIS-Plugin by members of                                             '
+ '          ISAAK (https://isaakiel.github.io/)                            '
+ '           Lower Saxony Institute for Historical Coastal Research        '
+ '           University of Kiel                                            '
+ '   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
@@ -24,6 +29,7 @@
 from qgis.gui import QgsMessageBar
 from PyQt4.QtCore import QVariant
 from qgis.core import *
+from messageWrapper import criticalMessageToBar, exportError
 class Export: 
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
@@ -42,7 +48,7 @@ class Export:
 
             writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QGis.WKBPoint, corrdinate_system, "ESRI Shapefile")
             if writer.hasError() != QgsVectorFileWriter.NoError:
-                print "Error when creating shapefile: "
+                exportError(self)
 
             #CHANGE
             export_feature = QgsFeature()
@@ -69,7 +75,8 @@ class Export:
 
             writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QGis.WKBPoint, corrdinate_system, "ESRI Shapefile")
             if writer.hasError() != QgsVectorFileWriter.NoError:
-                print "Error when creating shapefile: "
+                exportError(self)
+
             #CHANGE
             export_feature = QgsFeature()
             for x in range(len(coord_trans)):
@@ -92,7 +99,8 @@ class Export:
         writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QGis.WKBPoint, coordinate_system,
                                      "ESRI Shapefile")
         if writer.hasError() != QgsVectorFileWriter.NoError:
-            print "Error when creating shapefile: "
+            exportError(self)
+
         # CHANGE
         export_feature = QgsFeature()
         for x in range(len(coords)):
@@ -113,7 +121,7 @@ class Export:
         writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QGis.WKBPoint, coordinate_system,
                                      "ESRI Shapefile")
         if writer.hasError() != QgsVectorFileWriter.NoError:
-            print "Error when creating shapefile: "
+                exportError(self)
         # CHANGE
         export_feature = QgsFeature()
         for x in range(len(coords)):

@@ -10,7 +10,6 @@
 	<p>By Members of <a href="https://isaakiel.github.io">ISAAKiel</a> </p>
 	<p>Moritz Mennenga (Lower Saxony Institute for Historical Coastal Research Wilhelmshaven)</p>
 	<p>Kay Schmütz (Graduate School - Human Developent in Landscapes / CAU Kiel)</p>
-	<p>Nils Hempel (Institute for Classical Archaeology / CAU Kiel)</p>
 	<p>Christoph Rinne (Institute for Pre- and Protohistoric Archaeology / CAU Kiel)</p>
     <h1>How to use the profileAAR-Plugin</h1>
 	<p>This tool is created to transform fotogrammetric control points from archaeological excavation,
@@ -38,7 +37,8 @@
 	</ul>
 	<p></p>
 	<h2>2. You have the choice</h2>
-	<p>At first you have to select the layer, then the attributes are visible in the <b>z coord</b>, the <b>pr number</b> and the <b>view column</b> boxes. </p>
+	<p>At first you have to select the layer, then the attributes are visible in the <b>z coord</b>, the <b>pr number</b>, the <b>use</b> and the <b>view column</b> boxes. </p>
+	<p>In this case <b>use</b> means if the point will be used to calculate the rotation angle (cloumn with '1'). If there is an outlier in the data, mark it with a '0'.</p>
 	<p>Please select the matching attributes.</p>
 	<p>In the next two boxes, you have to choose:</p>
 	<ul>
@@ -56,14 +56,14 @@
 	</ul>
 
 	<p><b>Export elevation points</b> will export an additional shapefile containing the upper right fotogrammetric control point and its height and the profile number.</p>
-	<p>This can be very helpful by processing the drawings.</p>
+	<p>This can be very helpful while processing the drawings.</p>
 
-	<h2>3. Run the magic box</h2>	
+	<h2>3. Run the calculation</h2>	
 	<p>If you press the OK Button the magic happens.</p>
 	<p>Some hints for a good result</p>
 	<ul>
 	<li>If you have a straight profile you will have the best results</li>
-	<li>If profiles are long sometimes it is better to split them (we plan a function for the next version to do it the easy way for the user)</li>
+	<li>If profiles are very long and not very straight, sometimes it is better to split them (we plan a function for the next version to do it the easy way for the user)</li>
 	</ul>
 	<h2>4. Accuracy</h2>
 	<p>Getting values for the accuracy of the points.</p>
