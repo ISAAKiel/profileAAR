@@ -1,4 +1,4 @@
-# This file contains metadata for your plugin. Since 
+﻿# This file contains metadata for your plugin. Since 
 # version 2.0 of QGIS this is the proper way to supply 
 # information about a plugin. The old method of 
 # embedding metadata in __init__.py will 
@@ -14,7 +14,7 @@ version=1.0
 author=ISAAKiel- Moritz Mennenga NIhK WHV / Kay Schmütz a. Christoph Rinne UFG Kiel
 email=mennenga@nihk.de
 
-about= The plugin profileAAR transforms profile control points for fotogrammetric rectification of profile images of archaeological excavations. Due to this plugin it is possible to rectify your images of profiles in QGIS. You need the measurements with the z-Coordinate as an attribute and the direction of view (where stood the fotographer in relation to the profile) and the unique number of the profile. You will find the article under http://zenodo.de and the Tutorial under http://www.youtube.de 
+about= The plugin profileAAR transforms profile control points for fotogrammetric rectification of profile images of archaeological excavations. Due to this plugin it is possible to rectify your images of profiles in QGIS. 
 
 tracker=https://github.com/ISAAKiel/profileAAR/issues/5
 repository=https://github.com/ISAAKiel/profileAAR
