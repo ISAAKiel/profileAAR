@@ -6,30 +6,67 @@
     <title>profileAAR help</title>
   </head>
   <body>
-    <p> <b>You will find the detailed information about how it works in our Publication</b>
 	<p>By Members of <a href="https://isaakiel.github.io">ISAAKiel</a> </p>
 	<p>Moritz Mennenga (Lower Saxony Institute for Historical Coastal Research Wilhelmshaven)</p>
 	<p>Kay Schmütz (Graduate School - Human Developent in Landscapes / CAU Kiel)</p>
 	<p>Christoph Rinne (Institute for Pre- and Protohistoric Archaeology / CAU Kiel)</p>
     <h1>How to use the profileAAR-Plugin</h1>
-	<p>This tool is created to transform fotogrammetric control points from archaeological excavation,
-	to use them to georeference profiles is Qgis.</p>
+	<p>ProfileAAR is a plugin to transform measured photogrammetry points to allow equalization of profiles in the GIS.</p>
+	<p>The points are rotated and shifted according to different specifications (see below), </p>
+	<p>the determination of the rotation parameters is based on a linear regression.</p>
 	<h2>1. Input data</h2>
-	<p>At first we need the dataset.</p>
-	<p>All we need is a shapefile with the fotogrammetric control points.</p>
-	<p>As attributes we need:</p>
+	<p>You need a shapefile with points. Several profiles can be processed at the same time
+	<p>The shapefile must have at least the following attributes</p>
 	<ul>
 	<li> the <b>z-value</b> [float/double/real] </li>
 	<li> the label of the <b>profile</b> (e.g. number of the profile [text or number])</li>
-	<li> the <b>view</b> direction (defined by the position of the observer related to the profile as N, E, S or W [text])</li>
+	<li> the <b>view</b> direction (defined by the position of the observer related to the profile (view from ...) as N, E, S or W [text])</li>
 	<li> the <b>used Points</b> (points that are used to determine the slope of the regression [0/1])</li>
 	<img src="./img/view.jpg" alt="View" style="width:250px;height:228px;">
 	<p>If a profile is NE - SW orientated it doesn't matter if you choose E or S.</p>
 	</ul>
 	<p></p>
-	<h2>2. You have the choice</h2>
-	<p>At first you have to select the layer, then the attributes are visible in the <b>z coord</b>, the <b>pr number</b>, the <b>use</b> and the <b>view column</b> boxes. </p>
-	<p>In this case <b>use</b> means if the point will be used to calculate the rotation angle (cloumn with '1'). If there is an outlier in the data, mark it with a '0'.</p>
+	<p>Example for an attribute list</p>
+	 <table> 
+	 <tr> 
+	 <th>z-Value</th> <th>profile_no</th> <th>view</th><th>use</th> 
+	 </tr> 
+	 <tr> 
+	 <td>0.5</td> <td>1</td> <td>N</td> <td>1</td>
+	 </tr> 
+	 <tr> 
+	 <td>0.5</td> <td>1</td> <td>N</td> <td>1</td>
+	 </tr> 
+	 <tr> 
+	 <td>0.25</td> <td>1</td> <td>N</td> <td>1</td>
+	 </tr> 
+	 <tr> 
+	 <td>0</td> <td>1</td> <td>N</td> <td>1</td>
+	 </tr> 
+	 <tr> 
+	 <td>0</td> <td>1</td> <td>N</td> <td>1</td>
+	 </tr>
+	 </tr> 
+	 <tr> 
+	 <td>1.8</td> <td>2</td> <td>E</td> <td>1</td>
+	 </tr> 
+	 <tr> 
+	 <td>1.5</td> <td>2</td> <td>E</td> <td>1</td>
+	 </tr> 
+	 <tr> 
+	 <td>1</td> <td>2</td> <td>E</td> <td>0</td>
+	 </tr> 
+	 <tr> 
+	 <td>0.75</td> <td>2</td> <td>E</td> <td>1</td>
+	 </tr> 
+	 <tr> 
+	 <td>0.8</td> <td>2</td> <td>E</td> <td>1</td>
+	 </tr>
+	 </table> 
+	<p></p>
+	<h2>2. Options</h2>
+	<p>First, the layer and then the associated attributes in the dropdown menus must be selected. <b>z coord</b>, the <b>pr number</b>, the <b>use</b> and the <b>view column</b> boxes. </p>
+	<p>In this case <b>use</b> means if the point will be used to calculate the rotation angle (coloumn with '1'). If there is an outlier in the data, mark it with a '0'.</p>
 	<p>Please select the matching attributes.</p>
 	<p>In the next two boxes, you have to choose:</p>
 	<ul>
@@ -42,6 +79,9 @@
 	<p>In the <b>Direction</b> box:</p>
 	<li>1.: <b>Original</b>. The points will be parallel to the profile.</li>
 	<li>2.: <b>Horizontal</b>. The points will be parallel to the x-axis.</li>
+	<li>3.: <b>original height</b>. Same like horizontal but the profile will be at x = 0 and y is the measured height. This allows an export with a coordinate frame</li>
+	<p><i>Before using the third option <b>original height</b> always check whether the given coordinate system is still constant in scale at the origin</i></p>
+	<p></p>
 	<img src="./img/direction.jpg" alt="Direction" style="width:630px;height:234px;">
 	<p> View on a profile(0). The result after choosing original (1) or horizontal (2).</p>
 	</ul>
@@ -50,7 +90,6 @@
 	<p>This can be very helpful while processing the drawings.</p>
 
 	<h2>3. Run the calculation</h2>	
-	<p>If you press the OK Button the magic happens.</p>
 	<p>Some hints for a good result</p>
 	<ul>
 	<li>If you have a straight profile you will have the best results</li>
