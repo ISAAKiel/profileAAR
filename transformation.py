@@ -276,6 +276,28 @@ class Magic_Box:
             y_trans.append(first_rotationresult['y_trans'][i])
             z_trans.append(first_rotationresult['z_trans'][i])
 
+        if direction == "absolute height":
+            #To get an export for the absolute height it is necessary to rotate the profile like the horizontal way
+            #and move it on the y-axis
+            printLogMessage(self, str('NEXT'), 'ttt')
+            x_coord_proc = listToList(self, coord_proc, 0)
+            y_coord_proc = listToList(self, coord_proc, 1)
+            z_coord_proc = listToList(self, coord_proc, 2)
+            # calculate the minimal x
+            mean_x = mean(x_coord_proc)
+            mean_y = mean(y_coord_proc)
+            mean_z = mean(z_coord_proc)
+            for i in range(len(x_trans)):
+                x_trans[i]  = x_trans[i] - mean_x
+                z_trans[i] = z_trans[i] - mean_y + mean_z
+              #  printLogMessage(self, str(x_coord_proc[i]), 'ttt')
+             #   printLogMessage(self, str(x_trans[i]), 'ttt')
+            #printLogMessage(self,str(min_x),'ttt')
+            new_min_x = min(x_trans)
+            printLogMessage(self, str(new_min_x), 'ttt')
+            for i in range(len(x_trans)):
+                x_trans[i] = x_trans[i] + abs(new_min_x)
+
         # instantiate a list for the transformed coordinates
         coord_trans = []
         #CHANGE
@@ -328,7 +350,6 @@ class Magic_Box:
         # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
         if direction == "original":
             # the rotation angle is the negative angle of the first rotation
-            QgsMessageLog.logMessage('Fehler:' + str(fehler_check), 'Fehle')
             if fehler_check == True:
                 y_slope_deg = -slope_deg - 45
                 QgsMessageLog.logMessage('Fehler:' + str('1'), 'Fehle')

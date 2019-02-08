@@ -130,6 +130,11 @@
      <string>original</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>absolute height</string>
+    </property>
+   </item>
   </widget>
   <widget class="QComboBox" name="viewCombo">
    <property name="geometry">
