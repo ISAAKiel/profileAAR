@@ -153,15 +153,60 @@ def ns_error_determination(self, coord_proc):
         return bool(False)
 
 
+def sectionPoint(self, coord_proc, side):
+    if side == 'East':
+        coord_sort = sorted(coord_proc, key = lambda  x: ( -x[0], x[1]))
+    elif side == 'West':
+        coord_sort = sorted(coord_proc, key=lambda x: (x[0], -x[1]))
+
+    coord_sort_xy = []
+    for i in range (0,2):
+        coord_sort_xy.append(coord_sort[i])
+
+    coords_sort_z = sorted(coord_sort_xy, key = lambda  x: (-x[2]))
+
+    point = QgsPoint(coords_sort_z[0][0], coords_sort_z[0][1])
+    printLogMessage(self, str(coords_sort_z[0][0])+','+ str(coords_sort_z[0][1]), 'koord')
+
+    return point
+
+
+
+
+def sectionCalc(self, coord_proc, cutting_start):
+
+    #East
+
+    eastpoint = sectionPoint(self,coord_proc, 'East')
+    westpoint =  sectionPoint(self,coord_proc, 'West')
+
+    points_of_line = []
+
+    if cutting_start == 'W':
+        points_of_line.append(eastpoint)
+        points_of_line.append(westpoint)
+    elif cutting_start == 'E':
+        points_of_line.append(westpoint)
+        points_of_line.append(eastpoint)
+
+    return (points_of_line)
 
 class Magic_Box:
     def __init__(self, qgisInterface):
         self.qgisInterface = qgisInterface
 
+
+
+
+
+
+
     def transformation(self, coord_proc, method, direction):
         #initialize the Errorhandler
         errorhandler = ErrorHandler(self)
         profilnr_proc = listToList(self, coord_proc, 4)
+
+
 
         fehler_check = False
         ns_fehler_vorhanden = ns_error_determination(self, coord_proc)
@@ -253,18 +298,31 @@ class Magic_Box:
         #CHANGE Check the distance with all points
         distance = errorhandler.calculateError(linegress, xw_check, yw_check, coord_proc[0][4])
 
+
+
         # calculate the degree of the slope
+        #Defining the starting point for the export of the section
         slope_deg = 0.0
+        #Variable for determining the paint direction of the cutting line
+        cutting_start = ''
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:
             slope_deg = 180 - fabs((atan(slope)*180)/pi) * -1
+            cutting_start = 'E'
         elif slope < 0 and coord_proc[0][3] in ["S", "W"]:
             slope_deg = fabs((atan(slope) * 180) / pi)
+            cutting_start = 'W'
         elif slope > 0 and coord_proc[0][3] in ["S", "E"]:
             slope_deg = ((atan(slope) * 180) / pi) * -1
+            cutting_start = 'W'
         elif slope > 0 and coord_proc[0][3] in ["N", "W"]:
             slope_deg = 180 - ((atan(slope) * 180) / pi)
+            cutting_start = 'E'
         elif slope == 0 and coord_proc[0][3] == "N":
             slope_deg = 180
+            cutting_start = 'E'
+
+
+
 
         # instantiate lists for the transformed coordinates
         x_trans = []
@@ -279,7 +337,6 @@ class Magic_Box:
         if direction == "absolute height":
             #To get an export for the absolute height it is necessary to rotate the profile like the horizontal way
             #and move it on the y-axis
-            printLogMessage(self, str('NEXT'), 'ttt')
             x_coord_proc = listToList(self, coord_proc, 0)
             y_coord_proc = listToList(self, coord_proc, 1)
             z_coord_proc = listToList(self, coord_proc, 2)
@@ -294,9 +351,10 @@ class Magic_Box:
              #   printLogMessage(self, str(x_trans[i]), 'ttt')
             #printLogMessage(self,str(min_x),'ttt')
             new_min_x = min(x_trans)
-            printLogMessage(self, str(new_min_x), 'ttt')
             for i in range(len(x_trans)):
                 x_trans[i] = x_trans[i] + abs(new_min_x)
+
+
 
         # instantiate a list for the transformed coordinates
         coord_trans = []
@@ -352,10 +410,10 @@ class Magic_Box:
             # the rotation angle is the negative angle of the first rotation
             if fehler_check == True:
                 y_slope_deg = -slope_deg - 45
-                QgsMessageLog.logMessage('Fehler:' + str('1'), 'Fehle')
+
             else:
                 y_slope_deg = -slope_deg
-                QgsMessageLog.logMessage('Fehler:' + str('2'), 'Fehle')
+
 
             # get the centerpoint
             y_center_x = mean(x_trans)
@@ -404,7 +462,7 @@ class Magic_Box:
             criticalMessageToBar(self, 'Error', 'Profile was calculated incorrect (1cm acc.) See Log-Window: ' + str(str(coord_proc[0][4])))
             printLogMessage(self, 'DISTANCE WARNING!', 'Distance')
 
-        return coord_trans
+        return {'coord_trans':coord_trans, 'cutting_start':cutting_start}
 
     #CHANGE NEW
     def height_points (self, coord_trans):

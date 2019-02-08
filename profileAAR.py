@@ -30,6 +30,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog, QPixmap
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
 from qgis.gui import QgsMessageBar, QgsMapLayerComboBox, QgsMapLayerProxyModel
 from qgis.utils import showPluginHelp
+from transformation import sectionCalc
 
 
 # Initialize Qt resources from file resources.py
@@ -288,12 +289,15 @@ class profileAAR:
 
 
             height = False
+            section = False
 
             if fieldCheck == True or inputCheck == True:
                 sys.exitfunc()
 
             if self.dlg.hightBox.isChecked():
                 height = True
+            if self.dlg.sectionBox.isChecked():
+                    section = True
 
             point_id = 0
             for feature in iter:
@@ -319,8 +323,8 @@ class profileAAR:
 
             coord_trans = []
             height_points = []
-            outer_points_org = []
-            outer_points_proc = []
+            cutting_line = []
+
             for i in range(len(profile_names)):
                 # instantiate a temporary list for a single profile
                 coord_proc = []
@@ -354,13 +358,19 @@ class profileAAR:
                 if profileCheck == False and fieldCheck == False and inputCheck == False:
 
                     #Calculating the profile and add it to the list
-                    coord_height_list = magicbox.transformation(coord_proc, method, direction)
+                    transform_return = magicbox.transformation(coord_proc, method, direction)
+                    coord_height_list = transform_return['coord_trans']
+
                     coord_trans.append(coord_height_list)
                     #CHANGE If checked, the upper right poitn has to be exportet as point
                     if height == True:
                         height_points.append(magicbox.height_points(coord_height_list))
-                        #outer_points_org.append(magicbox.outer_profile_points(coord_proc))
-                        #outer_points_proc.append(magicbox.outer_profile_points((coord_height_list)))
+
+                    if section == True:
+                        cutting_line.append(sectionCalc(self, coord_proc, transform_return['cutting_start']))
+
+
+
 
             if profileCheck == False:
                 '''Export the data'''
@@ -369,8 +379,11 @@ class profileAAR:
                 #If points are checked, export them #CHANGE
                 if height == True:
                     export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
-                    #export.export_outer_profile_points_original(outer_points_org[:2], self.dlg.outputPath.text(), selectedLayer.crs())
-                    #export.export_outer_profile_points_proc(outer_points_proc[:2], self.dlg.outputPath.text(), selectedLayer.crs())
+                if section == True:
+                    #if a profile is recommended, we have to export it. To make it easy to display everything, export left point first
+                    printLogMessage(self,str(coord_proc[0][4]),'sec111t')
+                    export.export_section(cutting_line, coord_proc[0][4],self.dlg.outputPath.text(), selectedLayer.crs())
+
                 #Load the file to qgis automaticly
                 layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
                 #CHANGE
@@ -378,7 +391,10 @@ class profileAAR:
                     filename = self.dlg.outputPath.text().split(".shp")[0]
                     filename = filename + "_height.shp"
                     layer = self.iface.addVectorLayer(filename, "", "ogr")
-
+                if section == True:
+                    filename = self.dlg.outputPath.text().split(".shp")[0]
+                    filename = filename + "_section.shp"
+                    layer = self.iface.addVectorLayer(filename, "", "ogr")
                 #if the loading of the layer fails, give a message
                 if not layer:
                     criticalMessageToBar(self, 'Error', 'Failed to open '+self.dlg.outputPath.text())
