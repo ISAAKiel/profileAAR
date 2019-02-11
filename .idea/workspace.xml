@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c7b05d9a-ebbc-4998-b757-141c93dec821" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index-en.html" beforeDir="false" afterPath="$PROJECT_DIR$/index-en.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metadata.txt" beforeDir="false" afterPath="$PROJECT_DIR$/metadata.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/profileAAR.py" beforeDir="false" afterPath="$PROJECT_DIR$/profileAAR.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile.dbf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile.shp" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile.shp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data/Test_Profile.shx" beforeDir="false" afterPath="$PROJECT_DIR$/test_data/Test_Profile.shx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transformation.py" beforeDir="false" afterPath="$PROJECT_DIR$/transformation.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,7 +12,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/transformation.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="282">
@@ -52,11 +45,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/profileAAR.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="435">
-              <caret line="369" column="165" selection-start-line="369" selection-start-column="157" selection-end-line="369" selection-end-column="165" />
+              <caret line="369" column="170" selection-start-line="369" selection-start-column="170" selection-end-line="369" selection-end-column="170" />
               <folding>
                 <element signature="e#1527#1612#0" expanded="true" />
               </folding>
@@ -126,8 +119,8 @@
         <option value="$PROJECT_DIR$/errorhandling.py" />
         <option value="$PROJECT_DIR$/profileAAR_dialog_base.ui" />
         <option value="$PROJECT_DIR$/export.py" />
-        <option value="$PROJECT_DIR$/profileAAR.py" />
         <option value="$PROJECT_DIR$/transformation.py" />
+        <option value="$PROJECT_DIR$/profileAAR.py" />
       </list>
     </option>
   </component>
@@ -262,22 +255,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/profileAAR.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="369" column="165" selection-start-line="369" selection-start-column="157" selection-end-line="369" selection-end-column="165" />
-          <folding>
-            <element signature="e#1527#1612#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/transformation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="282">
           <caret line="158" column="40" lean-forward="true" selection-start-line="158" selection-start-column="40" selection-end-line="158" selection-end-column="40" />
           <folding>
             <element signature="e#1527#1574#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/profileAAR.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="369" column="170" selection-start-line="369" selection-start-column="170" selection-end-line="369" selection-end-column="170" />
+          <folding>
+            <element signature="e#1527#1612#0" expanded="true" />
           </folding>
         </state>
       </provider>

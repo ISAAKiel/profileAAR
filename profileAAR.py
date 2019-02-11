@@ -367,7 +367,7 @@ class profileAAR:
                         height_points.append(magicbox.height_points(coord_height_list))
 
                     if section == True:
-                        cutting_line.append(sectionCalc(self, coord_proc, transform_return['cutting_start'],transform_return['linegress'], transform_return['ns_error']))
+                        cutting_line.append(sectionCalc(self, coord_proc, transform_return['cutting_start'],transform_return['linegress'], transform_return['ns_error']), )
 
 
 
