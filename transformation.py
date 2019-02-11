@@ -153,11 +153,21 @@ def ns_error_determination(self, coord_proc):
         return bool(False)
 
 
-def sectionPoint(self, coord_proc, side):
-    if side == 'East':
-        coord_sort = sorted(coord_proc, key = lambda  x: ( -x[0], x[1]))
-    elif side == 'West':
-        coord_sort = sorted(coord_proc, key=lambda x: (x[0], -x[1]))
+def sectionPoint(self, coord_proc, side, slope, ns_error):
+
+    #
+    slope_deg = (atan(slope) * 180) / pi
+    if slope_deg >= 45 or slope_deg <= -45:
+        if side == 'East':
+            coord_sort = sorted(coord_proc, key = lambda  x: ( -x[0])) #, x[1]
+        elif side == 'West':
+            coord_sort = sorted(coord_proc, key=lambda x: (x[0]))  #, -x[1]
+
+    elif slope_deg < 45 and slope_deg > -45:
+        if side == 'East':
+            coord_sort = sorted(coord_proc, key=lambda x: (-x[1])) #, x[0]
+        elif side == 'West':
+            coord_sort = sorted(coord_proc, key=lambda x: (x[1])) # , -x[0]
 
     coord_sort_xy = []
     for i in range (0,2):
@@ -165,29 +175,55 @@ def sectionPoint(self, coord_proc, side):
 
     coords_sort_z = sorted(coord_sort_xy, key = lambda  x: (-x[2]))
 
-    point = QgsPoint(coords_sort_z[0][0], coords_sort_z[0][1])
-    printLogMessage(self, str(coords_sort_z[0][0])+','+ str(coords_sort_z[0][1]), 'koord')
 
-    return point
+    return {'x':coords_sort_z[0][0], 'y':coords_sort_z[0][1]}
 
 
 
 
-def sectionCalc(self, coord_proc, cutting_start):
+def sectionCalc(self, coord_proc, cutting_start, linegress, ns_error):
 
-    #East
+    #Calculation the section of the profile
 
-    eastpoint = sectionPoint(self,coord_proc, 'East')
-    westpoint =  sectionPoint(self,coord_proc, 'West')
+    #getting the most easter or western and highest point
+    #this is nearly the sectionline
+    eastpoint = sectionPoint(self,coord_proc, 'East', linegress[0], ns_error)
+    westpoint =  sectionPoint(self,coord_proc, 'West', linegress[0], ns_error)
 
+
+    #getting the single coordinates to rotate them if they are affected by the north - south problem
+    eastx = eastpoint['x']
+    easty = eastpoint['y']
+    westx = westpoint['x']
+    westy = westpoint['y']
+
+
+    if ns_error:
+        #Rotate the line by - 45 degree
+        #list of two coordinates
+        rotlist = []
+        rotlist.append([eastpoint['x'],eastpoint['y'],0])
+        rotlist.append([westpoint['x'], westpoint['y'], 0])
+        rot_result = rotation(self, rotlist,-45, False)
+        eastx = rot_result['x_trans'][0]
+        westx = rot_result['x_trans'][1]
+        easty = rot_result['y_trans'][0]
+        westy = rot_result['y_trans'][1]
+
+
+    #Convert the coorinates to Qgis Vector Points
+    QgisEastPoint = QgsPoint(eastx, easty)
+    QgisWestPoint = QgsPoint(westx, westy)
+
+    #write a list with the coordinates from left to right in direction of view
+    #This is necessary for the correct mapping in qgis
     points_of_line = []
-
     if cutting_start == 'W':
-        points_of_line.append(eastpoint)
-        points_of_line.append(westpoint)
+        points_of_line.append(QgisEastPoint)
+        points_of_line.append(QgisWestPoint)
     elif cutting_start == 'E':
-        points_of_line.append(westpoint)
-        points_of_line.append(eastpoint)
+        points_of_line.append(QgisWestPoint)
+        points_of_line.append(QgisEastPoint)
 
     return (points_of_line)
 
@@ -462,7 +498,7 @@ class Magic_Box:
             criticalMessageToBar(self, 'Error', 'Profile was calculated incorrect (1cm acc.) See Log-Window: ' + str(str(coord_proc[0][4])))
             printLogMessage(self, 'DISTANCE WARNING!', 'Distance')
 
-        return {'coord_trans':coord_trans, 'cutting_start':cutting_start}
+        return {'coord_trans':coord_trans, 'cutting_start':cutting_start, 'linegress':linegress, 'ns_error':ns_fehler_vorhanden}
 
     #CHANGE NEW
     def height_points (self, coord_trans):

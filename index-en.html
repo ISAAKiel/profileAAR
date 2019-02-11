@@ -11,11 +11,11 @@
 	<p>Kay Schmütz (Graduate School - Human Developent in Landscapes / CAU Kiel)</p>
 	<p>Christoph Rinne (Institute for Pre- and Protohistoric Archaeology / CAU Kiel)</p>
     <h1>How to use the profileAAR-Plugin</h1>
-	<p>ProfileAAR is a plugin to transform measured photogrammetry points to allow equalization of profiles in the GIS.</p>
+	<p>ProfileAAR is a plugin to transform measured photogrammetry points to allow equalization of profiles in GIS.</p>
 	<p>The points are rotated and shifted according to different specifications (see below), </p>
 	<p>the determination of the rotation parameters is based on a linear regression.</p>
 	<h2>1. Input data</h2>
-	<p>You need a shapefile with points. Several profiles can be processed at the same time
+	<p>You require a shapefile with points. Several profiles can be processed at the same time
 	<p>The shapefile must have at least the following attributes</p>
 	<ul>
 	<li> the <b>z-value</b> [float/double/real] </li>
@@ -66,7 +66,7 @@
 	<p></p>
 	<h2>2. Options</h2>
 	<p>First, the layer and then the associated attributes in the dropdown menus must be selected. <b>z coord</b>, the <b>pr number</b>, the <b>use</b> and the <b>view column</b> boxes. </p>
-	<p>In this case <b>use</b> means if the point will be used to calculate the rotation angle (coloumn with '1'). If there is an outlier in the data, mark it with a '0'.</p>
+	<p>In this case <b>use</b> means whether the point will be used to calculate the rotation angle (coloumn with '1'). If there is an outlier in the data, mark it with a '0'.</p>
 	<p>Please select the matching attributes.</p>
 	<p>In the next two boxes, you have to choose:</p>
 	<ul>
@@ -79,14 +79,14 @@
 	<p>In the <b>Direction</b> box:</p>
 	<li>1.: <b>Original</b>. The points will be parallel to the profile.</li>
 	<li>2.: <b>Horizontal</b>. The points will be parallel to the x-axis.</li>
-	<li>3.: <b>original height</b>. Same like horizontal but the profile will be at x = 0 and y is the measured height. This allows an export with a coordinate frame</li>
-	<p><i>Before using the third option <b>original height</b> always check whether the given coordinate system is still constant in scale at the origin</i></p>
+	<li>3.: <b>original height</b>. Same as horizontal but the profile will be at x = 0 and y is the measured height. This allows an export with a coordinate frame.</li>
+	<p><i>Before using the third option <b>original height</b> always check whether the given coordinate system is still constantly in scale at the origin</i></p>
 	<p></p>
 	<img src="./img/direction.jpg" alt="Direction" style="width:630px;height:234px;">
 	<p> View on a profile(0). The result after choosing original (1) or horizontal (2).</p>
 	</ul>
 
-	<p><b>Export elevation points</b> will export an additional shapefile containing the upper right fotogrammetric control point and its height and the profile number.</p>
+	<p><b>Export elevation points</b> will export an additional shapefile containing the upper right photogrammetric control point, its height, and the profile number.</p>
 	<p><b>Export section</b> will export an additional shapefile containing the section based on the highest outer points.</p>
 	<p>Thanks to Nils Müller-Scheeßel for the idea.</p>
 	<p>This can be used to show the line with the point of view. </p>
@@ -99,34 +99,34 @@
 	<p>This can be very helpful while processing the drawings.</p>
 
 	<h2>3. Run the calculation</h2>	
-	<p>Some hints for a good result</p>
+	<p>Some hints for a good result:</p>
 	<ul>
-	<li>If you have a straight profile you will have the best results</li>
-	<li>If profiles are very long and not very straight, sometimes it is better to split them (we plan a function for the next version to do it the easy way for the user)</li>
+	<li>If you have a straight profile you will have the best results.</li>
+	<li>If profiles are very long and not very straight, sometimes it is better to split them (we plan a function for the next version to do it the easy way for the user).</li>
 	</ul>
 	<h2>4. Accuracy</h2>
 	<p>Getting values for the accuracy of the points.</p>
 	<p>When you open the attribute table of the rotated points, you will find the column <b>distance</b>.</p>
-  	<p>This value represents the distance of each point to the calculated profile between the points. As higher the value is, as worse is the result.</p>
+  	<p>This value represents the distance of each point to the calculated profile between the points. The higher the value is, the worse the result will be.</p>
   	<p>If there is one point not in the line, this one will have a high distance. If you choose 0 in the original column <b>used Points</b>, this point will be excluded</p>
-	<p>in the calculation of the regression line, but the point will be rotated. This can be used to correct measurement faults.</p>
-	<h2>5. Errorhandling</h2>
-	<p>An errorhandler will check the data during the calculation</p>
+	<p>in the calculation of the regression line, but the point will be rotated. This can be used to correct measurement errors.</p>
+	<h2>5. Error handling</h2>
+	<p>An error handler will check the data during the calculation</p>
 	<p>There are a few errors and warnings possible. All Errors will be shown in a red bar and in the ErrorLOG protocol in the protocol window (View -> Panels -> Log Messages Panel)</p>
 	<ul>
 	<li> <i> A profile needs min. 4 points. Error on profile: XXX </i> </li>
 	<p>Profile XXX has 4 or less points.</p>
-	<li> <i>The view column of your data is inconsistant (either non or two different views are present). Error on profile: XXX </i> </li>
-	<p> The view of the profiles contains different or no values for the points </p>
+	<li> <i>The view column of your data is inconsistent (either none or two different views are present). Error on profile: XXX </i> </li>
+	<p> The view of the profiles contains different or no values for the points. </p>
 	<li> <i>The view value is not one of the four cardinal directions. Error on profile:  XXX </i> </li>
-	<p>The view column holds another direction than N, E, S or W</p>
+	<p>The view column holds another direction than N, E, S or W.</p>
 	<li> <i>Only 0 or 1 are allowed in the selection/use. Error on profile:  XXX </i> </li>		
-	<p>In the column use are only 1 or 0 allowed as values</p>
-	<li> <i>Layer XXX is not projected. Please choose an projected reference system.</i> </li>
-	<p>The coordinatesystem of the Layer is not a projected one. Save the layer in a projected system</p>
-	<li> <i>The z-Value needs to be a float. Check the field type of the z-Value</i> </li>	
+	<p>In the use column only 1 or 0 are allowed as values.</p>
+	<li> <i>Layer XXX is not projected. Please choose a projected reference system.</i> </li>
+	<p>The coordinate system of the layer is not a projected one. Save the layer in a projected system.</p>
+	<li> <i>The z-value needs to be a float. Check the field type of the z-value</i> </li>	
 	<p>Save the column containing the z-value as float</p>
-	<p><b>You will get the best results, if your are careful on the excavation and prepare a perfectly straight profile!</b></p>
+	<p><b>You will get the best results if your work carefully in advance on the excavation and prepare a perfectly straight profile!</b></p>
 	</ul>
 	</body>
 </html>
