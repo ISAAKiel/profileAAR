@@ -25,7 +25,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant
+from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QFileInfo
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QPixmap
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
 from qgis.gui import QgsMessageBar, QgsMapLayerComboBox, QgsMapLayerProxyModel
@@ -403,7 +403,8 @@ class profileAAR:
             pass
 
     def select_output_file(self):
-        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.shp')
+        prjfi = QFileInfo(QgsProject.instance().fileName())
+        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ", prjfi.absolutePath(), '*.shp')
         self.dlg.outputPath.setText(filename)
 
 
