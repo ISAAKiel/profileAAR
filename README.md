@@ -1,3 +1,3 @@
 # profileAAR
 A python Plugin for QGIS 2.X
-A plugin for recalculate profile control points to use them for rectifing archaeological profiles
+The plugin profileAAR transforms profile control points for fotogrammetric rectification of profile images of archaeological excavations
