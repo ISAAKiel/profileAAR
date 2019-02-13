@@ -285,7 +285,7 @@ class profileAAR:
             profile_names = []
             #check if the z values have the correct type and if the crs is projected
             fieldCheck = errorhandler.field_check(selectedLayer, self.dlg.zCombo.currentText())
-            printLogMessage(self, str(fieldCheck), 'AA')
+
 
 
             height = False
