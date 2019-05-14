@@ -30,7 +30,7 @@ tags=
 
 homepage=https://github.com/ISAAKiel/profileAAR
 category=Vector
-icon=icon.png
+icon=img/icon.png
 # experimental flag
 experimental=False
 

@@ -1,8 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/profileAAR" >
-        <file>icon.png</file>
-    </qresource>
-    <qresource prefix="/plugins/profileAAR" >
-        <file>icon_dialogue.png</file>
-    </qresource>
+  <qresource prefix="profileAAR">
+    <file>img/icon.png</file>
+  </qresource>
 </RCC>

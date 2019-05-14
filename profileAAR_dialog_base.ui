@@ -213,7 +213,7 @@
     <string>ProfileAAR</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_9">
+  <widget class="QLabel" name="icon">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -226,7 +226,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="resources.qrc">:/plugins/profileAAR/icon.png</pixmap>
+    <pixmap>img/icon.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -335,6 +335,7 @@
    <header>qgis.gui</header>
   </customwidget>
  </customwidgets>
+ <resources/>
  <connections>
   <connection>
    <sender>button_box</sender>

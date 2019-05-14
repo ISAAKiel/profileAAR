@@ -76,7 +76,7 @@ from .transformation import sectionCalc
 
 # Initialize Qt resources from file resources.py
 
-#import resources
+from .resources import *
 
 import sys
 
@@ -382,9 +382,7 @@ class profileAAR(object):
 
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-
-
-        icon_path = ':/plugins/profileAAR/icon.png'
+        icon_path = ':/profileAAR/img/icon.png'
 
         self.add_action(
 
