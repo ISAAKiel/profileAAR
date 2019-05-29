@@ -12,3 +12,6 @@ You will find the Plugin in the Extention Manager
 **QGIS 2**
 !!! Not working with QGIS 2.18.28 - Versions 2.10 -> 2.18.26 are ok !!!
 Please install the Plugin manually by downloading the last version in the master branch and copy the files in the QGIS Plugin folder
+
+
+Moritz Mennenga, Kay Schmütz, & Christoph Rinne. (2019, May 29). ISAAKiel/profileAAR: profileAAR - First official QGIS3 release (Version 2.0.1). Zenodo. http://doi.org/10.5281/zenodo.3234836
