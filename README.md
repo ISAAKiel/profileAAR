@@ -1,5 +1,14 @@
 # profileAAR
-A python Plugin for QGIS 2.X
+A python Plugin
 The plugin profileAAR transforms profile control points for fotogrammetric rectification of profile images of archaeological excavations
 
+**How to use profileAAR**
+After installing and opening the plugin there is a "?"-Button in the Plugin. There you will find additional informations. 
+
+**QGIS 3**
+Install Qgis3 >3.6.0 
+You will find the Plugin in the Extention Manager
+
+**QGIS 2**
 !!! Not working with QGIS 2.18.28 - Versions 2.10 -> 2.18.26 are ok !!!
+Please install the Plugin manually by downloading the last version in the master branch and copy the files in the QGIS Plugin folder
