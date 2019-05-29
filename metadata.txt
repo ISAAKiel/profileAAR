@@ -11,7 +11,7 @@ name=profileAAR
 qgisMinimumVersion=3.6.0
 description=The plugin profileAAR transforms profile control points for fotogrammetric rectification of section images of archaeological excavations
 version=2.0
-author=ISAAKiel- Moritz Mennenga NIhK WHV / Kay Schmütz a. Christoph Rinne UFG Kiel 
+author=ISAAKiel- Moritz Mennenga NIhK WHV / Kay Schmütz a. Christoph Rinne UFG Kiel
 email=mennenga@nihk.de
 
 about= The plugin profileAAR transforms section control points for photogrammetric rectification of profile images from archaeological excavations. With this plugin you can prepare your data for rectifing your images of profiles in QGIS. Explanation is under the '?'-Symbol to be found in the plugin  
