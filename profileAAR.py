@@ -70,7 +70,7 @@ from qgis.utils import showPluginHelp
 
 from .transformation import sectionCalc
 
-
+from .messageWrapper import *
 
 
 
@@ -109,31 +109,13 @@ from .profileAAR_dialog import profileAARDialog
 import os.path
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class profileAAR(object):
 
     """QGIS Plugin Implementation."""
 
-
-
     def __init__(self, iface):
 
         """Constructor.
-
-
-
         :param iface: An interface instance that will be passed to this class
 
             which provides the hook by which you can manipulate the QGIS
@@ -164,23 +146,15 @@ class profileAAR(object):
 
             'profileAAR_{}.qm'.format(locale))
 
-
-
         if os.path.exists(locale_path):
 
             self.translator = QTranslator()
 
             self.translator.load(locale_path)
 
-
-
             if qVersion() > '4.3.3':
 
                 QCoreApplication.installTranslator(self.translator)
-
-
-
-
 
         # Declare instance attributes
 
@@ -193,12 +167,6 @@ class profileAAR(object):
         self.toolbar = self.iface.addToolBar(u'profileAAR')
 
         self.toolbar.setObjectName(u'profileAAR')
-
-        
-
-
-
-
 
     # noinspection PyMethodMayBeStatic
 
@@ -227,10 +195,6 @@ class profileAAR(object):
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
 
         return QCoreApplication.translate('profileAAR', message)
-
-
-
-
 
     def add_action(
 
@@ -330,8 +294,6 @@ class profileAAR(object):
 
         """
 
-
-
         icon = QIcon(icon_path)
 
         action = QAction(icon, text, parent)
@@ -340,25 +302,17 @@ class profileAAR(object):
 
         action.setEnabled(enabled_flag)
 
-
-
         if status_tip is not None:
 
             action.setStatusTip(status_tip)
-
-
 
         if whats_this is not None:
 
             action.setWhatsThis(whats_this)
 
-
-
         if add_to_toolbar:
 
             self.toolbar.addAction(action)
-
-
 
         if add_to_menu:
 
@@ -368,15 +322,9 @@ class profileAAR(object):
 
                 action)
 
-
-
         self.actions.append(action)
 
-
-
         return action
-
-
 
     def initGui(self):
 
@@ -393,10 +341,6 @@ class profileAAR(object):
             callback=self.run,
 
             parent=self.iface.mainWindow())
-
-
-
-
 
     def unload(self):
 
@@ -416,13 +360,9 @@ class profileAAR(object):
 
         del self.toolbar
 
-
-
-
-
     def layer_field(self):
 
-        '''Function to read the Fieldnames in the select infos in GUI section'''
+        """Function to read the Fieldnames in the select infos in GUI section"""
 
         # get the selected layer from the inputCombobox
 
@@ -464,23 +404,19 @@ class profileAAR(object):
 
         self.dlg.useCombo.addItems(fieldnames)
 
-
-
-
-
     def run(self):
 
         """Run method that performs all the real work"""
 
-        #trigger help button
+        # trigger help button
 
-        #helpButton.clicked.connect(showPluginHelp())
+        # helpButton.clicked.connect(showPluginHelp())
 
         # Create the dialog (after translation) and keep reference
 
         self.dlg = profileAARDialog()
 
-        #initialize the Errorhandler
+        # initialize the Errorhandler
 
         errorhandler = ErrorHandler(self.iface)
 
@@ -490,7 +426,7 @@ class profileAAR(object):
 
         '''DEFINE OUTPUT PATH'''
 
-        #Choose file if button is clicked
+        # Choose file if button is clicked
 
         self.dlg.outputPath.clear()
 
@@ -512,11 +448,7 @@ class profileAAR(object):
 
         self.dlg.inputCombo.currentIndexChanged.connect(self.layer_field)
 
-
-
         self.dlg.helpButton.clicked.connect(self.show_help)
-
-
 
         '''SHORT BLOCK OF PLUGIN CODE (runs the dialog and triggers the event after the OK button was pressed)'''
 
@@ -532,67 +464,51 @@ class profileAAR(object):
 
         if result:
 
-            inputCheck = False
-
-            fieldCheck = False
-
-            #Check if input fields are filled correctly an if the layer has correct properties
+            # Check if input fields are filled correctly an if the layer has correct properties
 
             inputCheck = errorhandler.input_check(self.dlg.outputPath.text())
 
-
-
             '''GET INPUT FROM GUI TO VARIABLES/PREPARE LIST OF DATA'''
 
-            #GET TEXT FROM METHOD AND DIRECTION
+            # GET TEXT FROM METHOD AND DIRECTION
 
-            #Read the method that is selected
+            # Read the method that is selected
 
             method = str(self.dlg.methodCombo.currentText())
 
-            #read the direction, that is selected
+            # read the direction, that is selected
 
             direction = str(self.dlg.directionCombo.currentText())
 
-            #Get the selected layer
+            # Get the selected layer
 
             selectedLayer = self.dlg.inputCombo.currentLayer()
 
-            #PREPARE DATA LIST
+            # PREPARE DATA LIST
 
-            #Go thought all data rows in the selected layer
+            # Go thought all data rows in the selected layer
 
             iter = selectedLayer.getFeatures()
 
-            #list for the data
+            # list for the data
 
             coord = []
 
-            #list for the different profile names
+            # list for the different profile names
 
             profile_names = []
 
-            #check if the z values have the correct type and if the crs is projected
+            # check if the z values have the correct type and if the crs is projected
 
             fieldCheck = errorhandler.field_check(selectedLayer, self.dlg.zCombo.currentText())
-
-
-
-
-
-
 
             height = False
 
             section = False
 
-
-
-            if fieldCheck == True or inputCheck == True:
+            if fieldCheck is True or inputCheck is True:
 
                 sys.exitfunc()
-
-
 
             if self.dlg.hightBox.isChecked():
 
@@ -602,8 +518,6 @@ class profileAAR(object):
 
                     section = True
 
-
-
             point_id = 0
 
             for feature in iter:
@@ -612,33 +526,31 @@ class profileAAR(object):
 
                 # fetch geometry
 
-                # TODO: 3Nachkommastellen!! Bisher sind es nur 2.....
-
                 geom = feature.geometry()
 
-                #getting x and y coordinate
+                # getting x and y coordinate
 
                 x = round(geom.asPoint().x(), 3)
 
                 y = round(geom.asPoint().y(), 3)
 
-                #write coordinates and attributes (view, profile and z) in a list
+                # write coordinates and attributes (view, profile and z) in a list
 
-                # TODO: Use dictinary or object
-
-                #add an ID to each point
+                # add an ID to each point
 
                 point_id += 1
 
-                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()], feature[self.dlg.profileCombo.currentText()], feature[self.dlg.useCombo.currentText()], point_id])
+                coord.append([x, y, feature[self.dlg.zCombo.currentText()],
+                              feature[self.dlg.viewCombo.currentText()],
+                              feature[self.dlg.profileCombo.currentText()],
+                              feature[self.dlg.useCombo.currentText()],
+                              point_id])
 
-                #write a list of profilenames (unique entries)
+                # write a list of profilenames (unique entries)
 
                 if feature[self.dlg.profileCombo.currentText()] not in profile_names:
 
                     profile_names.append(feature[self.dlg.profileCombo.currentText()])
-
-
 
             '''WORK ON EVERY PROFILE IN LOOP'''
 
@@ -646,15 +558,11 @@ class profileAAR(object):
 
             # select every single profile in a loop
 
-
-
             coord_trans = []
 
             height_points = []
 
             cutting_line = []
-
-
 
             for i in range(len(profile_names)):
 
@@ -666,11 +574,12 @@ class profileAAR(object):
 
                 view_check = []
 
-                #CHANGE  # instantiate list for the selection to check if all entries in one profile are the same
+                # instantiate list for the selection to check if all entries in one profile are the same
 
                 selection_check = []
 
-                # iterate through the features in coord, if the profilename matches store the features datalist in templist
+                # iterate through the features in coord, if the profilename matches store the features
+                # datalist in templist
 
                 for x in range(len(coord)):
 
@@ -678,107 +587,92 @@ class profileAAR(object):
 
                         coord_proc.append(coord[x])
 
-
-
                         # write the unique view values in the checklist
 
                         if coord[x][3] not in view_check:
 
                             view_check.append(coord[x][3])
 
-
-
-                        # CHANGE  write the unique selection values in the checklist
+                        # write the unique selection values in the checklist
 
                         if coord[x][4] not in selection_check:
 
                             selection_check.append(coord[x][5])
 
-                
+                # Handle Errors depending on the attributes in the fields
 
-                #Handle Errors depending on the attributes in the fields
+                # Errorhandling: Checking the single Profiles for inconsestency
 
-                #Errorhandling: Checking the single Profiles for inconsestency
-
-                #Therefore we need the data of the actual profile, the view_check with the view values and actual profile name, selection is 0 or 1
+                # Therefore we need the data of the actual profile, the view_check with the view values
+                # and actual profile name, selection is 0 or 1
 
                 profileCheck = False
 
-                if fieldCheck == False and inputCheck == False:
+                if fieldCheck is False and inputCheck is False:
 
+                    profileCheck = errorhandler.singleprofile(coord_proc,
+                                                              view_check,
+                                                              str(profile_names[i]),
+                                                              selection_check)
 
+                if profileCheck is False and fieldCheck is False and inputCheck is False:
 
-                    profileCheck = errorhandler.singleprofile(coord_proc, view_check, str(profile_names[i]), selection_check)
-
-
-
-
-
-
-
-                if profileCheck == False and fieldCheck == False and inputCheck == False:
-
-
-
-                    #Calculating the profile and add it to the list
+                    # Calculating the profile and add it to the list
 
                     transform_return = magicbox.transformation(coord_proc, method, direction)
 
                     coord_height_list = transform_return['coord_trans']
 
-
-
                     coord_trans.append(coord_height_list)
 
-                    #CHANGE If checked, the upper right poitn has to be exportet as point
+                    # If checked, the upper right poitn has to be exportet as point
 
-                    if height == True:
+                    if height is True:
 
                         height_points.append(magicbox.height_points(coord_height_list))
 
+                    if section is True:
 
+                        cutting_line.append(sectionCalc(self,
+                                                        coord_proc,
+                                                        transform_return['cutting_start'],
+                                                        transform_return['linegress'],
+                                                        transform_return['ns_error']), )
 
-                    if section == True:
-
-                        cutting_line.append(sectionCalc(self, coord_proc, transform_return['cutting_start'],transform_return['linegress'], transform_return['ns_error']), )
-
-
-
-
-
-
-
-
-
-            if profileCheck == False:
+            if profileCheck is False:
 
                 '''Export the data'''
 
-                #For exporting we need the data, the path and the crs of the input data
+                # For exporting we need the data, the path and the crs of the input data
 
-                export.export(coord_trans, self.dlg.outputPath.text(), selectedLayer.crs())
+                export.export(coord_trans,
+                              self.dlg.outputPath.text(),
+                              selectedLayer.crs())
 
-                #If points are checked, export them #CHANGE
+                # If points are checked, export them #CHANGE
 
-                if height == True:
+                if height is True:
 
-                    export.export_height(height_points, self.dlg.outputPath.text(), selectedLayer.crs())
+                    export.export_height(height_points,
+                                         self.dlg.outputPath.text(),
+                                         selectedLayer.crs())
 
-                if section == True:
+                if section is True:
 
-                    #if a profile is recommended, we have to export it. To make it easy to display everything, export left point first
+                    # if a profile is recommended, we have to export it. To make it easy to display everything,
+                    # export left point first
+                    export.export_section(cutting_line,
+                                          coord_proc[0][4],
+                                          self.dlg.outputPath.text(),
+                                          selectedLayer.crs())
 
-                    export.export_section(cutting_line, coord_proc[0][4],self.dlg.outputPath.text(), selectedLayer.crs())
+                # Load the file to qgis automaticly
 
+                layer = self.iface.addVectorLayer(self.dlg.outputPath.text(),
+                                                  "",
+                                                  "ogr")
 
-
-                #Load the file to qgis automaticly
-
-                layer = self.iface.addVectorLayer(self.dlg.outputPath.text(), "", "ogr")
-
-                #CHANGE
-
-                if height == True:
+                if height is True:
 
                     filename = self.dlg.outputPath.text().split(".shp")[0]
 
@@ -786,27 +680,23 @@ class profileAAR(object):
 
                     layer = self.iface.addVectorLayer(filename, "", "ogr")
 
-                if section == True:
+                if section is True:
 
                     filename = self.dlg.outputPath.text().split(".shp")[0]
 
                     filename = filename + "_section.shp"
 
-                    layer = self.iface.addVectorLayer(filename, "", "ogr")
+                    layer = self.iface.addVectorLayer(filename,
+                                                      "",
+                                                      "ogr")
 
-                #if the loading of the layer fails, give a message
+                # if the loading of the layer fails, give a message
 
                 if not layer:
 
-                    criticalMessageToBar(self, 'Error', 'Failed to open '+self.dlg.outputPath.text())
-
-
-
-    
+                    criticalMessageToBar(self, 'Error', 'Failed to open '+ self.dlg.outputPath.text())
 
             pass
-
-
 
     def select_output_file(self):
 
@@ -816,91 +706,6 @@ class profileAAR(object):
 
         self.dlg.outputPath.setText(filename)
 
-
-
-
-
     def show_help(self):
 
         showPluginHelp()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			
-
-
-
-		
-

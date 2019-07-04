@@ -44,15 +44,9 @@
 
 from __future__ import print_function
 
-
-
-
 from qgis.gui import QgsMessageBar
 
 from qgis.core import *
-
-
-
 
 
 def criticalMessageToBar (self, header, text):
@@ -60,11 +54,9 @@ def criticalMessageToBar (self, header, text):
     self.qgisInterface.messageBar().pushMessage(header, text, level=Qgis.Critical)
 
 
-
 def warningMessageToBar (self, header, text):
 
     self.qgisInterface.messageBar().pushMessage(header, tex, level=Qgis.Info)
-
 
 
 def exportError (self):
@@ -75,8 +67,6 @@ def exportError (self):
     criticalMessageToBar(self, 'Export Error', 'Error when creating shapefile')
 
 
-
 def printLogMessage(self,message,tab):
 
     QgsMessageLog.logMessage(message, tab)
-

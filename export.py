@@ -78,8 +78,6 @@ class Export(object):
 
             '''Create Vector Layer'''
 
-            # CHANGE
-
             export_fields = QgsFields()
 
             export_fields.append(QgsField("x", QVariant.Double))
@@ -96,17 +94,16 @@ class Export(object):
 
             export_fields.append(QgsField("was_used", QVariant.String))
 
-
-
-            writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QgsWkbTypes.Point, corrdinate_system, "ESRI Shapefile")
+            writer = QgsVectorFileWriter(filename,
+                                         "utf-8",
+                                         export_fields,
+                                         QgsWkbTypes.Point,
+                                         corrdinate_system,
+                                         "ESRI Shapefile")
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
 
                 exportError(self)
-
-
-
-            #CHANGE
 
             export_feature = QgsFeature()
 
@@ -114,31 +111,21 @@ class Export(object):
 
                 for i in range(len(coord_trans[x])):
 
-                    export_feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(coord_trans[x][i][0], coord_trans[x][i][2])))
+                    export_feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(coord_trans[x][i][0],
+                                                                                  coord_trans[x][i][2])))
 
-                    #TODO Werte runden auf drei nachkommastellen
-
-                    export_feature.setAttributes([float(coord_trans[x][i][0]), float(coord_trans[x][i][1]), float(coord_trans[x][i][2]), str(coord_trans[x][i][3]), str(coord_trans[x][i][4]), str(coord_trans[x][i][5]) , str(coord_trans[x][i][6])])
+                    export_feature.setAttributes([float(coord_trans[x][i][0]), float(coord_trans[x][i][1]),
+                                                  float(coord_trans[x][i][2]), str(coord_trans[x][i][3]),
+                                                  str(coord_trans[x][i][4]), str(coord_trans[x][i][5]),
+                                                  str(coord_trans[x][i][6])])
 
                     writer.addFeature(export_feature)
 
-
-
-
-
-
-
             del writer
-
-
-
-
 
     def export_height(self, coord_trans, filename, corrdinate_system):
 
             '''Create Vector Layer'''
-
-            # CHANGE
 
             export_fields = QgsFields()
 
@@ -150,17 +137,13 @@ class Export(object):
 
             filename = filename + "_height.shp"
 
-
-
-            writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QgsWkbTypes.Point, corrdinate_system, "ESRI Shapefile")
+            writer = QgsVectorFileWriter(filename, "utf-8", export_fields,
+                                         QgsWkbTypes.Point, corrdinate_system,
+                                         "ESRI Shapefile")
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
 
                 exportError(self)
-
-
-
-            #CHANGE
 
             export_feature = QgsFeature()
 
@@ -170,53 +153,33 @@ class Export(object):
 
                 export_feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(coord_trans[x][0], coord_trans[x][2])))
 
-                #TODO Werte runden auf drei nachkommastellen
-
                 export_feature.setAttributes([str(coord_trans[x][3]), str(coord_trans[x][4])])
 
                 writer.addFeature(export_feature)
 
-
-
             del writer
-
-
-
-
-
-
-
-
-
-
 
     def export_section(self, cutting_line, prnumber, filename, corrdinate_system):
 
             '''Create Vector Layer'''
 
-            # CHANGE
-
             export_fields = QgsFields()
 
             export_fields.append(QgsField("prnumber", QVariant.String))
-
-
-
-
 
             filename = filename.split(".shp")[0]
 
             filename = filename + "_section.shp"
 
-            writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QgsWkbTypes.LineString, corrdinate_system, "ESRI Shapefile")
+            writer = QgsVectorFileWriter(filename, "utf-8",
+                                         export_fields,
+                                         QgsWkbTypes.LineString,
+                                         corrdinate_system,
+                                         "ESRI Shapefile")
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
 
                 exportError(self)
-
-
-
-            #CHANGE
 
             export_feature = QgsFeature()
 
@@ -228,15 +191,4 @@ class Export(object):
 
                 writer.addFeature(export_feature)
 
-
-
-
-
-
-
             del writer
-
-
-
-
-
