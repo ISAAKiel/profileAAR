@@ -72,11 +72,25 @@ class Export(object):
 
         self.qgisInterface = qgisInterface
 
-        
 
-    def export(self, coord_trans, filename, corrdinate_system):
+    def export(self, coord_trans, filename, coordinate_system):
 
-            '''Create Vector Layer'''
+            """
+            create a new QGIS vectorlayer with the new calculated points
+
+            :param coord_trans: list of new points and their attributes
+            :type coord_trans: list
+
+            :param filename: name of the export file
+            :type filename: str, QString
+
+            :param coordinate_system: layers spatial reference
+            :type coordinate_system: QgsCoordinateReferenceSystem
+
+            """
+
+
+            # Define the fields of the attribute table
 
             export_fields = QgsFields()
 
@@ -94,11 +108,13 @@ class Export(object):
 
             export_fields.append(QgsField("was_used", QVariant.String))
 
+            # write the new file
+
             writer = QgsVectorFileWriter(filename,
                                          "utf-8",
                                          export_fields,
                                          QgsWkbTypes.Point,
-                                         corrdinate_system,
+                                         coordinate_system,
                                          "ESRI Shapefile")
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
@@ -106,6 +122,8 @@ class Export(object):
                 exportError(self)
 
             export_feature = QgsFeature()
+
+            # write each line from the new dataset to the shape-file
 
             for x in range(len(coord_trans)):
 
@@ -123,9 +141,23 @@ class Export(object):
 
             del writer
 
-    def export_height(self, coord_trans, filename, corrdinate_system):
+    def export_height(self, coord_trans, filename, coordinate_system):
 
-            '''Create Vector Layer'''
+            """
+            Export the upper right point in a new shapefile to support the layout scheme used by archaeologists
+
+            :param coord_trans: coord_trans
+            :type coord_trans: list
+
+            :param filename: name of the export file
+            :type filename: str, QString
+
+            :param coordinate_system: layers spatial reference
+            :type coordinate_system: QgsCoordinateReferenceSystem
+
+            """
+
+            # Define the fields of the attribute table
 
             export_fields = QgsFields()
 
@@ -133,12 +165,16 @@ class Export(object):
 
             export_fields.append(QgsField("org_z", QVariant.String))
 
+            # Add a suffix on the filename
+
             filename = filename.split(".shp")[0]
 
             filename = filename + "_height.shp"
 
+            # write the new file
+
             writer = QgsVectorFileWriter(filename, "utf-8", export_fields,
-                                         QgsWkbTypes.Point, corrdinate_system,
+                                         QgsWkbTypes.Point, coordinate_system,
                                          "ESRI Shapefile")
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
@@ -147,9 +183,9 @@ class Export(object):
 
             export_feature = QgsFeature()
 
-            for x in range(len(coord_trans)):
+            # Write the upper right point in a new shape-file
 
-                # QgsMessageLog.logMessage(str(coord_trans[x]), 'MyPlugin')
+            for x in range(len(coord_trans)):
 
                 export_feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(coord_trans[x][0], coord_trans[x][2])))
 
@@ -159,13 +195,33 @@ class Export(object):
 
             del writer
 
-    def export_section(self, cutting_line, prnumber, filename, corrdinate_system):
+    def export_section(self, cutting_line, prnumber, filename, coordinate_system):
 
-            '''Create Vector Layer'''
+            """
+            Export line between the most upper right and upper left points
+
+            :param cutting_line: two points representing an line for each profile
+            :type cutting_line: list of QGISPoints
+
+            :param prnumber: number of the profile
+            :type prnumber: str, QString
+
+            :param filename: name of the export file
+            :type filename: str, QString
+
+            :param coordinate_system: layers spatial reference
+            :type coordinate_system: QgsCoordinateReferenceSystem
+
+            """
+
+
+            # Define the fields of the attribute table
 
             export_fields = QgsFields()
 
             export_fields.append(QgsField("prnumber", QVariant.String))
+
+            # Add a suffix on the filename
 
             filename = filename.split(".shp")[0]
 
@@ -174,7 +230,7 @@ class Export(object):
             writer = QgsVectorFileWriter(filename, "utf-8",
                                          export_fields,
                                          QgsWkbTypes.LineString,
-                                         corrdinate_system,
+                                         coordinate_system,
                                          "ESRI Shapefile")
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
@@ -182,6 +238,8 @@ class Export(object):
                 exportError(self)
 
             export_feature = QgsFeature()
+
+            # Add each geometry to the shape-file
 
             for x in range(len(cutting_line)):
 

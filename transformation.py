@@ -79,6 +79,26 @@ from .messageWrapper import criticalMessageToBar, printLogMessage
 
 def rotation (self, coord_proc, slope_deg, zAdaption):
 
+
+    """
+    rotating points of a profile depending on the settings and the calculated rotation angle
+
+    :param coord_proc: coordinates to be processed
+    :type coord_proc: list
+
+    :param slope_deg: rotation angle
+    :type slope_deg: str, QString
+
+    :param zAdaption: rotation z or not
+    :type zAdaption: bool
+
+    :returns: rotated x, y and z coordinates
+    :rtype: dictionary containing lists
+
+    """
+
+    # separate list in x, y and z values
+
     x_coord_proc = listToList(coord_proc, 0)
 
     y_coord_proc = listToList(coord_proc, 1)
@@ -98,6 +118,8 @@ def rotation (self, coord_proc, slope_deg, zAdaption):
     y_trans = []
 
     z_trans = []
+
+    # rotate each point
 
     for i in range(len(coord_proc)):
 
@@ -126,6 +148,20 @@ def rotation (self, coord_proc, slope_deg, zAdaption):
 
 def listToList(coord_proc, position):
 
+    """
+    getting a list element out of a list
+
+    :param coord_proc: coordinates to be processed
+    :type coord_proc: list
+
+    :param position: position of the list to be extracted
+    :type position: integer
+
+    :returns: a new list
+    :rtype: list
+
+    """
+
     newList = []
 
     for i in range(len(coord_proc)):
@@ -137,18 +173,27 @@ def listToList(coord_proc, position):
 
 def ns_error_determination(self, coord_proc):
 
+    """
+    Due to mathematical problems with exactly north-south orientated profiles it is nessecary to determine them
+
+    Therefore a linear regression has to be calculated "by hand"
+    and the slope between the the most northern und southern
+
+    points has to be compared with the slope of the linegress (the results of the lingress function are not sufficent)
+
+    The calculation is after https://www.crashkurs-statistik.de/einfache-lineare-regression/
+
+    :param coord_proc: coordinates to be processed
+    :type coord_proc: list
+
+    :returns: a bool that shows if the profile is (more or less) N-S orientated
+    :rtype: bool
+
+    """
+
     xw = listToList(coord_proc, 0)
 
     yw = listToList(coord_proc, 1)
-
-    # Due to mathematical problems with exactly north-south orientated profiles it is nessecary to determine them
-
-    # Therefore a linear regression has to be calculated "by hand"
-    # and the slope between the the most northern und southern
-
-    # points has to be compared with the slope of the linegress (the results of the lingress function are not sufficent)
-
-    # The calculation is after https://www.crashkurs-statistik.de/einfache-lineare-regression/
 
     xStrich = mean(xw)
 
@@ -220,6 +265,8 @@ def ns_error_determination(self, coord_proc):
 
     y2Gerade = a + b * x2Gerade
 
+    # calculating the slope
+
     steigung_neu = atan((y2Gerade - y1Gerade) / (x2Gerade - x1Gerade)) * 180 / pi
 
     # If the profile is perfectly E-W orentated there is no problem, the new slope can be the old one
@@ -249,6 +296,22 @@ def ns_error_determination(self, coord_proc):
 
 
 def sectionPoint(coord_proc, side, slope):
+    """
+        Calculating the most uppereast or upperwest point of a profile to draw the sectionline
+
+        :param coord_proc: coordinates to be processed
+        :type coord_proc: list
+
+        :param side: the side to be searched for
+        :type side: str
+
+        :param slope: slope of the profile
+        :type slope: double
+
+        :returns: coordinates of the most upper left or right point
+        :rtype: dictionary
+
+    """
 
     slope_deg = (atan(slope) * 180) / pi
 
@@ -284,9 +347,28 @@ def sectionPoint(coord_proc, side, slope):
 
 
 def sectionCalc(self, coord_proc, cutting_start, linegress, ns_error):
-    # Calculation the section of the profile
-    # getting the most easter or western and highest point
-    # this is nearly the sectionline
+
+    """
+        Finding the section of the profile
+        getting the most easter or western and highest point
+        this is nearly the sectionline
+
+        :param coord_proc: coordinates to be processed
+        :type coord_proc: list
+
+        :param cutting_start: the direction to start the drawing of the profile
+        :type cutting_start: str [N, S, E, W]
+
+        :param linegress: linear least-squares regression
+        :type linegress:  scipy.stats.linregress()
+
+        :param ns_error: if there is the N-S-direction error
+        :type ns_error: bool
+
+        :returns: A list of the upper outer points for the section
+        :rtype: list of QgsPointXY()
+
+    """
 
     eastpoint = sectionPoint(coord_proc, 'East', linegress[0])
 
@@ -358,6 +440,24 @@ class Magic_Box(object):
 
     def transformation(self, coord_proc, method, direction):
 
+        """
+            Main part where the transformation on the coordinates lists starts
+            For each profile this function will be started separately
+
+            :param coord_proc: coordinates to be processed
+            :type coord_proc: list
+
+            :param method: method choosen by the use
+            :type method: str
+
+            :param direction: direction choosen by the user
+            :type direction:  str
+
+            :returns: The rotated points of a profile with their attributes
+            :rtype: dictionary of lists
+
+        """
+
         #initialize the Errorhandler
 
         errorhandler = ErrorHandler(self)
@@ -366,11 +466,15 @@ class Magic_Box(object):
 
         fehler_check = False
 
+        # check if the profile is NS-orientated
+
         ns_fehler_vorhanden = ns_error_determination(self, coord_proc)
+
+        # if the profile is NS-orientated
 
         if ns_fehler_vorhanden:
 
-            # Profil um 45 Grad drehen
+            # rotate the profile on 45 degree
 
             rotationresult = rotation(self, coord_proc, 45, False)
 
@@ -417,7 +521,6 @@ class Magic_Box(object):
 
             del rangcheck_orginal[coords][3]
 
-        # distanz zwischen den beiden Punkten oben CHANGE
         # create the valuelists that are used
 
         xw = []
@@ -430,7 +533,7 @@ class Magic_Box(object):
 
         for x in range(len(x_coord_proc)):
 
-            # Nur Auswahl zum berechnen der Steigung verwenden
+            # Only use selected (use column) to calculate the rotation parameter
 
             if(selection_proc[x] == 1):
 
@@ -442,7 +545,7 @@ class Magic_Box(object):
 
             yw_check.append(y_coord_proc[x] - min(y_coord_proc))
 
-        #There is a problem with lingress if the points are nearly N-S oriented
+        # There is a problem with lingress if the points are nearly N-S oriented
 
         # To solve this, it is nessecary to change the input values of the regression
 
@@ -495,6 +598,8 @@ class Magic_Box(object):
 
         cutting_start = ''
 
+        # Calculating the rotation angle
+
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:
 
             slope_deg = 180 - fabs((atan(slope)*180)/pi) * -1
@@ -532,6 +637,8 @@ class Magic_Box(object):
         y_trans = []
 
         z_trans = []
+
+        # Rotate on the first axis
 
         first_rotationresult = rotation(self, coord_proc, slope_deg, True)
 
@@ -750,7 +857,17 @@ class Magic_Box(object):
 
     def height_points (self, coord_trans):
 
-        #Getting the top right point and export it to a pointshape
+        """
+            Getting the top right point and export it to a pointshape
+
+            :param coord_trans: coordinates to be processed
+            :type coord_trans: list
+
+            :returns: height_point x,y
+            :rtype: list
+
+        """
+
 
         height_point = []
 
@@ -770,7 +887,16 @@ class Magic_Box(object):
 
     def outer_profile_points(self, coords):
 
-        # get the two points with the highest and lowest xvalue
+        """
+            get the two points with the highest and lowest xvalue
+
+            :param coords: coordinates to be processed
+            :type coords: list
+
+            :returns: left and right highest point as x,y
+            :rtype: list of list
+
+        """
 
         coords_sorted = sorted(coords, key=lambda x: (x[0]))
 

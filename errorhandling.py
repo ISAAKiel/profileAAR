@@ -96,9 +96,9 @@ class ErrorHandler(object):
         self.qgisInterface = qgisInterface
 
 # Checks that have to do on every single Profile
+# Check whether all the necessary parameters are available and are in the correct form
 
     def singleprofile(self, coord_proc, view_check, profile_name, selection_check):
-
         errorCheck = False
 
         # check if actual profile has less then 4 points
@@ -275,6 +275,8 @@ class ErrorHandler(object):
 
         errorCheck = False
 
+        # check if output file has choosen
+
         if str(value) == "":
 
             criticalMessageToBar(self, 'Error',
@@ -282,6 +284,8 @@ class ErrorHandler(object):
             # cancel execution of the script
             errorCheck = True
         return errorCheck
+
+    #calculate a mathematical error. This is the deviation of the individual points from the regression line
 
     def calculateError(self, linegress, xw, yw):
 

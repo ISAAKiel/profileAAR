@@ -420,7 +420,11 @@ class profileAAR(object):
 
         errorhandler = ErrorHandler(self.iface)
 
+        # initialize the calculation
+
         magicbox = Magic_Box(self.iface)
+
+        # initialize the Export
 
         export = Export(self.iface)
 
@@ -630,6 +634,8 @@ class profileAAR(object):
                     if height is True:
 
                         height_points.append(magicbox.height_points(coord_height_list))
+
+                    # if checked the section has to be exported
 
                     if section is True:
 
