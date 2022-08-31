@@ -61,7 +61,7 @@ from builtins import object
 from qgis.core import *
 
 import scipy
-
+import numpy
 from scipy import stats
 
 import sys
@@ -77,39 +77,28 @@ import matplotlib.pyplot as plt
 from .messageWrapper import criticalMessageToBar, printLogMessage
 
 
+
+
+
 def rotation (self, coord_proc, slope_deg, zAdaption):
 
+    x_coord_proc = listToList(self, coord_proc, 0)
 
-    """
-    rotating points of a profile depending on the settings and the calculated rotation angle
+    y_coord_proc = listToList(self, coord_proc, 1)
 
-    :param coord_proc: coordinates to be processed
-    :type coord_proc: list
+    z_coord_proc = listToList(self, coord_proc, 2)
 
-    :param slope_deg: rotation angle
-    :type slope_deg: str, QString
 
-    :param zAdaption: rotation z or not
-    :type zAdaption: bool
-
-    :returns: rotated x, y and z coordinates
-    :rtype: dictionary containing lists
-
-    """
-
-    # separate list in x, y and z values
-
-    x_coord_proc = listToList(coord_proc, 0)
-
-    y_coord_proc = listToList(coord_proc, 1)
-
-    z_coord_proc = listToList(coord_proc, 2)
 
     # calculate the point of rotation
 
     center_x = mean(x_coord_proc)
 
     center_y = mean(y_coord_proc)
+
+    # QgsMessageLog.logMessage(str(coord_proc[0][4]) + " " + str(center_x) + " " + str(center_y), 'MyPlugin')
+
+
 
     # instantiate lists for the transformed coordinates
 
@@ -119,7 +108,9 @@ def rotation (self, coord_proc, slope_deg, zAdaption):
 
     z_trans = []
 
-    # rotate each point
+
+
+
 
     for i in range(len(coord_proc)):
 
@@ -135,7 +126,7 @@ def rotation (self, coord_proc, slope_deg, zAdaption):
 
                 slope_deg / 180 * pi))
 
-        if zAdaption is True:
+        if zAdaption == True:
 
             z_trans.append(coord_proc[i][2] + center_y - mean(z_coord_proc))
 
@@ -143,24 +134,15 @@ def rotation (self, coord_proc, slope_deg, zAdaption):
 
             z_trans.append(coord_proc[i][2])
 
-    return {'x_trans': x_trans, 'y_trans': y_trans ,'z_trans': z_trans }
 
 
-def listToList(coord_proc, position):
 
-    """
-    getting a list element out of a list
 
-    :param coord_proc: coordinates to be processed
-    :type coord_proc: list
+    return {'x_trans':x_trans, 'y_trans':y_trans ,'z_trans':z_trans }
 
-    :param position: position of the list to be extracted
-    :type position: integer
 
-    :returns: a new list
-    :rtype: list
 
-    """
+def listToList (self, coord_proc, position):
 
     newList = []
 
@@ -171,29 +153,22 @@ def listToList(coord_proc, position):
     return newList
 
 
+
 def ns_error_determination(self, coord_proc):
 
-    """
-    Due to mathematical problems with exactly north-south orientated profiles it is nessecary to determine them
 
-    Therefore a linear regression has to be calculated "by hand"
-    and the slope between the the most northern und southern
 
-    points has to be compared with the slope of the linegress (the results of the lingress function are not sufficent)
+    xw = listToList(self, coord_proc, 0)
 
-    The calculation is after https://www.crashkurs-statistik.de/einfache-lineare-regression/
+    yw = listToList(self, coord_proc, 1)
 
-    :param coord_proc: coordinates to be processed
-    :type coord_proc: list
+    # Due to mathematical problems with exactly north-south orientated profiles it is nessecary to determine them
 
-    :returns: a bool that shows if the profile is (more or less) N-S orientated
-    :rtype: bool
+    #Therefore a linear regression has to be calculated "by hand" and the slope between the the most northern und southern
 
-    """
+    #points has to be compared with the slope of the linegress (the results of the lingress function are not sufficent)
 
-    xw = listToList(coord_proc, 0)
-
-    yw = listToList(coord_proc, 1)
+    #The calculation is after https://www.crashkurs-statistik.de/einfache-lineare-regression/
 
     xStrich = mean(xw)
 
@@ -202,6 +177,10 @@ def ns_error_determination(self, coord_proc):
     abzugX = []
 
     abzugY = []
+
+
+
+
 
     for i in range(len(xw)):
 
@@ -221,7 +200,15 @@ def ns_error_determination(self, coord_proc):
 
             x2Gerade = xw[i]
 
+
+
+
+
     for i in range(len(yw)):
+
+
+
+
 
         if i > 0 and yw[i] < ymin:
 
@@ -230,6 +217,8 @@ def ns_error_determination(self, coord_proc):
             ymin_postition = i
 
         elif i > 0 and yw[i] > ymax:
+
+
 
             ymax = yw[i]
 
@@ -247,9 +236,19 @@ def ns_error_determination(self, coord_proc):
 
         abzugY.append(yw[i] - yStrich)
 
-    abzugXsum = 0
+
+
+
+
+
+
+    abzugXsum =  0
 
     abzugXsum2 = 0
+
+
+
+
 
     for i in range(len(abzugX)):
 
@@ -257,19 +256,33 @@ def ns_error_determination(self, coord_proc):
 
         abzugXsum2 = abzugXsum2 + abzugX[i] * abzugX[i]
 
+
+
+
+
+
+
     b = abzugXsum / abzugXsum2
 
     a = yStrich - b * xStrich
+
+
+
+
 
     y1Gerade = a + b * x1Gerade
 
     y2Gerade = a + b * x2Gerade
 
-    # calculating the slope
+
+
+
 
     steigung_neu = atan((y2Gerade - y1Gerade) / (x2Gerade - x1Gerade)) * 180 / pi
 
-    # If the profile is perfectly E-W orentated there is no problem, the new slope can be the old one
+
+
+    #If the profile is perfectly E-W orentated there is no problem, the new slope can be the old one
 
     try:
 
@@ -279,14 +292,17 @@ def ns_error_determination(self, coord_proc):
 
         steigung_alt = steigung_neu
 
-    # If the slope of the regression and the original points differs more than 10%, the Profile has to be considered separately
+
+
+    #If the slope of the regression and the original points differs more than 10%, the Profile has to be considered separately
 
     pluszehn = abs(steigung_alt) + (abs(steigung_alt) * 10 / 100)
 
     minuszehn = abs(steigung_alt) - (abs(steigung_alt) * 10 / 100)
 
-    if abs(steigung_neu) > pluszehn and abs(round(steigung_alt, 0)) != 45 \
-            or abs(steigung_neu) < minuszehn and abs(round(steigung_alt, 0)) != 45:
+
+
+    if abs(steigung_neu) > pluszehn and abs(round(steigung_alt, 0)) != 45 or  abs(steigung_neu) < minuszehn and abs(round(steigung_alt, 0)) != 45:
 
         return bool(True)
 
@@ -295,23 +311,14 @@ def ns_error_determination(self, coord_proc):
         return bool(False)
 
 
-def sectionPoint(coord_proc, side, slope):
-    """
-        Calculating the most uppereast or upperwest point of a profile to draw the sectionline
 
-        :param coord_proc: coordinates to be processed
-        :type coord_proc: list
 
-        :param side: the side to be searched for
-        :type side: str
 
-        :param slope: slope of the profile
-        :type slope: double
+def sectionPoint(self, coord_proc, side, slope, ns_error):
 
-        :returns: coordinates of the most upper left or right point
-        :rtype: dictionary
 
-    """
+
+    #
 
     slope_deg = (atan(slope) * 180) / pi
 
@@ -319,62 +326,71 @@ def sectionPoint(coord_proc, side, slope):
 
         if side == 'East':
 
-            coord_sort = sorted(coord_proc, key = lambda  x: ( -x[0]))
+            coord_sort = sorted(coord_proc, key = lambda  x: ( -x[0])) #, x[1]
 
         elif side == 'West':
 
-            coord_sort = sorted(coord_proc, key=lambda x: (x[0]))
+            coord_sort = sorted(coord_proc, key=lambda x: (x[0]))  #, -x[1]
+
+
 
     elif slope_deg < 45 and slope_deg > -45:
 
         if side == 'East':
 
-            coord_sort = sorted(coord_proc, key=lambda x: (-x[1]))
+            coord_sort = sorted(coord_proc, key=lambda x: (-x[1])) #, x[0]
 
         elif side == 'West':
 
-            coord_sort = sorted(coord_proc, key=lambda x: (x[1]))
+            coord_sort = sorted(coord_proc, key=lambda x: (x[1])) # , -x[0]
+
+
 
     coord_sort_xy = []
 
-    for i in range(0, 2):
+    for i in range (0,2):
 
         coord_sort_xy.append(coord_sort[i])
 
-    coords_sort_z = sorted(coord_sort_xy, key = lambda x: (-x[2]))
 
-    return {'x': coords_sort_z[0][0], 'y': coords_sort_z[0][1]}
+
+    coords_sort_z = sorted(coord_sort_xy, key = lambda  x: (-x[2]))
+
+
+
+
+
+    return {'x':coords_sort_z[0][0], 'y':coords_sort_z[0][1]}
+
+
+
+
+
+
+
 
 
 def sectionCalc(self, coord_proc, cutting_start, linegress, ns_error):
 
-    """
-        Finding the section of the profile
-        getting the most easter or western and highest point
-        this is nearly the sectionline
 
-        :param coord_proc: coordinates to be processed
-        :type coord_proc: list
 
-        :param cutting_start: the direction to start the drawing of the profile
-        :type cutting_start: str [N, S, E, W]
+    #Calculation the section of the profile
 
-        :param linegress: linear least-squares regression
-        :type linegress:  scipy.stats.linregress()
 
-        :param ns_error: if there is the N-S-direction error
-        :type ns_error: bool
 
-        :returns: A list of the upper outer points for the section
-        :rtype: list of QgsPointXY()
+    #getting the most easter or western and highest point
 
-    """
+    #this is nearly the sectionline
 
-    eastpoint = sectionPoint(coord_proc, 'East', linegress[0])
+    eastpoint = sectionPoint(self,coord_proc, 'East', linegress[0], ns_error)
 
-    westpoint = sectionPoint(coord_proc, 'West', linegress[0])
+    westpoint =  sectionPoint(self,coord_proc, 'West', linegress[0], ns_error)
 
-    # getting the single coordinates to rotate them if they are affected by the north - south problem
+
+
+
+
+    #getting the single coordinates to rotate them if they are affected by the north - south problem
 
     eastx = eastpoint['x']
 
@@ -384,19 +400,23 @@ def sectionCalc(self, coord_proc, cutting_start, linegress, ns_error):
 
     westy = westpoint['y']
 
+
+
+
+
     if ns_error:
 
-        # Rotate the line by - 45 degree
+        #Rotate the line by - 45 degree
 
-        # list of two coordinates
+        #list of two coordinates
 
         rotlist = []
 
-        rotlist.append([eastpoint['x'],eastpoint['y'], 0])
+        rotlist.append([eastpoint['x'],eastpoint['y'],0])
 
         rotlist.append([westpoint['x'], westpoint['y'], 0])
 
-        rot_result = rotation(self, rotlist, -45, False)
+        rot_result = rotation(self, rotlist,-45, False)
 
         eastx = rot_result['x_trans'][0]
 
@@ -406,15 +426,21 @@ def sectionCalc(self, coord_proc, cutting_start, linegress, ns_error):
 
         westy = rot_result['y_trans'][1]
 
-    # Convert the coorinates to Qgis Vector Points
+
+
+
+
+    #Convert the coorinates to Qgis Vector Points
 
     QgisEastPoint = QgsPointXY(eastx, easty)
 
     QgisWestPoint = QgsPointXY(westx, westy)
 
-    # write a list with the coordinates from left to right in direction of view
 
-    # This is necessary for the correct mapping in qgis
+
+    #write a list with the coordinates from left to right in direction of view
+
+    #This is necessary for the correct mapping in qgis
 
     points_of_line = []
 
@@ -430,7 +456,11 @@ def sectionCalc(self, coord_proc, cutting_start, linegress, ns_error):
 
         points_of_line.append(QgisEastPoint)
 
+
+
     return (points_of_line)
+
+
 
 class Magic_Box(object):
 
@@ -438,43 +468,41 @@ class Magic_Box(object):
 
         self.qgisInterface = qgisInterface
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def transformation(self, coord_proc, method, direction):
-
-        """
-            Main part where the transformation on the coordinates lists starts
-            For each profile this function will be started separately
-
-            :param coord_proc: coordinates to be processed
-            :type coord_proc: list
-
-            :param method: method choosen by the use
-            :type method: str
-
-            :param direction: direction choosen by the user
-            :type direction:  str
-
-            :returns: The rotated points of a profile with their attributes
-            :rtype: dictionary of lists
-
-        """
 
         #initialize the Errorhandler
 
         errorhandler = ErrorHandler(self)
 
-        profilnr_proc = listToList(coord_proc, 4)
+        profilnr_proc = listToList(self, coord_proc, 4)
+
+
+
+
+
+
 
         fehler_check = False
 
-        # check if the profile is NS-orientated
-
         ns_fehler_vorhanden = ns_error_determination(self, coord_proc)
-
-        # if the profile is NS-orientated
 
         if ns_fehler_vorhanden:
 
-            # rotate the profile on 45 degree
+            # Profil um 45 Grad drehen
 
             rotationresult = rotation(self, coord_proc, 45, False)
 
@@ -488,22 +516,37 @@ class Magic_Box(object):
 
                 coord_proc[i][2] = rotationresult['z_trans'][i]
 
-        # write the x and v values in the corresponding lists
+
+
+        #write the x and v values in the corresponding lists
+
+
+
         # instantiate an empty list for the transformed coordinates and other values
 
         # instantiate lists for the x and y values
 
-        x_coord_proc = listToList(coord_proc, 0)
+        x_coord_proc = listToList(self, coord_proc, 0)
 
-        y_coord_proc = listToList(coord_proc, 1)
+        y_coord_proc = listToList(self, coord_proc, 1)
 
-        selection_proc = listToList(coord_proc, 5)
+        z_coord_proc = listToList(self, coord_proc, 2)
 
-        id_proc = listToList(coord_proc, 6)
+        selection_proc = listToList(self, coord_proc, 5)
+
+
+
+        id_proc = listToList(self, coord_proc, 6)
 
         rangcheck_orginal = []
 
+
+
+
+
         for i in range(len(coord_proc)):
+
+
 
             tmplist = []
 
@@ -513,6 +556,8 @@ class Magic_Box(object):
 
             rangcheck_orginal.append(tmplist)
 
+
+
         for coords in range(len(rangcheck_orginal)):
 
             del rangcheck_orginal[coords][5]
@@ -521,11 +566,23 @@ class Magic_Box(object):
 
             del rangcheck_orginal[coords][3]
 
+        #distanz zwischen den beiden Punkten oben CHANGE
+
+
+
+
+
+
+
         # create the valuelists that are used
+
+		#EINFUEGEN WENN Spalte = x verwenden
 
         xw = []
 
         yw = []
+
+        #CHANGE
 
         xw_check = []
 
@@ -533,7 +590,7 @@ class Magic_Box(object):
 
         for x in range(len(x_coord_proc)):
 
-            # Only use selected (use column) to calculate the rotation parameter
+            #CHANGE Nur Auswahl zum berechnen der Steigung verwenden
 
             if(selection_proc[x] == 1):
 
@@ -545,23 +602,43 @@ class Magic_Box(object):
 
             yw_check.append(y_coord_proc[x] - min(y_coord_proc))
 
-        # There is a problem with lingress if the points are nearly N-S oriented
 
-        # To solve this, it is nessecary to change the input values of the regression
+
+        
+
+        #QgsMessageLog.logMessage(str(xw), 'MyPlugin')
+
+        #CHANGE
+
+        #There is a problem with lingress if the points are nearly N-S oriented
+
+        #To solve this, it is nessecary to change the input values of the regression
 
         # Calculate the regression for both directions
 
-        linegress_x = scipy.stats.linregress(scipy.array(xw), scipy.array(yw))
 
-        linegress_y = scipy.stats.linregress(scipy.array(yw), scipy.array(xw))
+
+        linegress_x = scipy.stats.linregress(numpy.array(xw), numpy.array(yw))
+
+        linegress_y = scipy.stats.linregress(numpy.array(yw), numpy.array(xw))
+
+
+
+
 
         # get the sum of residuals for both direction
 
-        # We like to use the regression with less sum of the residuals
+        #We like to use the regression with less sum of the residuals
 
-        res_x = self.calculateResidual(linegress_x, scipy.array(xw), scipy.array(yw))
+        res_x = self.calculateResidual(linegress_x, numpy.array(xw), numpy.array(yw), profilnr_proc[0])
 
-        res_y = self.calculateResidual(linegress_y, scipy.array(yw), scipy.array(xw))
+        res_y = self.calculateResidual(linegress_y, numpy.array(yw), numpy.array(xw), profilnr_proc[0])
+
+
+
+
+
+
 
         if isnan(res_y) or res_x >= res_y:
 
@@ -575,7 +652,7 @@ class Magic_Box(object):
 
              # if the linear regression with the changed values was used, the angle of the slope is rotated by 90°
 
-             slope = tan((-90-(((atan(linegress[0]) * 180) / pi))) * pi / 180)
+             slope = tan((-90-(((atan(linegress[0])*180)/pi)))*pi / 180)
 
         else:
 
@@ -584,21 +661,34 @@ class Magic_Box(object):
             sys.exitfunc()
 
 
-        # Check the distance with all points
 
-        distance = errorhandler.calculateError(self, linegress, xw_check, yw_check)
+
+
+
+
+
+
+
+
+        #CHANGE Check the distance with all points
+
+        distance = errorhandler.calculateError(linegress, xw_check, yw_check, coord_proc[0][4])
+
+
+
+
+
+
 
         # calculate the degree of the slope
 
-        # Defining the starting point for the export of the section
+        #Defining the starting point for the export of the section
 
         slope_deg = 0.0
 
-        # Variable for determining the paint direction of the cutting line
+        #Variable for determining the paint direction of the cutting line
 
         cutting_start = ''
-
-        # Calculating the rotation angle
 
         if slope < 0 and coord_proc[0][3] in ["N", "E"]:
 
@@ -630,6 +720,14 @@ class Magic_Box(object):
 
             cutting_start = 'E'
 
+
+
+
+
+
+
+
+
         # instantiate lists for the transformed coordinates
 
         x_trans = []
@@ -637,8 +735,6 @@ class Magic_Box(object):
         y_trans = []
 
         z_trans = []
-
-        # Rotate on the first axis
 
         first_rotationresult = rotation(self, coord_proc, slope_deg, True)
 
@@ -650,17 +746,19 @@ class Magic_Box(object):
 
             z_trans.append(first_rotationresult['z_trans'][i])
 
+
+
         if direction == "absolute height":
 
-            # To get an export for the absolute height it is necessary to rotate the profile like the horizontal way
+            #To get an export for the absolute height it is necessary to rotate the profile like the horizontal way
 
-            # and move it on the y-axis
+            #and move it on the y-axis
 
-            x_coord_proc = listToList(coord_proc, 0)
+            x_coord_proc = listToList(self, coord_proc, 0)
 
-            y_coord_proc = listToList(coord_proc, 1)
+            y_coord_proc = listToList(self, coord_proc, 1)
 
-            z_coord_proc = listToList(coord_proc, 2)
+            z_coord_proc = listToList(self, coord_proc, 2)
 
             # calculate the minimal x
 
@@ -676,15 +774,29 @@ class Magic_Box(object):
 
                 z_trans[i] = z_trans[i] - mean_y + mean_z
 
+              #  printLogMessage(self, str(x_coord_proc[i]), 'ttt')
+
+             #   printLogMessage(self, str(x_trans[i]), 'ttt')
+
+            #printLogMessage(self,str(min_x),'ttt')
+
             new_min_x = min(x_trans)
 
             for i in range(len(x_trans)):
 
                 x_trans[i] = x_trans[i] + abs(new_min_x)
 
+
+
+
+
+
+
         # instantiate a list for the transformed coordinates
 
         coord_trans = []
+
+        #CHANGE
 
         rangcheck_trans = []
 
@@ -692,12 +804,13 @@ class Magic_Box(object):
 
         for i in range(len(coord_proc)):
 
-            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2],
-                                distance[i], selection_proc[i], id_proc[i]])
+            coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i], id_proc[i]])
 
             rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
 
-        # If the aim is to get the view of the surface, the x-axis has to be rotated aswell
+      
+
+        #If the aim is to get the view of the surface, the x-axis has to be rotated aswell
 
         if method == "surface":
 
@@ -713,9 +826,13 @@ class Magic_Box(object):
 
                 z_zw.append(z_trans[i] - min(y_trans + z_trans))
 
+
+
             # actual calculation of the slope using the linear regression again
 
-            z_slope = scipy.stats.linregress(scipy.array(z_yw), scipy.array(z_zw))[0]
+            z_slope = scipy.stats.linregress(numpy.array(z_yw), numpy.array(z_zw))[0]
+
+
 
             # transform the radians of the slope into degrees
 
@@ -733,11 +850,15 @@ class Magic_Box(object):
 
                 z_slope_deg = 0.0
 
+
+
             # calculate the centerpoint
 
             z_center_y = mean(y_trans)
 
             z_center_z = mean(z_trans)
+
+
 
             # rewrite the lists for the y and z values
 
@@ -747,63 +868,11 @@ class Magic_Box(object):
 
             for i in range(len(coord_trans)):
 
-                y_trans.append(z_center_y + (coord_trans[i][1] - z_center_y)
-                               * cos(z_slope_deg / 180 * pi) - (coord_trans[i][2] - z_center_z)
-                               * sin(z_slope_deg / 180 * pi))
+                y_trans.append(z_center_y + (coord_trans[i][1] - z_center_y) * cos(z_slope_deg / 180 * pi) - (coord_trans[i][2] - z_center_z) * sin(z_slope_deg / 180 * pi))
 
-                z_trans.append(z_center_z + (coord_trans[i][1] - z_center_y)
-                               * sin(z_slope_deg / 180 * pi) + (coord_trans[i][2] - z_center_z)
-                               * cos(z_slope_deg / 180 * pi))
+                z_trans.append(z_center_z + (coord_trans[i][1] - z_center_y) * sin(z_slope_deg / 180 * pi) + (coord_trans[i][2] - z_center_z) * cos(z_slope_deg / 180 * pi))
 
-            # empty and rewrite the output list
 
-            coord_trans = []
-
-            rangcheck_trans = []
-
-            for i in range(len(coord_proc)):
-
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2],
-                                    distance[i], selection_proc[i],id_proc[i]])
-
-                rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
-
-        # If the direction is in the "original" setting, the points have
-        # to be rotated back to their original orientation
-
-        if direction == "original":
-
-            # the rotation angle is the negative angle of the first rotation
-
-            if fehler_check is True:
-
-                y_slope_deg = -slope_deg - 45
-
-            else:
-
-                y_slope_deg = -slope_deg
-
-            # get the centerpoint
-
-            y_center_x = mean(x_trans)
-
-            y_center_z = mean(z_trans)
-
-            # rewrite the lists for the x and z values
-
-            x_trans = []
-
-            z_trans = []
-
-            for i in range(len(coord_trans)):
-
-                x_trans.append(y_center_x + (coord_trans[i][0] - y_center_x) * cos(y_slope_deg / 180 * pi)
-                               - (coord_trans[i][2] - y_center_z)
-                               * sin(y_slope_deg / 180 * pi))
-
-                z_trans.append(y_center_z + (coord_trans[i][0] - y_center_x) * sin(y_slope_deg / 180 * pi)
-                               + (coord_trans[i][2] - y_center_z)
-                               * cos(y_slope_deg / 180 * pi))
 
             # empty and rewrite the output list
 
@@ -815,16 +884,89 @@ class Magic_Box(object):
 
                 # CHANGE
 
-                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4],
-                                    coord_proc[i][2], distance[i], selection_proc[i], id_proc[i]])
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i],id_proc[i]])
 
                 rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
+
+
+
+        # If the direction is in the "original" setting, the points have to be rotated back to their original orientation
+
+        if direction == "original":
+
+            # the rotation angle is the negative angle of the first rotation
+
+            if fehler_check == True:
+
+                y_slope_deg = -slope_deg - 45
+
+
+
+            else:
+
+                y_slope_deg = -slope_deg
+
+
+
+
+
+            # get the centerpoint
+
+            y_center_x = mean(x_trans)
+
+            y_center_z = mean(z_trans)
+
+
+
+            #rewrite the lists for the x and z values
+
+            x_trans = []
+
+            z_trans = []
+
+            for i in range(len(coord_trans)):
+
+                x_trans.append(y_center_x + (coord_trans[i][0] - y_center_x) * cos(y_slope_deg / 180 * pi) - (coord_trans[i][2] - y_center_z)
+
+                               * sin(y_slope_deg / 180 * pi))
+
+                z_trans.append(y_center_z + (coord_trans[i][0] - y_center_x) * sin(y_slope_deg / 180 * pi) + (coord_trans[i][2] - y_center_z)
+
+                               * cos(y_slope_deg / 180 * pi))
+
+
+
+            # empty and rewrite the output list
+
+            coord_trans = []
+
+            rangcheck_trans = []
+
+            for i in range(len(coord_proc)):
+
+                # CHANGE
+
+                coord_trans.append([x_trans[i], y_trans[i], z_trans[i], coord_proc[i][4], coord_proc[i][2], distance[i], selection_proc[i], id_proc[i]])
+
+                rangcheck_trans.append([x_trans[i], z_trans[i], y_trans[i]])
+
+
+
+
+
+
+
+        #change
+
+
 
         # check the distances of the outter points from the old points and the converted ones
 
         original_outer_points = self.outer_profile_points(coord_proc)
 
         original_distance = self.calculate_distance_from_outer_profile_points_orgiginal(original_outer_points)
+
+
 
         new_outer_points = []
 
@@ -836,6 +978,8 @@ class Magic_Box(object):
 
         new_distance = self.calculate_distance_from_outer_profile_points_proc(new_outer_points)
 
+
+
         printLogMessage(self, 'PR:' + str(coord_proc[0][4]), 'Distance')
 
         printLogMessage(self, 'Original Distance: ' + str(original_distance), 'Distance')
@@ -844,30 +988,35 @@ class Magic_Box(object):
 
         printLogMessage(self, 'Diff. Distance: ' + str(abs(original_distance-new_distance)), 'Distance')
 
+
+
+
+
+
+
+
+
         if abs(original_distance - new_distance) > 0.01:
 
-            criticalMessageToBar(self, 'Error', 'Profile was calculated incorrect (1cm acc.) See Log-Window: '
-                                 + str(str(coord_proc[0][4])))
+            criticalMessageToBar(self, 'Error', 'Profile was calculated incorrect (1cm acc.) See Log-Window: ' + str(str(coord_proc[0][4])))
 
             printLogMessage(self, 'DISTANCE WARNING!', 'Distance')
 
-        return {'coord_trans': coord_trans, 'cutting_start': cutting_start, 'linegress': linegress,
-                'ns_error': ns_fehler_vorhanden}
 
+
+        return {'coord_trans':coord_trans, 'cutting_start':cutting_start, 'linegress':linegress, 'ns_error':ns_fehler_vorhanden}
+
+
+
+    #CHANGE NEW
 
     def height_points (self, coord_trans):
 
-        """
-            Getting the top right point and export it to a pointshape
+        #Getting the top right point and export it to a pointshape
 
-            :param coord_trans: coordinates to be processed
-            :type coord_trans: list
+        xw = []
 
-            :returns: height_point x,y
-            :rtype: list
-
-        """
-
+        yw = []
 
         height_point = []
 
@@ -885,24 +1034,19 @@ class Magic_Box(object):
 
         return height_point
 
+
+
     def outer_profile_points(self, coords):
 
-        """
-            get the two points with the highest and lowest xvalue
-
-            :param coords: coordinates to be processed
-            :type coords: list
-
-            :returns: left and right highest point as x,y
-            :rtype: list of list
-
-        """
+        # get the two points with the highest and lowest xvalue
 
         coords_sorted = sorted(coords, key=lambda x: (x[0]))
 
         two_lowest = coords_sorted[:2]
 
         two_highest = coords_sorted[-2:]
+
+
 
         if two_lowest[1][2] > two_lowest[0][2]:
 
@@ -922,11 +1066,15 @@ class Magic_Box(object):
 
         return [lowestx, highestx]
 
+
+
     def calculate_distance_from_outer_profile_points_orgiginal(self, outer_points):
 
         distance = sqrt((outer_points[1][0]-outer_points[0][0])**2 + (outer_points[1][1]-outer_points[0][1])**2)
 
         return distance
+
+
 
     def calculate_distance_from_outer_profile_points_proc(self, outer_points):
 
@@ -934,7 +1082,11 @@ class Magic_Box(object):
 
         return distance
 
-    def calculateResidual(self, linegress, array1, array2):
+
+
+
+
+    def calculateResidual(self, linegress, array1, array2, prnr):
 
         # This calculates the predicted value for each observed value
 
@@ -942,8 +1094,85 @@ class Magic_Box(object):
 
         pred_values = linegress[0] * array1 + linegress[1]
 
+
+
         # This prints the residual for each pair of observations
 
         Residual = obs_values - pred_values
 
+
+
         return sum(Residual)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

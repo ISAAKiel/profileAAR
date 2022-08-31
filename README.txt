@@ -1,11 +1,33 @@
-A python Plugin The plugin profileAAR transforms profile control points for fotogrammetric rectification of profile images of archaeological excavations
+Plugin Builder Results
 
-How to use profileAAR After installing and opening the plugin there is a "?"-Button in the Plugin. There you will find additional informations.
+Your plugin profileAAR was created in:
+    /home/mo1005/.qgis2/python/plugins/profileAAR
 
-QGIS 3 Install Qgis3 >3.6.0 You will find the Plugin in the Extention Manager
+Your QGIS plugin directory is located at:
+    /home/mo1005/.qgis2/python/plugins
 
-Moritz Mennenga, Kay Schmütz, & Christoph Rinne. (2019, May 29). ISAAKiel/profileAAR: profileAAR - First official QGIS3 release (Version 2.0.1). Zenodo. http://doi.org/10.5281/zenodo.3234836
+What's Next:
 
-QGIS 2 !!! Not working with QGIS 2.18.28 - Versions 2.10 -> 2.18.26 are ok !!! Please install the Plugin manually by downloading the last version in the master branch and copy the files in the QGIS Plugin folder
+  * Copy the entire directory containing your new plugin to the QGIS plugin
+    directory
 
-Moritz Mennenga, Kay Schmütz, & Christoph Rinne. (2019, March 21). ISAAKiel/profileAAR: First working version for QGIS2 (Version v1.0). Zenodo. http://doi.org/10.5281/zenodo.2601860
+  * Compile the resources file using pyrcc4
+
+  * Run the tests (``make test``)
+
+  * Test the plugin by enabling it in the QGIS plugin manager
+
+  * Customize it by editing the implementation file: ``profileAAR.py``
+
+  * Create your own custom icon, replacing the default icon.png
+
+  * Modify your user interface by opening profileAAR.ui in Qt Designer
+
+  * You can use the Makefile to compile your Ui and resource files when
+    you make changes. This requires GNU make (gmake)
+
+For more information, see the PyQGIS Developer Cookbook at:
+http://www.qgis.org/pyqgis-cookbook/index.html
+
+(C) 2011-2014 GeoApt LLC - geoapt.com
+Git revision : $Format:%H$
