@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>508</height>
+    <height>555</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>460</y>
-     <width>341</width>
+     <y>510</y>
+     <width>340</width>
      <height>32</height>
     </rect>
    </property>
@@ -186,7 +186,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>380</y>
+     <y>430</y>
      <width>81</width>
      <height>16</height>
     </rect>
@@ -236,8 +236,8 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>380</y>
-     <width>211</width>
+     <y>430</y>
+     <width>210</width>
      <height>20</height>
     </rect>
    </property>
@@ -246,8 +246,8 @@
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>380</y>
-     <width>61</width>
+     <y>430</y>
+     <width>60</width>
      <height>23</height>
     </rect>
    </property>
@@ -305,8 +305,8 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>410</y>
-     <width>141</width>
+     <y>460</y>
+     <width>140</width>
      <height>17</height>
     </rect>
    </property>
@@ -318,8 +318,8 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>440</y>
-     <width>141</width>
+     <y>490</y>
+     <width>140</width>
      <height>17</height>
     </rect>
    </property>
@@ -327,12 +327,35 @@
     <string>export section</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_11">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>380</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Point number</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="pointnoCombo">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>380</y>
+     <width>291</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsmaplayercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -464,6 +464,10 @@ class profileAAR(object):
 
         self.dlg.useCombo.addItems(fieldnames)
 
+        # pointnoCombo
+        self.dlg.pointnoCombo.clear()
+
+        self.dlg.pointnoCombo.addItems(fieldnames)
 
 
 
@@ -630,7 +634,7 @@ class profileAAR(object):
 
                 point_id += 1
 
-                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()], feature[self.dlg.profileCombo.currentText()], feature[self.dlg.useCombo.currentText()], point_id])
+                coord.append([x,y,feature[self.dlg.zCombo.currentText()],feature[self.dlg.viewCombo.currentText()], feature[self.dlg.profileCombo.currentText()], feature[self.dlg.useCombo.currentText()],feature[self.dlg.pointnoCombo.currentText()], point_id])
 
                 #write a list of profilenames (unique entries)
 

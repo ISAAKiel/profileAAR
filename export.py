@@ -96,6 +96,8 @@ class Export(object):
 
             export_fields.append(QgsField("was_used", QVariant.String))
 
+            export_fields.append(QgsField("point_no", QVariant.String))
+
             crs = corrdinate_system
             transform_context = QgsProject.instance().transformContext()
             save_options = QgsVectorFileWriter.SaveVectorOptions()
@@ -130,7 +132,7 @@ class Export(object):
 
                     #TODO Werte runden auf drei nachkommastellen
 
-                    export_feature.setAttributes([float(coord_trans[x][i][0]), float(coord_trans[x][i][1]), float(coord_trans[x][i][2]), str(coord_trans[x][i][3]), str(coord_trans[x][i][4]), str(coord_trans[x][i][5]) , str(coord_trans[x][i][6])])
+                    export_feature.setAttributes([float(coord_trans[x][i][0]), float(coord_trans[x][i][1]), float(coord_trans[x][i][2]), str(coord_trans[x][i][3]), str(coord_trans[x][i][4]), str(coord_trans[x][i][5]) , str(coord_trans[x][i][6]), str(coord_trans[x][i][7])])
 
                     writer.addFeature(export_feature)
 
