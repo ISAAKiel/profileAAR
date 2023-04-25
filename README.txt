@@ -7,3 +7,6 @@ QGIS 3 Install Qgis3 >3.6.0 You will find the Plugin in the Extention Manager
 Please cite:
 
 Moritz Mennenga, Kay Schmütz, & Christoph Rinne. (2019, May 29). ISAAKiel/profileAAR: profileAAR - First official QGIS3 release (Version 2.0.1). Zenodo. http://doi.org/10.5281/zenodo.3234836
+
+Additional information:
+Mennenga M, Schmütz K. profileAAR – a Plugin to transform section control points for rectifying archaeological section images in QGIS. Siedlungs- und Küstenforschung im südlichen Nordseegebiet. 2022(45):227–34.
