@@ -337,7 +337,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Point number</string>
+    <string>Point ID</string>
    </property>
   </widget>
   <widget class="QComboBox" name="pointnoCombo">
