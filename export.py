@@ -72,7 +72,22 @@ class Export(object):
 
         self.qgisInterface = qgisInterface
 
-        
+    def _create_shapefile_writer(self, filename, export_fields, geometry_type, coordinate_system):
+
+        """Create a vector file writer using the QGIS 3/4 compatible factory API."""
+
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = "ESRI Shapefile"
+        save_options.fileEncoding = "UTF-8"
+
+        return QgsVectorFileWriter.create(
+            filename,
+            export_fields,
+            geometry_type,
+            coordinate_system,
+            QgsProject.instance().transformContext(),
+            save_options
+        )
 
     def export(self, coord_trans, filename, corrdinate_system):
 
@@ -98,21 +113,12 @@ class Export(object):
 
             export_fields.append(QgsField("point_no", QVariant.String))
 
-            crs = corrdinate_system
-            transform_context = QgsProject.instance().transformContext()
-            save_options = QgsVectorFileWriter.SaveVectorOptions()
-            save_options.driverName = "ESRI Shapefile"
-            save_options.fileEncoding = "UTF-8"
-
-            writer = QgsVectorFileWriter.create(
+            writer = self._create_shapefile_writer(
                 filename,
                 export_fields,
                 QgsWkbTypes.Point,
-                crs,
-                transform_context,
-                save_options
+                corrdinate_system
             )
-            #writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QgsWkbTypes.Point, corrdinate_system, "ESRI Shapefile")
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
 
@@ -166,7 +172,12 @@ class Export(object):
 
 
 
-            writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QgsWkbTypes.Point, corrdinate_system, "ESRI Shapefile")
+            writer = self._create_shapefile_writer(
+                filename,
+                export_fields,
+                QgsWkbTypes.Point,
+                corrdinate_system
+            )
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
 
@@ -222,7 +233,12 @@ class Export(object):
 
             filename = filename + "_section.shp"
 
-            writer = QgsVectorFileWriter(filename, "utf-8", export_fields, QgsWkbTypes.LineString, corrdinate_system, "ESRI Shapefile")
+            writer = self._create_shapefile_writer(
+                filename,
+                export_fields,
+                QgsWkbTypes.LineString,
+                corrdinate_system
+            )
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
 

@@ -1,7 +1,5 @@
 @echo off
-call "C:\Program Files\QGIS 3.4\bin\o4w_env.bat"
-call "C:\Program Files\QGIS 3.4\bin\qt5_env.bat"
-call "C:\Program Files\QGIS 3.4\bin\py3_env.bat"
-
-@echo on
-pyrcc5 -o resources.py resources.qrc
+REM QGIS 4 / Qt6 version: profileAAR no longer requires compiled Qt resources.
+REM Icons are loaded via filesystem paths, so resources.py does not need regeneration.
+echo Nothing to compile. Icons are loaded from img\icon.png.
+pause

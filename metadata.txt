@@ -8,9 +8,10 @@
 
 [general]
 name=profileAAR
-qgisMinimumVersion=3.22.0
+qgisMinimumVersion=4.0.3
+qgisMaximumVersion=4.99
 description=The plugin profileAAR transforms profile control points for fotogrammetric rectification of section images of archaeological excavations
-version=2.0.4
+version=3.0
 author=ISAAKiel- Moritz Mennenga (NIhK WHV), Kay Schmütz, Christoph Rinne (UFG Kiel) 
 email=mennenga@nihk.de
 

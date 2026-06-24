@@ -1,0 +1,34 @@
+profileAAR QGIS 4 / Qt6 compatibility update
+
+Changed files:
+- profileAAR.py
+  * QAction import moved to qgis.PyQt.QtGui.
+  * direct resources.py import removed.
+  * icon path changed from :/profileAAR/img/icon.png to filesystem path img/icon.png.
+  * dialog exec_() changed to exec().
+
+- profileAAR_dialog.py
+  * PyQt5 imports replaced by qgis.PyQt imports.
+  * direct resources.py import removed.
+  * dialog icon loaded from filesystem path img/icon.png.
+
+- export.py
+  * remaining deprecated QgsVectorFileWriter(...) constructor calls replaced with QgsVectorFileWriter.create(...).
+  * shared writer helper added.
+
+- resources.py
+  * PyQt5 import changed to qgis.PyQt so accidental imports do not break QGIS 4.
+  * Plugin no longer depends on this file for icons.
+
+- compile_resources.bat
+  * QGIS 3.4 / Qt5 / pyrcc5 references removed.
+  * Resource compilation is no longer needed for the single plugin icon.
+
+- metadata.txt
+  * qgisMaximumVersion=4.99 added.
+  * version changed to 2.0.5.
+
+- plugin_upload.py
+  * broken generated uploader script replaced by a harmless deprecated stub to avoid Python syntax errors during packaging/scanning.
+
+Important: This package was statically migrated. Final validation must be done by loading it in QGIS 4 and running the plugin workflow on test data.

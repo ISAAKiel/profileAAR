@@ -58,8 +58,8 @@ from builtins import range
 from builtins import object
 from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QFileInfo
 
-from qgis.PyQt.QtWidgets import QAction, QFileDialog
-from qgis.PyQt.QtGui import QIcon, QPixmap
+from qgis.PyQt.QtWidgets import QFileDialog
+from qgis.PyQt.QtGui import QAction, QIcon, QPixmap
 
 from qgis.core import * #QgsMessageLog, QgsVectorDataProvider - Import changed to use the full geometry options
 
@@ -74,9 +74,8 @@ from .transformation import sectionCalc
 
 
 
-# Initialize Qt resources from file resources.py
-
-from .resources import *
+# Qt resources are not imported directly for QGIS 4/Qt6 compatibility.
+# Icons are loaded from filesystem paths instead.
 
 import sys
 
@@ -382,7 +381,7 @@ class profileAAR(object):
 
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/profileAAR/img/icon.png'
+        icon_path = os.path.join(self.plugin_dir, 'img', 'icon.png')
 
         self.add_action(
 
@@ -530,7 +529,7 @@ class profileAAR(object):
 
         # Run the dialog event loop
 
-        result = self.dlg.exec_()
+        result = self.dlg.exec()
 
         # See if OK was pressed
 

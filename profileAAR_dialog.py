@@ -46,11 +46,9 @@
 
 import os
 
-from .resources import *
-
 from qgis.PyQt import uic
-from PyQt5.QtWidgets import QAction, QDialog, QFormLayout
-import PyQt5.QtGui as QtGui
+from qgis.PyQt.QtWidgets import QDialog, QFormLayout
+from qgis.PyQt.QtGui import QPixmap
 
 
 
@@ -82,5 +80,6 @@ class profileAARDialog(QDialog, FORM_CLASS):
 
         self.setupUi(self)
         
-        self.icon.setPixmap(QtGui.QPixmap(':/profileAAR/img/icon.png'))
+        icon_path = os.path.join(os.path.dirname(__file__), 'img', 'icon.png')
+        self.icon.setPixmap(QPixmap(icon_path))
 
